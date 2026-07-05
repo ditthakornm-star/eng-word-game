@@ -8,10 +8,13 @@
 </head>
 <body class="bg-indigo-50 p-4 font-sans select-none relative min-h-screen">
     <div class="max-w-md mx-auto bg-white p-5 rounded-3xl shadow-xl border-4 border-indigo-200 mt-2">
-        <div class="flex items-center justify-between gap-2 mb-3">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
             <button id="mode-toggle-btn" onclick="toggleMode()" class="text-xs bg-emerald-100 text-emerald-700 font-bold px-3 py-2 rounded-full shadow-sm active:scale-95 transition-all cursor-pointer">
                 โหมด: ง่ายมาก 🧸
             </button>
+            <a href="../" class="text-xs bg-slate-100 text-slate-700 font-bold px-3 py-2 rounded-full shadow-sm active:scale-95 transition-all cursor-pointer">
+                เลือกชุด 📚
+            </a>
             <button onclick="openHowToPlay()" class="text-xs bg-amber-100 text-amber-700 font-bold px-3 py-2 rounded-full shadow-sm active:scale-95 transition-all cursor-pointer">
                 วิธีเล่น ❔
             </button>
@@ -64,7 +67,8 @@
 
         <div id="control-panel" class="flex flex-wrap justify-between items-center gap-2 mb-4 border-t border-slate-100 pt-3">
             <button onclick="initGame()" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-2 rounded-xl transition active:scale-95 cursor-pointer">เริ่มใหม่ 🔄</button>
-            <button id="hint-btn" onclick="useHint()" class="text-xs bg-violet-100 hover:bg-violet-200 text-violet-700 font-bold px-3 py-2 rounded-xl transition active:scale-95 cursor-pointer">ใบ้ตัวถัดไป 💡</button>
+            <button id="study-again-btn" onclick="reviewStudyWord()" class="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold px-3 py-2 rounded-xl transition active:scale-95 cursor-pointer">ดูคำอีกครั้ง 👀</button>
+            <button id="hint-btn" onclick="useHint()" class="text-xs bg-violet-100 hover:bg-violet-200 text-violet-700 font-bold px-3 py-2 rounded-xl transition active:scale-95 cursor-pointer">ใบ้ตัวถัดไป 0/2 💡</button>
             <button onclick="backspace()" class="text-xs bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold px-3 py-2 rounded-xl transition active:scale-95 cursor-pointer">ลบ ⌫</button>
             <button onclick="clearCurrentWord()" class="text-xs bg-rose-100 hover:bg-rose-200 text-rose-600 font-bold px-3 py-2 rounded-xl transition active:scale-95 cursor-pointer">ลบทั้งหมด ↩</button>
         </div>
@@ -79,7 +83,7 @@
                 <p>1. กดปุ่มเสียง 🔊 เพื่อฟังคำศัพท์ภาษาอังกฤษ</p>
                 <p>2. โหมดง่ายมากจะเปิดป๊อบอัพให้ดูคำเต็ม กด “พร้อมแล้ว” แล้วค่อยสะกด</p>
                 <p>3. กด “ยืนยันคำตอบ” แล้วเลือกคำแปลภาษาไทย</p>
-                <p>4. โหมดง่ายกด “ใบ้ตัวถัดไป” ได้เรื่อยๆ</p>
+                <p>4. โหมดง่ายกด “ใบ้ตัวถัดไป” ได้ไม่เกิน 2 ครั้งต่อคำ</p>
                 <p>5. โหมดยากมีตัวหลอกเพิ่ม และไม่มีปุ่มใบ้</p>
             </div>
             <button onclick="closeHowToPlay()" class="mt-5 w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-all">เริ่มเล่นเลย</button>
@@ -142,7 +146,7 @@
             <h2 class="text-2xl font-black text-slate-800 mb-2">สรุปคะแนนรวม</h2>
             <div class="bg-indigo-50 rounded-2xl p-4 mb-6 border border-indigo-100">
                 <span class="text-sm font-bold text-indigo-600 block mb-1">คะแนนที่ได้ทั้งหมด</span>
-                <div class="text-5xl font-black text-indigo-900"><span id="final-score">0</span> <span class="text-2xl text-slate-400 font-bold">/ 15</span></div>
+                <div class="text-5xl font-black text-indigo-900"><span id="final-score">0</span> <span class="text-2xl text-slate-400 font-bold">/ <span id="final-total">15</span></span></div>
             </div>
             <p id="final-evaluation" class="text-sm font-bold text-emerald-600 mb-6 leading-relaxed"></p>
             <button onclick="restartGame()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-95 transition-all text-base cursor-pointer">🔄 เล่นใหม่อีกรอบ</button>
@@ -177,6 +181,7 @@
         var usedButtons = [];
         var audioCtx = null;
         var inputLocked = false;
+        var hintCount = 0;
 
         function answerOf(data) {
             return data.w.replace(/\s/g, "");
@@ -259,6 +264,7 @@
             totalScore = 0;
             document.getElementById("total-words").innerText = vocabularyList.length;
             document.getElementById("score-total").innerText = vocabularyList.length;
+            document.getElementById("final-total").innerText = vocabularyList.length;
             document.getElementById("score-display").innerText = formatScore(totalScore);
             loadWord();
         }
@@ -309,12 +315,16 @@
             userInput = "";
             usedButtons = [];
             currentWordScore = 1.0;
+            hintCount = 0;
 
             var preview = document.getElementById("word-preview");
             var hintText = document.getElementById("english-hint");
             var hintBtn = document.getElementById("hint-btn");
+            var studyAgainBtn = document.getElementById("study-again-btn");
             inputLocked = gameMode === "veryEasy";
             hintBtn.style.display = gameMode === "hard" ? "none" : "inline-block";
+            studyAgainBtn.style.display = gameMode === "veryEasy" ? "inline-block" : "none";
+            updateHintButton();
             if (gameMode === "veryEasy") {
                 preview.style.display = "block";
                 hintText.innerText = "ดูคำในป๊อบอัพ แล้วกดพร้อมแล้วเพื่อเริ่มสะกด";
@@ -393,6 +403,14 @@
             document.getElementById("study-word-modal").style.display = "flex";
         }
 
+        function reviewStudyWord() {
+            if (gameMode !== "veryEasy") return;
+            inputLocked = true;
+            setPracticeLock(true);
+            showStudyWordModal(shuffledList[currentIndex]);
+            document.getElementById("status-message").innerText = "ดูคำอีกครั้งให้จำ แล้วกดพร้อมแล้วเพื่อกลับมาสะกดต่อ";
+        }
+
         function startVeryEasyAnswer() {
             document.getElementById("study-word-modal").style.display = "none";
             inputLocked = false;
@@ -407,8 +425,11 @@
             var buttons = document.querySelectorAll("#keyboard-container button");
             for (var i = 0; i < buttons.length; i++) {
                 if (locked) {
-                    buttons[i].classList.add("opacity-40", "pointer-events-none");
-                } else {
+                    if (!buttons[i].classList.contains("pointer-events-none")) {
+                        buttons[i].classList.add("practice-lock", "opacity-40", "pointer-events-none");
+                    }
+                } else if (buttons[i].classList.contains("practice-lock")) {
+                    buttons[i].classList.remove("practice-lock");
                     buttons[i].classList.remove("opacity-40", "pointer-events-none");
                 }
             }
@@ -422,7 +443,7 @@
 
         function handleKey(c, btn) {
             if (inputLocked) {
-                document.getElementById("status-message").innerText = "รอให้คำหายก่อน แล้วค่อยเริ่มสะกดนะ";
+                document.getElementById("status-message").innerText = "กดพร้อมแล้วในป๊อบอัพก่อน แล้วค่อยเริ่มสะกดนะ";
                 return;
             }
             playLetterAudio(c);
@@ -441,8 +462,12 @@
                 document.getElementById("status-message").innerText = "โหมดยากไม่มีคำใบ้นะ ลองฟังเสียงอีกครั้งได้เลย";
                 return;
             }
+            if (hintCount >= 2) {
+                document.getElementById("status-message").innerText = "คำนี้ใช้คำใบ้ครบ 2 ครั้งแล้ว ลองต่อเองอีกนิดนะ";
+                return;
+            }
             if (inputLocked) {
-                document.getElementById("status-message").innerText = "รอให้คำหายก่อน แล้วค่อยใช้ใบ้ได้นะ";
+                document.getElementById("status-message").innerText = "กดพร้อมแล้วในป๊อบอัพก่อน แล้วค่อยใช้ใบ้ได้นะ";
                 return;
             }
             var data = shuffledList[currentIndex];
@@ -460,6 +485,8 @@
             for (var i = 0; i < buttons.length; i++) {
                 if (buttons[i].dataset.letter === nextLetter && !buttons[i].classList.contains("pointer-events-none")) {
                     handleKey(nextLetter, buttons[i]);
+                    hintCount++;
+                    updateHintButton();
                     if (gameMode === "easy") {
                         currentWordScore = Math.max(0, currentWordScore - 0.25);
                     } else if (gameMode === "hard") {
@@ -473,9 +500,21 @@
             }
         }
 
+        function updateHintButton() {
+            var hintBtn = document.getElementById("hint-btn");
+            if (hintBtn) {
+                hintBtn.innerText = "ใบ้ตัวถัดไป " + hintCount + "/2 💡";
+                if (hintCount >= 2) {
+                    hintBtn.classList.add("opacity-50", "pointer-events-none");
+                } else {
+                    hintBtn.classList.remove("opacity-50", "pointer-events-none");
+                }
+            }
+        }
+
         function checkAnswer() {
             if (inputLocked) {
-                document.getElementById("status-message").innerText = "รอให้คำหายก่อน แล้วค่อยตอบนะ";
+                document.getElementById("status-message").innerText = "กดพร้อมแล้วในป๊อบอัพก่อน แล้วค่อยตอบนะ";
                 return;
             }
             var target = answerOf(shuffledList[currentIndex]);
