@@ -91,6 +91,10 @@
             <div id="study-word-emoji" class="text-5xl mb-3"></div>
             <p class="text-xs font-black text-emerald-500 uppercase tracking-wider">ดูให้จำก่อนนะ</p>
             <div id="study-word-text" class="text-4xl font-black text-emerald-800 tracking-wide my-3"></div>
+            <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 mb-3">
+                <div class="text-[10px] font-black text-emerald-600 uppercase tracking-wider mb-2">จำเป็นก้อน</div>
+                <div id="study-word-parts" class="flex flex-wrap justify-center gap-2"></div>
+            </div>
             <div id="study-word-thai" class="text-sm font-bold text-slate-500 mb-4"></div>
             <button onclick="playWordAudio()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold px-4 py-2 rounded-xl text-xs active:scale-95 transition mb-3">🔊 ฟังคำนี้</button>
             <button onclick="startVeryEasyAnswer()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-all">พร้อมแล้ว เริ่มสะกด</button>
@@ -155,7 +159,7 @@
             {w:"daughter", t:"ลูกสาว", em:"👧", chunks:["daugh","ter"], tip:"daugh + ter ตัว gh ไม่ออกเสียง", s:"She is my daughter.", st:"เธอคือลูกสาวของฉัน"},
             {w:"fruit", t:"ผล, ผลไม้", em:"🍎", chunks:["fruit"], tip:"fr + uit", s:"I like to eat fruit.", st:"ฉันชอบกินผลไม้"},
             {w:"seed", t:"เมล็ด, เมล็ดพันธุ์", em:"🌱", chunks:["seed"], tip:"s + ee + d", s:"A seed can grow into a plant.", st:"เมล็ดสามารถเติบโตเป็นพืชได้"},
-            {w:"fibrous root", t:"รากฝอย", em:"🌿", chunks:["fibrous","root"], tip:"fibrous + root เวลาเล่นให้กดตัวอักษรติดกัน ไม่ต้องกดเว้นวรรค", s:"Grass has fibrous roots.", st:"หญ้ามีรากฝอย"},
+            {w:"fibrous root", t:"รากฝอย", em:"🌿", chunks:["fi","brous","root"], tip:"แบ่งจำเป็น 3 ก้อน: fi + brous + root โดย root แปลว่าราก เวลาเล่นให้กดตัวอักษรติดกัน ไม่ต้องกดเว้นวรรค", s:"Grass has fibrous roots.", st:"หญ้ามีรากฝอย"},
             {w:"elder", t:"ผู้อาวุโสแก่กว่า, มีอาวุโสกว่า", em:"👵", chunks:["el","der"], tip:"el + der", s:"We should respect our elders.", st:"เราควรเคารพผู้อาวุโส"},
             {w:"decide", t:"ตัดสินใจ", em:"💭", chunks:["de","cide"], tip:"de + cide", s:"I decide to read a book.", st:"ฉันตัดสินใจอ่านหนังสือ"},
             {w:"punish", t:"ลงโทษ", em:"⭐", chunks:["pun","ish"], tip:"pun + ish", s:"Do not punish with anger.", st:"อย่าลงโทษด้วยความโกรธ"},
@@ -378,6 +382,14 @@
             document.getElementById("study-word-emoji").innerText = data.em;
             document.getElementById("study-word-text").innerText = data.w;
             document.getElementById("study-word-thai").innerText = data.t;
+            var parts = document.getElementById("study-word-parts");
+            parts.innerHTML = "";
+            data.chunks.forEach(function(part) {
+                var badge = document.createElement("span");
+                badge.className = "bg-white border-2 border-emerald-300 text-emerald-800 font-black text-lg px-3 py-1 rounded-xl shadow-sm";
+                badge.innerText = part;
+                parts.appendChild(badge);
+            });
             document.getElementById("study-word-modal").style.display = "flex";
         }
 
