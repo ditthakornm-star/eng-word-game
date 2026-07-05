@@ -37,7 +37,7 @@
         <div id="emoji-display" class="text-5xl text-center mb-2 animate-bounce"></div>
         <h2 id="english-hint" class="text-xs font-bold text-center text-slate-400 mb-4 h-4 uppercase tracking-widest">ฟังเสียงแล้วเรียงตัวอักษร</h2>
         <div id="word-preview" class="hidden text-center mb-4 bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-3">
-            <div class="text-[10px] font-black text-emerald-600 uppercase tracking-wider mb-1">ดูคำนี้แล้วพิมพ์ตาม</div>
+            <div id="word-preview-label" class="text-[10px] font-black text-emerald-600 uppercase tracking-wider mb-1">ดูคำนี้ 5 วินาที แล้วจำไปสะกด</div>
             <div id="word-preview-text" class="text-3xl font-black text-emerald-800 tracking-wide"></div>
         </div>
 
@@ -64,7 +64,7 @@
 
         <div id="control-panel" class="flex flex-wrap justify-between items-center gap-2 mb-4 border-t border-slate-100 pt-3">
             <button onclick="initGame()" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-2 rounded-xl transition active:scale-95 cursor-pointer">เริ่มใหม่ 🔄</button>
-            <button onclick="useHint()" class="text-xs bg-violet-100 hover:bg-violet-200 text-violet-700 font-bold px-3 py-2 rounded-xl transition active:scale-95 cursor-pointer">ใบ้ตัวถัดไป 💡</button>
+            <button id="hint-btn" onclick="useHint()" class="text-xs bg-violet-100 hover:bg-violet-200 text-violet-700 font-bold px-3 py-2 rounded-xl transition active:scale-95 cursor-pointer">ใบ้ตัวถัดไป 💡</button>
             <button onclick="backspace()" class="text-xs bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold px-3 py-2 rounded-xl transition active:scale-95 cursor-pointer">ลบ ⌫</button>
             <button onclick="clearCurrentWord()" class="text-xs bg-rose-100 hover:bg-rose-200 text-rose-600 font-bold px-3 py-2 rounded-xl transition active:scale-95 cursor-pointer">ลบทั้งหมด ↩</button>
         </div>
@@ -77,10 +77,10 @@
             <h2 class="text-xl font-black text-slate-800 mb-3 text-center">วิธีเล่น</h2>
             <div class="space-y-2 text-sm text-slate-700 font-semibold leading-relaxed">
                 <p>1. กดปุ่มเสียง 🔊 เพื่อฟังคำศัพท์ภาษาอังกฤษ</p>
-                <p>2. โหมดง่ายมากจะโชว์คำเต็มให้ดู แล้วให้พิมพ์ตาม</p>
+                <p>2. โหมดง่ายมากจะโชว์คำเต็ม 5 วินาที แล้วซ่อนให้สะกดจากความจำ</p>
                 <p>3. กด “ยืนยันคำตอบ” แล้วเลือกคำแปลภาษาไทย</p>
-                <p>4. ถ้าติดขัด กด “ใบ้ตัวถัดไป” ได้เรื่อยๆ</p>
-                <p>5. โหมดง่ายมีเฉพาะตัวอักษรของคำนั้น โหมดยากจะมีตัวหลอกเพิ่ม</p>
+                <p>4. โหมดง่ายกด “ใบ้ตัวถัดไป” ได้เรื่อยๆ</p>
+                <p>5. โหมดยากมีตัวหลอกเพิ่ม และไม่มีปุ่มใบ้</p>
             </div>
             <button onclick="closeHowToPlay()" class="mt-5 w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-all">เริ่มเล่นเลย</button>
         </div>
@@ -161,6 +161,8 @@
         var userInput = "";
         var usedButtons = [];
         var audioCtx = null;
+        var inputLocked = false;
+        var previewTimer = null;
 
         function answerOf(data) {
             return data.w.replace(/\s/g, "");
@@ -274,6 +276,10 @@
         }
 
         function loadWord() {
+            if (previewTimer) {
+                clearTimeout(previewTimer);
+                previewTimer = null;
+            }
             var data = shuffledList[currentIndex];
             var target = answerOf(data);
             document.getElementById("word-number").innerText = currentIndex + 1;
@@ -297,10 +303,13 @@
             var preview = document.getElementById("word-preview");
             var previewText = document.getElementById("word-preview-text");
             var hintText = document.getElementById("english-hint");
+            var hintBtn = document.getElementById("hint-btn");
+            inputLocked = gameMode === "veryEasy";
+            hintBtn.style.display = gameMode === "hard" ? "none" : "inline-block";
             if (gameMode === "veryEasy") {
                 preview.style.display = "block";
                 previewText.innerText = data.w;
-                hintText.innerText = "ดูคำเต็ม แล้วกดตัวอักษรตาม";
+                hintText.innerText = "ดูคำ 5 วินาที แล้วจำไปสะกด";
             } else {
                 preview.style.display = "none";
                 previewText.innerText = "";
@@ -336,9 +345,7 @@
 
             var kb = document.getElementById("keyboard-container");
             kb.innerHTML = "";
-            if (gameMode !== "veryEasy") {
-                chars.sort(function() { return Math.random() - 0.5; });
-            }
+            chars.sort(function() { return Math.random() - 0.5; });
             for(var i = 0; i < chars.length; i++) {
                 (function(charVal) {
                     var btn = document.createElement("button");
@@ -350,10 +357,49 @@
                 })(chars[i]);
             }
 
+            if (gameMode === "veryEasy") {
+                setPracticeLock(true);
+                statusMsg.innerText = "ดูคำให้ดีนะ อีก 5 วินาทีคำจะหายไป แล้วค่อยสะกด";
+                statusMsg.className = "text-center text-sm font-bold text-emerald-600 min-h-[40px] mb-3 flex items-center justify-center p-2 bg-emerald-50 rounded-xl border border-emerald-200";
+                previewTimer = setTimeout(function() {
+                    previewText.innerText = "••••";
+                    preview.style.display = "none";
+                    inputLocked = false;
+                    setPracticeLock(false);
+                    statusMsg.innerText = "คำหายแล้ว ลองสะกดจากความจำได้เลย";
+                    statusMsg.className = "text-center text-sm font-bold text-indigo-600 min-h-[40px] mb-3 flex items-center justify-center p-2 bg-indigo-50 rounded-xl border border-indigo-200";
+                    playWordAudio();
+                }, 5000);
+            } else {
+                inputLocked = false;
+                setPracticeLock(false);
+            }
+
             setTimeout(function() { playWordAudio(); }, 500);
         }
 
+        function setPracticeLock(locked) {
+            var buttons = document.querySelectorAll("#keyboard-container button");
+            for (var i = 0; i < buttons.length; i++) {
+                if (locked) {
+                    buttons[i].classList.add("opacity-40", "pointer-events-none");
+                } else {
+                    buttons[i].classList.remove("opacity-40", "pointer-events-none");
+                }
+            }
+            var submitBtn = document.getElementById("submit-btn");
+            if (locked) {
+                submitBtn.classList.add("opacity-50", "pointer-events-none");
+            } else {
+                submitBtn.classList.remove("opacity-50", "pointer-events-none");
+            }
+        }
+
         function handleKey(c, btn) {
+            if (inputLocked) {
+                document.getElementById("status-message").innerText = "รอให้คำหายก่อน แล้วค่อยเริ่มสะกดนะ";
+                return;
+            }
             playLetterAudio(c);
             var target = answerOf(shuffledList[currentIndex]);
             if(userInput.length < target.length) {
@@ -366,6 +412,14 @@
         }
 
         function useHint() {
+            if (gameMode === "hard") {
+                document.getElementById("status-message").innerText = "โหมดยากไม่มีคำใบ้นะ ลองฟังเสียงอีกครั้งได้เลย";
+                return;
+            }
+            if (inputLocked) {
+                document.getElementById("status-message").innerText = "รอให้คำหายก่อน แล้วค่อยใช้ใบ้ได้นะ";
+                return;
+            }
             var data = shuffledList[currentIndex];
             var target = answerOf(data);
             if (userInput.length >= target.length) {
@@ -395,6 +449,10 @@
         }
 
         function checkAnswer() {
+            if (inputLocked) {
+                document.getElementById("status-message").innerText = "รอให้คำหายก่อน แล้วค่อยตอบนะ";
+                return;
+            }
             var target = answerOf(shuffledList[currentIndex]);
             if (userInput.length < target.length) {
                 document.getElementById("status-message").innerText = "พิมพ์ให้ครบก่อนนะคนเก่ง ✏️";
