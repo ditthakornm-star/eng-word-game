@@ -3,48 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Word Game - เลือกชุดคำศัพท์</title>
+    <title>แบบฝึกหัดลูก - เลือกหมวด</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-indigo-50 p-4 font-sans">
-    <main class="max-w-md mx-auto min-h-screen flex flex-col justify-center">
-        <section class="bg-white border-4 border-indigo-200 rounded-3xl shadow-xl p-6">
-            <div class="text-center mb-6">
-                <div class="text-5xl mb-3">📚</div>
-                <p class="text-xs font-black text-indigo-500 uppercase tracking-wider">G.1/2 Vocabulary</p>
-                <h1 class="text-2xl font-black text-slate-800">เลือกชุดคำศัพท์</h1>
-                <p class="text-sm font-semibold text-slate-500 mt-2">เลือกชุดที่ต้องการฝึกหรือทบทวน</p>
+<body class="min-h-screen bg-slate-50 p-4 font-sans">
+    <main class="max-w-lg mx-auto py-6">
+        <header class="text-center mb-6">
+            <div class="text-5xl mb-3">📚</div>
+            <p class="text-xs font-black text-sky-500 uppercase tracking-wider">Practice Hub</p>
+            <h1 class="text-2xl font-black text-slate-800">แบบฝึกหัดลูก</h1>
+            <p class="text-sm font-semibold text-slate-500 mt-2">เลือกหมวดวิชา แล้วเลือกชุดที่ต้องการฝึก</p>
+        </header>
+
+        <section class="bg-white border-4 border-amber-200 rounded-3xl shadow-xl p-5 mb-5">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-4xl">🧮</span>
+                <div>
+                    <h2 class="text-xl font-black text-slate-800">คณิตศาสตร์</h2>
+                    <p class="text-xs font-bold text-slate-500">แบบทดสอบสุ่มโจทย์ใหม่ทุกครั้ง</p>
+                </div>
+            </div>
+
+            <a href="./math-quiz/" class="block bg-amber-500 hover:bg-amber-600 text-white rounded-2xl p-4 shadow-md active:scale-95 transition">
+                <div class="font-black text-lg">คณิต ป.1 หน่วย 1-4</div>
+                <div class="text-xs text-amber-50 font-semibold">60 ข้อ พร้อมเสียงอ่านโจทย์และสรุปคะแนนแยกหน่วย</div>
+            </a>
+        </section>
+
+        <section class="bg-white border-4 border-indigo-200 rounded-3xl shadow-xl p-5">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-4xl">🔤</span>
+                <div>
+                    <h2 class="text-xl font-black text-slate-800">ภาษาอังกฤษ</h2>
+                    <p class="text-xs font-bold text-slate-500">เกมสะกดคำศัพท์ แยกตามสัปดาห์</p>
+                </div>
             </div>
 
             <div class="space-y-3">
                 <a href="./week-july-6/" class="block bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl p-4 shadow-md active:scale-95 transition">
-                    <div class="flex items-center gap-3">
-                        <span class="text-3xl">⭐</span>
-                        <div>
-                            <div class="font-black text-lg">ชุดใหม่ วันที่ 6-7 ก.ค.</div>
-                            <div class="text-xs text-indigo-100 font-semibold">15 คำ พร้อมโหมดฝึกจำและคำใบ้ 2 ครั้ง</div>
-                        </div>
-                    </div>
+                    <div class="font-black text-lg">ชุดวันที่ 6-7 ก.ค.</div>
+                    <div class="text-xs text-indigo-100 font-semibold">15 คำ พร้อมโหมดฝึกจำและคำใบ้ 2 ครั้ง</div>
                 </a>
 
                 <a href="./week-last/" class="block bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl p-4 shadow-md active:scale-95 transition">
-                    <div class="flex items-center gap-3">
-                        <span class="text-3xl">🔄</span>
-                        <div>
-                            <div class="font-black text-lg">ทวนชุดวันที่ 29-30 มิ.ย.</div>
-                            <div class="text-xs text-emerald-50 font-semibold">12 คำ ใช้วิธีเล่นใหม่เหมือนชุดล่าสุด</div>
-                        </div>
-                    </div>
-                </a>
-
-                <a href="./math-quiz/" class="block bg-amber-500 hover:bg-amber-600 text-white rounded-2xl p-4 shadow-md active:scale-95 transition">
-                    <div class="flex items-center gap-3">
-                        <span class="text-3xl">🧮</span>
-                        <div>
-                            <div class="font-black text-lg">คณิต ป.1 หน่วย 1-4</div>
-                            <div class="text-xs text-amber-50 font-semibold">60 ข้อ สุ่มโจทย์และคำตอบใหม่ทุกครั้ง</div>
-                        </div>
-                    </div>
+                    <div class="font-black text-lg">ทวนชุดวันที่ 29-30 มิ.ย.</div>
+                    <div class="text-xs text-emerald-50 font-semibold">12 คำ ใช้วิธีเล่นใหม่เหมือนชุดล่าสุด</div>
                 </a>
             </div>
         </section>

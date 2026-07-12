@@ -64,6 +64,10 @@
           ข้อที่ <span id="question-number">1</span>/<span id="question-total">60</span>
         </div>
 
+        <button onclick="playQuestionAudio()" class="w-full bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-black py-2 rounded-2xl active:scale-95 transition mb-3">
+          🔊 ฟังโจทย์
+        </button>
+
         <div id="question-card" class="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 mb-4">
           <h2 id="question-title" class="text-base font-black text-slate-800 text-center mb-3"></h2>
           <div id="question-visual" class="mb-3"></div>
@@ -107,6 +111,58 @@
     var score = 0;
     var selectedMode = "all";
     var unitScores = {};
+    var audioCtx = null;
+
+    function safeSpeak(text, lang, rate) {
+      try {
+        if (window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+          var u = new SpeechSynthesisUtterance(text);
+          u.lang = lang || "th-TH";
+          u.rate = rate || 0.9;
+          window.speechSynthesis.speak(u);
+        }
+      } catch(e) {}
+    }
+
+    function initAudio() {
+      try {
+        if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
+          var AudioContext = window.AudioContext || window.webkitAudioContext;
+          audioCtx = new AudioContext();
+        }
+        if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+      } catch(e) {}
+    }
+
+    function playTone(freq, wave, duration, delay) {
+      try {
+        if (!audioCtx) return;
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
+        osc.type = wave;
+        osc.frequency.value = freq;
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        var now = audioCtx.currentTime;
+        gain.gain.setValueAtTime(0.18, now + delay);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + delay + duration);
+        osc.start(now + delay);
+        osc.stop(now + delay + duration);
+      } catch(e) {}
+    }
+
+    function playSoundEffect(type) {
+      initAudio();
+      if (type === "correct") {
+        playTone(523.25, "sine", 0.1, 0);
+        playTone(659.25, "sine", 0.1, 0.1);
+        playTone(783.99, "sine", 0.24, 0.2);
+      } else {
+        playTone(260, "triangle", 0.18, 0);
+        playTone(180, "triangle", 0.24, 0.14);
+      }
+    }
 
     function rand(min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -151,6 +207,14 @@
       }).join("") + '</div>';
     }
 
+    function sequenceVisual(nums, missingIndex) {
+      return '<div class="flex flex-wrap justify-center gap-2">' + nums.map(function(n, i) {
+        var text = i === missingIndex ? "?" : n;
+        var cls = i === missingIndex ? "bg-amber-100 text-amber-700 border-amber-300" : "bg-white text-slate-700 border-slate-200";
+        return '<span class="w-10 h-10 rounded-xl border-2 flex items-center justify-center font-black text-lg ' + cls + '">' + text + '</span>';
+      }).join("") + '</div>';
+    }
+
     function emojiGrid(count, emoji) {
       if (count === 0) {
         return '<div class="text-center text-4xl font-black text-slate-400 py-3">0</div>';
@@ -178,6 +242,29 @@
       '</div>';
     }
 
+    function partWholeQuestion(total, a, b, hide) {
+      var whole = hide === "total" ? "?" : total;
+      var left = hide === "a" ? "?" : a;
+      var right = hide === "b" ? "?" : b;
+      return '<div class="flex items-center justify-center gap-2">' +
+        '<div class="w-16 h-16 rounded-full bg-sky-500 text-white flex items-center justify-center font-black text-2xl">' + whole + '</div>' +
+        '<div class="text-3xl font-black text-slate-300">=</div>' +
+        '<div class="flex flex-col gap-2">' +
+          '<div class="w-14 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xl">' + left + '</div>' +
+          '<div class="w-14 h-12 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-black text-xl">' + right + '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function expressionValue(expr) {
+      if (expr.op === "+") return expr.a + expr.b;
+      return expr.a - expr.b;
+    }
+
+    function expressionText(expr) {
+      return expr.a + " " + expr.op + " " + expr.b;
+    }
+
     function makeQuestion(unit, title, prompt, answer, options, visual, explanation) {
       return {
         unit: unit,
@@ -191,7 +278,7 @@
     }
 
     function genUnit1() {
-      var type = rand(1, 6);
+      var type = rand(1, 7);
       if (type === 1) {
         var n = rand(0, 10), em = pick(icons);
         return makeQuestion(1, "นับรูป", "มีทั้งหมดกี่ชิ้น?", n, uniqOptions(n, 0, 10, 4), emojiGrid(n, em), "นับได้ " + n + " ชิ้น");
@@ -206,7 +293,7 @@
       }
       if (type === 4) {
         var total = rand(2, 10), p = rand(0, total), q = total - p;
-        return makeQuestion(1, "ส่วนย่อย-ส่วนรวม", p + " + " + q + " = ?", total, uniqOptions(total, 0, 10, 4), partWhole(total, p, q), p + " รวมกับ " + q + " ได้ " + total);
+        return makeQuestion(1, "ส่วนย่อย-ส่วนรวม", p + " + " + q + " = ?", total, uniqOptions(total, 0, 10, 4), partWholeQuestion(total, p, q, "total"), p + " รวมกับ " + q + " ได้ " + total);
       }
       if (type === 5) {
         var start = rand(0, 6);
@@ -214,7 +301,13 @@
         var missingIndex = rand(0, 3);
         var ans = nums[missingIndex];
         var shown = nums.map(function(n, i) { return i === missingIndex ? "?" : n; });
-        return makeQuestion(1, "เรียงลำดับจำนวน", "เติมจำนวนที่หายไป: " + shown.join(" , "), ans, uniqOptions(ans, 0, 10, 4), numberLine(nums, ans), "ลำดับคือ " + nums.join(" , "));
+        return makeQuestion(1, "เรียงลำดับจำนวน", "เติมจำนวนที่หายไป: " + shown.join(" , "), ans, uniqOptions(ans, 0, 10, 4), sequenceVisual(nums, missingIndex), "ลำดับคือ " + nums.join(" , "));
+      }
+      if (type === 6) {
+        var base = rand(1, 9);
+        var askNext = Math.random() > 0.5;
+        var ansNum = askNext ? base + 1 : base - 1;
+        return makeQuestion(1, askNext ? "จำนวนถัดไป" : "จำนวนก่อนหน้า", (askNext ? "จำนวนถัดจาก " : "จำนวนก่อนหน้า ") + base + " คือข้อใด?", ansNum, uniqOptions(ansNum, 0, 10, 4), numberLine([Math.max(0, base - 1), base, Math.min(10, base + 1)], base), "คำตอบคือ " + ansNum);
       }
       var pos = rand(1, 5);
       var names = ["ที่ 1","ที่ 2","ที่ 3","ที่ 4","ที่ 5"];
@@ -231,7 +324,7 @@
     }
 
     function genUnit2() {
-      var type = rand(1, 5);
+      var type = rand(1, 7);
       var a = rand(0, 9), b = rand(0, 10 - a), sum = a + b;
       if (type === 1) {
         return makeQuestion(2, "บวกจำนวน", a + " + " + b + " = ?", sum, uniqOptions(sum, 0, 10, 4), "", a + " + " + b + " = " + sum);
@@ -241,17 +334,28 @@
       }
       if (type === 3) {
         var total = rand(1, 10), known = rand(0, total), miss = total - known;
-        return makeQuestion(2, "เติมตัวไม่ทราบค่า", known + " + ? = " + total, miss, uniqOptions(miss, 0, 10, 4), partWhole(total, known, miss), known + " ต้องบวก " + miss + " จึงได้ " + total);
+        return makeQuestion(2, "เติมตัวไม่ทราบค่า", known + " + ? = " + total, miss, uniqOptions(miss, 0, 10, 4), partWholeQuestion(total, known, miss, "b"), known + " ต้องบวก " + miss + " จึงได้ " + total);
       }
       if (type === 4) {
         return makeQuestion(2, "สลับที่การบวก", b + " + " + a + " = ?", sum, uniqOptions(sum, 0, 10, 4), "", "การบวกสลับที่ได้ " + sum + " เหมือนกัน");
+      }
+      if (type === 5) {
+        var target = rand(2, 10);
+        var x = rand(0, target);
+        var y = target - x;
+        return makeQuestion(2, "เลือกประโยคสัญลักษณ์", "ข้อใดมีผลบวกเท่ากับ " + target + "?", x + " + " + y, makeEquationOptions(x, y, "+", 10, target), "", x + " + " + y + " = " + target);
+      }
+      if (type === 6) {
+        var left = {a: rand(0, 5), b: rand(0, 5), op: "+"};
+        var right = {a: rand(0, 5), b: rand(0, 5), op: "+"};
+        return makeQuestion(2, "เปรียบเทียบผลบวก", expressionText(left) + " ___ " + expressionText(right) + " ควรใส่เครื่องหมายใด?", compareSymbol(expressionValue(left), expressionValue(right)), shuffle([">","<","="]), "", expressionValue(left) + " " + compareSymbol(expressionValue(left), expressionValue(right)) + " " + expressionValue(right));
       }
       var thing = pick(["ลูกอม","ดินสอ","ขนม","ลูกบอล","ส้ม"]);
       return makeQuestion(2, "โจทย์ปัญหาการบวก", "มี" + thing + " " + a + " ชิ้น ได้เพิ่ม " + b + " ชิ้น รวมมีกี่ชิ้น?", sum, uniqOptions(sum, 0, 10, 4), emojiGrid(a, "🙂") + '<div class="text-center text-2xl font-black my-1">+</div>' + emojiGrid(b, "🙂"), a + " + " + b + " = " + sum);
     }
 
     function genUnit3() {
-      var type = rand(1, 5);
+      var type = rand(1, 7);
       var total = rand(0, 10), take = rand(0, total), left = total - take;
       if (type === 1) {
         return makeQuestion(3, "ลบจำนวน", total + " - " + take + " = ?", left, uniqOptions(left, 0, 10, 4), "", total + " - " + take + " = " + left);
@@ -260,11 +364,22 @@
         return makeQuestion(3, "ลบจากรูปภาพ", "มี " + total + " ชิ้น เอาออก " + take + " ชิ้น เหลือกี่ชิ้น?", left, uniqOptions(left, 0, 10, 4), emojiGrid(total, pick(icons)), total + " - " + take + " = " + left);
       }
       if (type === 3) {
-        return makeQuestion(3, "เติมตัวไม่ทราบค่า", total + " - ? = " + left, take, uniqOptions(take, 0, 10, 4), partWhole(total, take, left), total + " ลบ " + take + " เหลือ " + left);
+        return makeQuestion(3, "เติมตัวไม่ทราบค่า", total + " - ? = " + left, take, uniqOptions(take, 0, 10, 4), partWholeQuestion(total, take, left, "a"), total + " ลบ " + take + " เหลือ " + left);
       }
       if (type === 4) {
         var a = rand(0, 9), b = rand(0, 10 - a), sum = a + b;
-        return makeQuestion(3, "ความสัมพันธ์บวกและลบ", sum + " - " + a + " = ?", b, uniqOptions(b, 0, 10, 4), partWhole(sum, a, b), "เพราะ " + a + " + " + b + " = " + sum);
+        return makeQuestion(3, "ความสัมพันธ์บวกและลบ", sum + " - " + a + " = ?", b, uniqOptions(b, 0, 10, 4), partWholeQuestion(sum, a, b, "b"), "เพราะ " + a + " + " + b + " = " + sum);
+      }
+      if (type === 5) {
+        var target = rand(0, 9);
+        var remove = rand(0, 10 - target);
+        var start = target + remove;
+        return makeQuestion(3, "เลือกประโยคสัญลักษณ์", "ข้อใดมีคำตอบเท่ากับ " + target + "?", start + " - " + remove, makeEquationOptions(start, remove, "-", 10, target), "", start + " - " + remove + " = " + target);
+      }
+      if (type === 6) {
+        var leftExpr = makeSubExpr();
+        var rightExpr = makeSubExpr();
+        return makeQuestion(3, "เปรียบเทียบผลลบ", expressionText(leftExpr) + " ___ " + expressionText(rightExpr) + " ควรใส่เครื่องหมายใด?", compareSymbol(expressionValue(leftExpr), expressionValue(rightExpr)), shuffle([">","<","="]), "", expressionValue(leftExpr) + " " + compareSymbol(expressionValue(leftExpr), expressionValue(rightExpr)) + " " + expressionValue(rightExpr));
       }
       var thing = pick(["ลูกอม","ดินสอ","ขนม","ลูกบอล","ส้ม"]);
       return makeQuestion(3, "โจทย์ปัญหาการลบ", "มี" + thing + " " + total + " ชิ้น ให้เพื่อนไป " + take + " ชิ้น เหลือกี่ชิ้น?", left, uniqOptions(left, 0, 10, 4), emojiGrid(total, "🙂"), total + " - " + take + " = " + left);
@@ -290,10 +405,31 @@
         var idx = rand(0, 3);
         var ans = nums[idx];
         var shown = nums.map(function(n, i) { return i === idx ? "?" : n; });
-        return makeQuestion(4, "เรียงลำดับ 11-20", "เติมจำนวนที่หายไป: " + shown.join(" , "), ans, uniqOptions(ans, 11, 20, 4), numberLine(nums, ans), "ลำดับคือ " + nums.join(" , "));
+        return makeQuestion(4, "เรียงลำดับ 11-20", "เติมจำนวนที่หายไป: " + shown.join(" , "), ans, uniqOptions(ans, 11, 20, 4), sequenceVisual(nums, idx), "ลำดับคือ " + nums.join(" , "));
       }
       var n3 = rand(12, 20);
-      return makeQuestion(4, "จำนวนมากกว่า/น้อยกว่า", "จำนวนใดน้อยกว่า " + n3 + "?", n3 - 1, uniqOptions(n3 - 1, 11, 20, 4), numberLine([n3 - 2, n3 - 1, n3, n3 + 1].filter(function(x){return x>=11 && x<=20;}), n3 - 1), (n3 - 1) + " น้อยกว่า " + n3);
+      return makeQuestion(4, "จำนวนมากกว่า/น้อยกว่า", "จำนวนใดน้อยกว่า " + n3 + "?", n3 - 1, uniqOptions(n3 - 1, 11, 20, 4), numberLine([n3 - 2, n3 - 1, n3, n3 + 1].filter(function(x){return x>=11 && x<=20;}), n3), (n3 - 1) + " น้อยกว่า " + n3);
+    }
+
+    function makeEquationOptions(a, b, op, max, targetValue) {
+      var answer = a + " " + op + " " + b;
+      var options = [answer];
+      var guard = 0;
+      while (options.length < 4 && guard < 80) {
+        var x = rand(0, max);
+        var y = op === "+" ? rand(0, max - x) : rand(0, x);
+        var text = x + " " + op + " " + y;
+        var value = op === "+" ? x + y : x - y;
+        if (value !== targetValue && options.indexOf(text) === -1) options.push(text);
+        guard++;
+      }
+      return shuffle(options);
+    }
+
+    function makeSubExpr() {
+      var a = rand(0, 10);
+      var b = rand(0, a);
+      return {a:a, b:b, op:"-"};
     }
 
     function tenFrame(n) {
@@ -342,6 +478,12 @@
       document.getElementById("home-screen").classList.remove("hidden");
     }
 
+    function playQuestionAudio() {
+      if (!quiz[current]) return;
+      var q = quiz[current];
+      safeSpeak(q.title + ". " + q.prompt, "th-TH", 0.85);
+    }
+
     function loadQuestion() {
       var q = quiz[current];
       document.getElementById("score-display").innerText = score;
@@ -374,12 +516,16 @@
       var feedback = document.getElementById("feedback");
       feedback.classList.remove("hidden");
       if (String(opt) === q.answer) {
+        playSoundEffect("correct");
+        safeSpeak("ถูกต้อง เก่งมาก", "th-TH", 0.95);
         score++;
         unitScores[q.unit].right++;
         btn.className = "bg-emerald-500 border-2 border-emerald-600 text-white font-black text-2xl min-h-[64px] rounded-2xl shadow-sm";
         feedback.className = "rounded-2xl p-3 mb-4 text-center font-bold bg-emerald-50 text-emerald-700 border border-emerald-200";
         feedback.innerText = "ถูกต้อง เก่งมาก! " + q.explanation;
       } else {
+        playSoundEffect("wrong");
+        safeSpeak("ยังไม่ใช่ คำตอบที่ถูกคือ " + q.answer, "th-TH", 0.95);
         btn.className = "bg-rose-500 border-2 border-rose-600 text-white font-black text-2xl min-h-[64px] rounded-2xl shadow-sm";
         buttons.forEach(function(b) {
           if (b.innerText === q.answer) {
