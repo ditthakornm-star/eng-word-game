@@ -2,89 +2,85 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>แบบทดสอบคณิต ป.1 หน่วย 1-4</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>แบบทดสอบคณิต ป.1 หน่วย 1-7</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { -webkit-text-size-adjust: 100%; }
+    button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    .pop { animation: pop .18s ease; }
+    @keyframes pop { 0% { transform: scale(.9); } 60% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    .shake { animation: shake .3s; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+  </style>
 </head>
 <body class="min-h-screen bg-sky-50 p-3 font-sans select-none">
   <main class="max-w-lg mx-auto">
+    <!-- ================= HOME ================= -->
     <section id="home-screen" class="min-h-screen flex flex-col justify-center">
       <div class="bg-white border-4 border-sky-200 rounded-3xl shadow-xl p-5">
         <div class="text-center mb-5">
           <div class="text-5xl mb-2">🧮</div>
-          <p class="text-xs font-black text-sky-500 uppercase tracking-wider">Grade 1 Math Quiz</p>
+          <p class="text-xs font-black text-sky-500 uppercase tracking-wider">Grade 1 Math</p>
           <h1 class="text-2xl font-black text-slate-800">แบบทดสอบคณิต ป.1</h1>
-          <p class="text-sm font-bold text-slate-500 mt-1">หน่วย 1-4 รวม 60 ข้อ สุ่มใหม่ทุกครั้ง</p>
+          <p class="text-sm font-bold text-slate-500 mt-1">ครบ 7 หน่วย สุ่มใหม่ทุกครั้ง แตะเล่นบนมือถือ/ไอแพด</p>
         </div>
 
-        <div class="grid gap-3 mb-5">
+        <div class="grid gap-2.5 mb-4">
           <button onclick="startQuiz('all')" class="bg-sky-600 hover:bg-sky-700 text-white text-left rounded-2xl p-4 shadow-md active:scale-95 transition">
-            <div class="text-lg font-black">ทำทั้งหมด 60 ข้อ</div>
-            <div class="text-xs font-semibold text-sky-100">หน่วยละ 15 ข้อ พร้อมสรุปคะแนนแยกหน่วย</div>
+            <div class="text-lg font-black">🎯 ทำรวมทุกหน่วย</div>
+            <div class="text-xs font-semibold text-sky-100">สุ่มหน่วยละ 6 ข้อ รวม 42 ข้อ พร้อมสรุปแยกหน่วย</div>
           </button>
-          <button onclick="startQuiz(1)" class="bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 text-left rounded-2xl p-4 active:scale-95 transition">
-            <div class="font-black">หน่วย 1: จำนวนนับ 1-10 และ 0</div>
-            <div class="text-xs text-slate-500 font-semibold">นับรูป เปรียบเทียบ เรียงลำดับ ส่วนย่อย-ส่วนรวม</div>
-          </button>
-          <button onclick="startQuiz(2)" class="bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 text-left rounded-2xl p-4 active:scale-95 transition">
-            <div class="font-black">หน่วย 2: การบวกไม่เกิน 10</div>
-            <div class="text-xs text-slate-500 font-semibold">สมการ รูปภาพ เติมตัวไม่ทราบค่า และโจทย์ปัญหา</div>
-          </button>
-          <button onclick="startQuiz(3)" class="bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 text-left rounded-2xl p-4 active:scale-95 transition">
-            <div class="font-black">หน่วย 3: การลบตัวตั้งไม่เกิน 10</div>
-            <div class="text-xs text-slate-500 font-semibold">สมการ รูปภาพ เติมตัวไม่ทราบค่า และโจทย์ปัญหา</div>
-          </button>
-          <button onclick="startQuiz(4)" class="bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 text-left rounded-2xl p-4 active:scale-95 transition">
-            <div class="font-black">หน่วย 4: จำนวนนับ 11-20</div>
-            <div class="text-xs text-slate-500 font-semibold">สิบกับหน่วย เปรียบเทียบ เรียงลำดับ 11-20</div>
-          </button>
+          <div id="unit-buttons" class="grid gap-2.5"></div>
         </div>
 
         <a href="../" class="block text-center text-xs font-bold text-slate-500 underline">กลับหน้าเลือกแบบฝึกหัด</a>
       </div>
     </section>
 
+    <!-- ================= QUIZ ================= -->
     <section id="quiz-screen" class="hidden py-3">
       <div class="bg-white border-4 border-sky-200 rounded-3xl shadow-xl p-4">
         <div class="flex items-center justify-between gap-2 mb-3">
-          <button onclick="goHome()" class="text-xs bg-slate-100 text-slate-700 font-bold px-3 py-2 rounded-full active:scale-95 transition">หน้าแรก</button>
+          <button onclick="goHome()" class="text-xs bg-slate-100 text-slate-700 font-bold px-3 py-2 rounded-full active:scale-95 transition">🏠 หน้าแรก</button>
           <button onclick="restartSameMode()" class="text-xs bg-amber-100 text-amber-700 font-bold px-3 py-2 rounded-full active:scale-95 transition">สุ่มใหม่ 🔄</button>
         </div>
 
         <div class="flex items-center justify-between mb-3">
           <span id="unit-badge" class="bg-sky-100 text-sky-700 font-black px-3 py-1 rounded-full text-xs">หน่วย 1</span>
-          <span class="text-amber-500 font-black">⭐ <span id="score-display">0</span>/<span id="total-display">60</span></span>
+          <span class="text-amber-500 font-black">⭐ <span id="score-display">0</span>/<span id="total-display">42</span></span>
         </div>
 
-        <div class="w-full bg-slate-100 rounded-full h-2 mb-4 overflow-hidden">
+        <div class="w-full bg-slate-100 rounded-full h-2 mb-3 overflow-hidden">
           <div id="progress-bar" class="bg-sky-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
         </div>
 
         <div class="text-center text-xs font-black text-slate-400 mb-2">
-          ข้อที่ <span id="question-number">1</span>/<span id="question-total">60</span>
+          ข้อที่ <span id="question-number">1</span>/<span id="question-total">42</span>
         </div>
 
-        <div id="question-card" class="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 mb-4">
-          <h2 id="question-title" class="text-base font-black text-slate-800 text-center mb-3"></h2>
-          <div id="question-visual" class="mb-3"></div>
-          <p id="question-prompt" class="text-lg font-black text-center text-slate-800 leading-relaxed"></p>
+        <div id="question-card" class="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 mb-3">
+          <h2 id="question-title" class="text-sm font-black text-sky-600 text-center mb-2"></h2>
+          <p id="question-prompt" class="text-lg font-black text-center text-slate-800 leading-relaxed mb-3"></p>
+          <div id="question-visual"></div>
         </div>
 
-        <div id="options" class="grid grid-cols-2 gap-3 mb-4"></div>
+        <div id="answer-area" class="mb-3"></div>
 
-        <div id="feedback" class="hidden rounded-2xl p-3 mb-4 text-center font-bold"></div>
+        <div id="feedback" class="hidden rounded-2xl p-3 mb-3 text-center font-bold"></div>
 
-        <button id="next-btn" onclick="nextQuestion()" class="hidden w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 rounded-2xl shadow-md active:scale-95 transition">ข้อถัดไป ➜</button>
+        <button id="next-btn" onclick="nextQuestion()" class="hidden w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 rounded-2xl shadow-md active:scale-95 transition text-lg">ข้อถัดไป ➜</button>
       </div>
     </section>
 
+    <!-- ================= RESULT ================= -->
     <section id="result-screen" class="hidden min-h-screen flex flex-col justify-center">
       <div class="bg-white border-4 border-amber-300 rounded-3xl shadow-xl p-5 text-center">
         <div id="result-icon" class="text-6xl mb-3">🏆</div>
         <h2 class="text-2xl font-black text-slate-800 mb-2">สรุปคะแนน</h2>
         <div class="bg-sky-50 border border-sky-100 rounded-2xl p-4 mb-4">
           <div class="text-sm font-bold text-sky-600">คะแนนรวม</div>
-          <div class="text-5xl font-black text-sky-900"><span id="final-score">0</span>/<span id="final-total">60</span></div>
+          <div class="text-5xl font-black text-sky-900"><span id="final-score">0</span>/<span id="final-total">42</span></div>
         </div>
         <div id="unit-summary" class="space-y-2 text-left mb-5"></div>
         <button onclick="restartSameMode()" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-black py-3 rounded-2xl shadow-md active:scale-95 transition mb-3">สุ่มโจทย์ใหม่อีกชุด</button>
@@ -94,517 +90,734 @@
   </main>
 
   <script>
+    /* =====================================================================
+       ข้อมูลหน่วย
+    ===================================================================== */
     var unitNames = {
       1: "จำนวนนับ 1-10 และ 0",
       2: "การบวกไม่เกิน 10",
       3: "การลบตัวตั้งไม่เกิน 10",
-      4: "จำนวนนับ 11-20"
+      4: "จำนวนนับ 11-20",
+      5: "การบวกไม่เกิน 20",
+      6: "การลบตัวตั้งไม่เกิน 20",
+      7: "รูปเรขาคณิต"
     };
-    var icons = ["🍎","🍌","🥕","🌽","🍪","🧁","✏️","📚","⚽","🧃","🧩","🎈"];
-    var thaiDigits = ["๐","๑","๒","๓","๔","๕","๖","๗","๘","๙"];
-    var quiz = [];
-    var current = 0;
-    var score = 0;
-    var selectedMode = "all";
-    var unitScores = {};
-    var audioCtx = null;
+    var unitSub = {
+      1: "นับ ระบาย เปรียบเทียบ เรียงลำดับ ส่วนย่อย-ส่วนรวม",
+      2: "บวก รูปภาพ ศูนย์กับการบวก เติมค่า โจทย์ปัญหา",
+      3: "ลบ ลบด้วยศูนย์ บ้านความสัมพันธ์ เติมค่า โจทย์ปัญหา",
+      4: "สิบกับหน่วย รูปกระจาย เปรียบเทียบ เรียงลำดับ",
+      5: "บวกไม่เกิน 20 บวกสามจำนวน เติมค่า โจทย์ปัญหา",
+      6: "ลบไม่เกิน 20 ความสัมพันธ์บวก-ลบ โจทย์ปัญหา",
+      7: "รูป 2 มิติ และ 3 มิติ วาดด้วยภาพ"
+    };
+    var ALL_UNITS = [1,2,3,4,5,6,7];
 
-    function initAudio() {
-      try {
-        if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
-          var AudioContext = window.AudioContext || window.webkitAudioContext;
-          audioCtx = new AudioContext();
+    var icons = ["🍎","🍌","🥕","🌽","🍪","🧁","✏️","📚","⚽","🧃","🧩","🎈","🍓","🍊","🐟"];
+
+    /* =====================================================================
+       สุ่ม / ช่วยเหลือ
+    ===================================================================== */
+    function rand(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
+    function pick(arr){ return arr[rand(0,arr.length-1)]; }
+    function shuffle(arr){
+      var c=arr.slice();
+      for(var i=c.length-1;i>0;i--){ var j=rand(0,i); var t=c[i]; c[i]=c[j]; c[j]=t; }
+      return c;
+    }
+    function compareSymbol(a,b){ return a>b?">":a<b?"<":"="; }
+    function uniqNums(answer,min,max,count){
+      var o=[answer], g=0;
+      while(o.length<count && g<120){ var n=rand(min,max); if(o.indexOf(n)===-1)o.push(n); g++; }
+      return shuffle(o);
+    }
+
+    /* =====================================================================
+       เสียงเอฟเฟกต์
+    ===================================================================== */
+    var audioCtx=null;
+    function initAudio(){
+      try{
+        if(!audioCtx && (window.AudioContext||window.webkitAudioContext)){
+          audioCtx=new (window.AudioContext||window.webkitAudioContext)();
         }
-        if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
-      } catch(e) {}
+        if(audioCtx && audioCtx.state==="suspended") audioCtx.resume();
+      }catch(e){}
     }
-
-    function playTone(freq, wave, duration, delay) {
-      try {
-        if (!audioCtx) return;
-        var osc = audioCtx.createOscillator();
-        var gain = audioCtx.createGain();
-        osc.type = wave;
-        osc.frequency.value = freq;
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        var now = audioCtx.currentTime;
-        gain.gain.setValueAtTime(0.18, now + delay);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + delay + duration);
-        osc.start(now + delay);
-        osc.stop(now + delay + duration);
-      } catch(e) {}
+    function tone(freq,wave,dur,delay){
+      try{
+        if(!audioCtx)return;
+        var o=audioCtx.createOscillator(), g=audioCtx.createGain();
+        o.type=wave; o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination);
+        var t=audioCtx.currentTime;
+        g.gain.setValueAtTime(0.18,t+delay);
+        g.gain.exponentialRampToValueAtTime(0.01,t+delay+dur);
+        o.start(t+delay); o.stop(t+delay+dur);
+      }catch(e){}
     }
-
-    function playSoundEffect(type) {
+    function sfx(type){
       initAudio();
-      if (type === "correct") {
-        playTone(523.25, "sine", 0.1, 0);
-        playTone(659.25, "sine", 0.1, 0.1);
-        playTone(783.99, "sine", 0.24, 0.2);
-      } else {
-        playTone(260, "triangle", 0.18, 0);
-        playTone(180, "triangle", 0.24, 0.14);
-      }
+      if(type==="correct"){ tone(523.25,"sine",0.1,0); tone(659.25,"sine",0.1,0.1); tone(783.99,"sine",0.24,0.2); }
+      else if(type==="tap"){ tone(440,"sine",0.05,0); }
+      else { tone(260,"triangle",0.18,0); tone(180,"triangle",0.24,0.14); }
     }
 
-    function rand(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
+    /* =====================================================================
+       ภาพประกอบ (visual)
+    ===================================================================== */
+    function emojiGrid(count,emoji){
+      if(count===0) return '<div class="text-center text-4xl font-black text-slate-300 py-3">0</div>';
+      var items="";
+      for(var i=0;i<count;i++) items+='<span class="text-3xl">'+emoji+'</span>';
+      return '<div class="bg-white rounded-2xl border border-slate-200 p-3 flex flex-wrap justify-center gap-1.5">'+items+'</div>';
+    }
+    function twoGroups(a,b,ea,eb){
+      return '<div class="grid grid-cols-2 gap-2">'+
+        '<div><div class="text-xs text-center font-bold text-slate-400 mb-1">กลุ่มที่ 1</div>'+emojiGrid(a,ea)+'</div>'+
+        '<div><div class="text-xs text-center font-bold text-slate-400 mb-1">กลุ่มที่ 2</div>'+emojiGrid(b,eb)+'</div></div>';
+    }
+    // number bond diagram: whole บน, สองส่วนล่าง (ค่าที่ซ่อนใส่ "?")
+    function bondVisual(whole,a,b){
+      return '<div class="flex items-center justify-center gap-3 py-1">'+
+        '<div class="w-16 h-16 rounded-2xl bg-sky-500 text-white flex items-center justify-center font-black text-2xl shadow">'+whole+'</div>'+
+        '<div class="flex flex-col items-center gap-0.5 text-slate-300"><span class="text-xl leading-none">↗</span><span class="text-xl leading-none">↘</span></div>'+
+        '<div class="flex flex-col gap-2">'+
+          '<div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xl border-2 border-emerald-200">'+a+'</div>'+
+          '<div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center font-black text-xl border-2 border-amber-200">'+b+'</div>'+
+        '</div></div>';
+    }
+    function tenFrame(n){
+      var ones=n-10;
+      var a='<div class="bg-sky-100 border-2 border-sky-200 rounded-2xl p-2 mb-2"><div class="text-xs font-black text-sky-600 text-center mb-1">เต็มสิบ = 10</div>'+emojiGrid(10,"🔵")+'</div>';
+      var b='<div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-2"><div class="text-xs font-black text-emerald-600 text-center mb-1">อีก '+ones+'</div>'+emojiGrid(ones,"🟢")+'</div>';
+      return a+b;
+    }
+    function ordinalVisual(pos){
+      var h='<div class="flex justify-center gap-1.5 flex-wrap">';
+      for(var i=1;i<=6;i++){
+        var on=i===pos;
+        h+='<div class="flex flex-col items-center">'+
+           '<span class="w-11 h-11 rounded-xl border-2 border-slate-200 flex items-center justify-center text-2xl '+(on?"bg-sky-500":"bg-white")+'">'+(on?"⭐":"🌟")+'</span>'+
+           '<span class="text-[10px] font-bold text-slate-400 mt-0.5">ที่ '+i+'</span></div>';
+      }
+      return h+'</div>';
     }
 
-    function pick(arr) {
-      return arr[rand(0, arr.length - 1)];
+    /* =====================================================================
+       รูปเรขาคณิต (SVG)
+    ===================================================================== */
+    var COLORS = ["#38bdf8","#34d399","#fbbf24","#fb7185","#a78bfa","#f97316"];
+    function svg2D(key,color){
+      var c = color || "#38bdf8";
+      var inner="";
+      if(key==="circle") inner='<circle cx="50" cy="50" r="38" fill="'+c+'"/>';
+      else if(key==="square") inner='<rect x="14" y="14" width="72" height="72" rx="6" fill="'+c+'"/>';
+      else if(key==="rectangle") inner='<rect x="8" y="26" width="84" height="48" rx="6" fill="'+c+'"/>';
+      else if(key==="triangle") inner='<polygon points="50,12 90,86 10,86" fill="'+c+'"/>';
+      else if(key==="oval") inner='<ellipse cx="50" cy="50" rx="42" ry="28" fill="'+c+'"/>';
+      return '<svg viewBox="0 0 100 100" class="w-full h-full">'+inner+'</svg>';
     }
-
-    function shuffle(arr) {
-      var copy = arr.slice();
-      for (var i = copy.length - 1; i > 0; i--) {
-        var j = rand(0, i);
-        var temp = copy[i];
-        copy[i] = copy[j];
-        copy[j] = temp;
+    function svg3D(key,color){
+      var c=color||"#fbbf24";
+      var d="rgba(0,0,0,.22)", l="rgba(255,255,255,.35)";
+      var s="";
+      if(key==="cube"){
+        s='<polygon points="25,35 60,35 60,80 25,80" fill="'+c+'"/>'+
+          '<polygon points="25,35 42,20 77,20 60,35" fill="'+c+'"/><polygon points="25,35 42,20 77,20 60,35" fill="'+l+'"/>'+
+          '<polygon points="60,35 77,20 77,65 60,80" fill="'+c+'"/><polygon points="60,35 77,20 77,65 60,80" fill="'+d+'"/>';
+      } else if(key==="sphere"){
+        s='<circle cx="50" cy="52" r="34" fill="'+c+'"/><ellipse cx="40" cy="40" rx="12" ry="8" fill="'+l+'"/>';
+      } else if(key==="cylinder"){
+        s='<rect x="28" y="28" width="44" height="46" fill="'+c+'"/>'+
+          '<ellipse cx="50" cy="74" rx="22" ry="8" fill="'+c+'"/><ellipse cx="50" cy="74" rx="22" ry="8" fill="'+d+'"/>'+
+          '<ellipse cx="50" cy="28" rx="22" ry="8" fill="'+c+'"/><ellipse cx="50" cy="28" rx="22" ry="8" fill="'+l+'"/>';
+      } else if(key==="cone"){
+        s='<polygon points="50,16 74,74 26,74" fill="'+c+'"/>'+
+          '<ellipse cx="50" cy="74" rx="24" ry="9" fill="'+c+'"/><ellipse cx="50" cy="74" rx="24" ry="9" fill="'+d+'"/>';
+      } else if(key==="box"){
+        s='<polygon points="20,40 62,40 62,80 20,80" fill="'+c+'"/>'+
+          '<polygon points="20,40 36,24 78,24 62,40" fill="'+l+'"/>'+
+          '<polygon points="62,40 78,24 78,64 62,80" fill="'+d+'"/>';
       }
-      return copy;
+      return '<svg viewBox="0 0 100 100" class="w-full h-full">'+s+'</svg>';
     }
+    var shapes2D=[
+      {key:"circle",name:"วงกลม"},{key:"triangle",name:"สามเหลี่ยม"},
+      {key:"square",name:"สี่เหลี่ยมจัตุรัส"},{key:"rectangle",name:"สี่เหลี่ยมผืนผ้า"},
+      {key:"oval",name:"วงรี"}
+    ];
+    var shapes3D=[
+      {key:"cube",name:"ทรงลูกบาศก์"},{key:"sphere",name:"ทรงกลม"},
+      {key:"cylinder",name:"ทรงกระบอก"},{key:"cone",name:"กรวย"},
+      {key:"box",name:"ทรงสี่เหลี่ยมมุมฉาก"}
+    ];
 
-    function uniqOptions(answer, min, max, count) {
-      var options = [String(answer)];
-      var guard = 0;
-      while (options.length < count && guard < 80) {
-        var n = rand(min, max);
-        if (options.indexOf(String(n)) === -1) options.push(String(n));
-        guard++;
-      }
-      return shuffle(options);
-    }
-
-    function compareSymbol(a, b) {
-      if (a > b) return ">";
-      if (a < b) return "<";
-      return "=";
-    }
-
-    function numberLine(nums) {
-      return '<div class="flex flex-wrap justify-center gap-2">' + nums.map(function(n) {
-        var cls = "bg-white text-slate-700 border-slate-200";
-        return '<span class="w-10 h-10 rounded-xl border-2 flex items-center justify-center font-black text-lg ' + cls + '">' + n + '</span>';
-      }).join("") + '</div>';
-    }
-
-    function sequenceVisual(nums, missingIndex) {
-      return '<div class="flex flex-wrap justify-center gap-2">' + nums.map(function(n, i) {
-        var text = i === missingIndex ? "?" : n;
-        var cls = i === missingIndex ? "bg-amber-100 text-amber-700 border-amber-300" : "bg-white text-slate-700 border-slate-200";
-        return '<span class="w-10 h-10 rounded-xl border-2 flex items-center justify-center font-black text-lg ' + cls + '">' + text + '</span>';
-      }).join("") + '</div>';
-    }
-
-    function emojiGrid(count, emoji) {
-      if (count === 0) {
-        return '<div class="text-center text-4xl font-black text-slate-400 py-3">0</div>';
-      }
-      var items = [];
-      for (var i = 0; i < count; i++) items.push('<span class="text-3xl">' + emoji + '</span>');
-      return '<div class="bg-white rounded-2xl border border-slate-200 p-3 flex flex-wrap justify-center gap-2">' + items.join("") + '</div>';
-    }
-
-    function twoGroups(a, b, emojiA, emojiB) {
-      return '<div class="grid grid-cols-2 gap-3">' +
-        '<div><div class="text-xs text-center font-bold text-slate-400 mb-1">กลุ่มที่ 1</div>' + emojiGrid(a, emojiA) + '</div>' +
-        '<div><div class="text-xs text-center font-bold text-slate-400 mb-1">กลุ่มที่ 2</div>' + emojiGrid(b, emojiB) + '</div>' +
-      '</div>';
-    }
-
-    function partWhole(total, a, b) {
-      return '<div class="flex items-center justify-center gap-2">' +
-        '<div class="w-16 h-16 rounded-full bg-sky-500 text-white flex items-center justify-center font-black text-2xl">' + total + '</div>' +
-        '<div class="text-3xl font-black text-slate-300">=</div>' +
-        '<div class="flex flex-col gap-2">' +
-          '<div class="w-14 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xl">' + a + '</div>' +
-          '<div class="w-14 h-12 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-black text-xl">' + b + '</div>' +
-        '</div>' +
-      '</div>';
-    }
-
-    function partWholeQuestion(total, a, b, hide) {
-      var whole = hide === "total" ? "?" : total;
-      var left = hide === "a" ? "?" : a;
-      var right = hide === "b" ? "?" : b;
-      return '<div class="flex items-center justify-center gap-2">' +
-        '<div class="w-16 h-16 rounded-full bg-sky-500 text-white flex items-center justify-center font-black text-2xl">' + whole + '</div>' +
-        '<div class="text-3xl font-black text-slate-300">=</div>' +
-        '<div class="flex flex-col gap-2">' +
-          '<div class="w-14 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xl">' + left + '</div>' +
-          '<div class="w-14 h-12 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-black text-xl">' + right + '</div>' +
-        '</div>' +
-      '</div>';
-    }
-
-    function expressionValue(expr) {
-      if (expr.op === "+") return expr.a + expr.b;
-      return expr.a - expr.b;
-    }
-
-    function expressionText(expr) {
-      return expr.a + " " + expr.op + " " + expr.b;
-    }
-
-    function makeQuestion(unit, title, prompt, answer, options, visual, explanation) {
-      return {
-        unit: unit,
-        title: title,
-        prompt: prompt,
-        answer: String(answer),
-        options: options || uniqOptions(answer, 0, unit === 4 ? 20 : 10, 4),
-        visual: visual || "",
-        explanation: explanation || "คำตอบคือ " + answer
-      };
-    }
-
-    function genUnit1() {
-      var type = rand(1, 7);
-      if (type === 1) {
-        var n = rand(5, 10), em = pick(icons);
-        return makeQuestion(1, "นับรูป", "มีทั้งหมดกี่ชิ้น?", n, uniqOptions(n, 0, 10, 4), emojiGrid(n, em), "นับได้ " + n + " ชิ้น");
-      }
-      if (type === 2) {
-        var n2 = rand(5, 9);
-        return makeQuestion(1, "เลขไทยกับเลขอารบิก", "เลขไทย " + thaiDigits[n2] + " ตรงกับข้อใด?", n2, uniqOptions(n2, 0, 10, 4), "", thaiDigits[n2] + " คือ " + n2);
-      }
-      if (type === 3) {
-        var a = rand(0, 10), b = rand(0, 10);
-        return makeQuestion(1, "เปรียบเทียบจำนวน", a + " ___ " + b + " ควรใส่เครื่องหมายใด?", compareSymbol(a,b), shuffle([">","<","="]), "", a + " " + compareSymbol(a,b) + " " + b);
-      }
-      if (type === 4) {
-        var total = rand(6, 10), p = rand(2, total - 2), q = total - p;
-        return makeQuestion(1, "ส่วนย่อย-ส่วนรวม", p + " + " + q + " = ?", total, uniqOptions(total, 0, 10, 4), partWholeQuestion(total, p, q, "total"), p + " รวมกับ " + q + " ได้ " + total);
-      }
-      if (type === 5) {
-        var start = rand(3, 6);
-        var nums = [start, start + 1, start + 2, start + 3];
-        var missingIndex = rand(0, 3);
-        var ans = nums[missingIndex];
-        var shown = nums.map(function(n, i) { return i === missingIndex ? "?" : n; });
-        return makeQuestion(1, "เรียงลำดับจำนวน", "เติมจำนวนที่หายไป: " + shown.join(" , "), ans, uniqOptions(ans, 0, 10, 4), sequenceVisual(nums, missingIndex), "ลำดับคือ " + nums.join(" , "));
-      }
-      if (type === 6) {
-        var base = rand(1, 9);
-        var askNext = Math.random() > 0.5;
-        var ansNum = askNext ? base + 1 : base - 1;
-        var visualNums = askNext ? [base, "?"] : ["?", base];
-        return makeQuestion(
-          1,
-          askNext ? "จำนวนถัดไป" : "จำนวนก่อนหน้า",
-          (askNext ? "จำนวนถัดจาก " : "จำนวนก่อนหน้า ") + base + " คือข้อใด?",
-          ansNum,
-          uniqOptions(ansNum, 0, 10, 4),
-          sequenceVisual(visualNums, askNext ? 1 : 0),
-          "คำตอบคือ " + ansNum
-        );
-      }
-      var pos = rand(1, 5);
-      var names = ["ที่ 1","ที่ 2","ที่ 3","ที่ 4","ที่ 5"];
-      return makeQuestion(1, "อันดับที่", "ดาวสีฟ้าอยู่ลำดับที่เท่าไร?", "ที่ " + pos, shuffle(names), ordinalVisual(pos), "ดาวสีฟ้าอยู่" + "ที่ " + pos);
-    }
-
-    function ordinalVisual(pos) {
-      var html = '<div class="flex justify-center gap-2">';
-      for (var i = 1; i <= 5; i++) {
-        var cls = i === pos ? "bg-sky-500 text-white" : "bg-white text-amber-400";
-        html += '<span class="w-12 h-12 rounded-xl border-2 border-slate-200 flex items-center justify-center text-2xl ' + cls + '">★</span>';
-      }
-      return html + '</div>';
-    }
-
-    function hardAddPair() {
-      var sum = rand(6, 10);
-      var a = rand(2, sum - 2);
-      var b = sum - a;
-      return {a: a, b: b, result: sum};
-    }
-
-    function hardSubPair() {
-      var total = rand(6, 10);
-      var take = rand(2, total - 2);
-      var left = total - take;
-      return {total: total, take: take, left: left};
-    }
-
-    function hardAddExpr() {
-      var pair = hardAddPair();
-      return {a: pair.a, b: pair.b, op: "+"};
-    }
-
-    function hardTeenPart() {
-      var n = rand(12, 19);
-      return {n: n, ones: n - 10};
-    }
-
-    function genUnit2() {
-      var type = rand(1, 7);
-      var pair = hardAddPair();
-      var a = pair.a, b = pair.b, sum = pair.result;
-      if (type === 1) {
-        return makeQuestion(2, "บวกจำนวน", a + " + " + b + " = ?", sum, uniqOptions(sum, 0, 10, 4), "", a + " + " + b + " = " + sum);
-      }
-      if (type === 2) {
-        return makeQuestion(2, "บวกจากรูปภาพ", "กลุ่มที่ 1 รวมกับกลุ่มที่ 2 มีทั้งหมดกี่ชิ้น?", sum, uniqOptions(sum, 0, 10, 4), twoGroups(a, b, pick(icons), pick(icons)), a + " + " + b + " = " + sum);
-      }
-      if (type === 3) {
-        var hidden = hardAddPair();
-        var total = hidden.result, known = hidden.a, miss = hidden.b;
-        return makeQuestion(2, "เติมตัวไม่ทราบค่า", known + " + ? = " + total, miss, uniqOptions(miss, 0, 10, 4), partWholeQuestion(total, known, miss, "b"), known + " ต้องบวก " + miss + " จึงได้ " + total);
-      }
-      if (type === 4) {
-        return makeQuestion(2, "สลับที่การบวก", b + " + " + a + " = ?", sum, uniqOptions(sum, 0, 10, 4), "", "การบวกสลับที่ได้ " + sum + " เหมือนกัน");
-      }
-      if (type === 5) {
-        var targetPair = hardAddPair();
-        var target = targetPair.result;
-        var x = targetPair.a;
-        var y = targetPair.b;
-        return makeQuestion(2, "เลือกประโยคสัญลักษณ์", "ข้อใดมีผลบวกเท่ากับ " + target + "?", x + " + " + y, makeEquationOptions(x, y, "+", 10, target), "", x + " + " + y + " = " + target);
-      }
-      if (type === 6) {
-        var left = hardAddExpr();
-        var right = hardAddExpr();
-        return makeQuestion(2, "เปรียบเทียบผลบวก", expressionText(left) + " ___ " + expressionText(right) + " ควรใส่เครื่องหมายใด?", compareSymbol(expressionValue(left), expressionValue(right)), shuffle([">","<","="]), "", expressionValue(left) + " " + compareSymbol(expressionValue(left), expressionValue(right)) + " " + expressionValue(right));
-      }
-      var storyAdd = pickStoryItem();
-      return makeQuestion(2, "โจทย์ปัญหาการบวก", "มี" + storyAdd.name + " " + a + " ชิ้น ได้เพิ่ม " + b + " ชิ้น รวมมีกี่ชิ้น?", sum, uniqOptions(sum, 0, 10, 4), emojiGrid(a, storyAdd.emoji) + '<div class="text-center text-2xl font-black my-1">+</div>' + emojiGrid(b, storyAdd.emoji), a + " + " + b + " = " + sum);
-    }
-
-    function genUnit3() {
-      var type = rand(1, 7);
-      var sub = hardSubPair();
-      var total = sub.total, take = sub.take, left = sub.left;
-      if (type === 1) {
-        return makeQuestion(3, "ลบจำนวน", total + " - " + take + " = ?", left, uniqOptions(left, 0, 10, 4), "", total + " - " + take + " = " + left);
-      }
-      if (type === 2) {
-        return makeQuestion(3, "ลบจากรูปภาพ", "มี " + total + " ชิ้น เอาออก " + take + " ชิ้น เหลือกี่ชิ้น?", left, uniqOptions(left, 0, 10, 4), emojiGrid(total, pick(icons)), total + " - " + take + " = " + left);
-      }
-      if (type === 3) {
-        return makeQuestion(3, "เติมตัวไม่ทราบค่า", total + " - ? = " + left, take, uniqOptions(take, 0, 10, 4), partWholeQuestion(total, take, left, "a"), total + " ลบ " + take + " เหลือ " + left);
-      }
-      if (type === 4) {
-        var rel = hardAddPair();
-        var a = rel.a, b = rel.b, sum = rel.result;
-        return makeQuestion(3, "ความสัมพันธ์บวกและลบ", sum + " - " + a + " = ?", b, uniqOptions(b, 0, 10, 4), partWholeQuestion(sum, a, b, "b"), "เพราะ " + a + " + " + b + " = " + sum);
-      }
-      if (type === 5) {
-        var eqSub = hardSubPair();
-        var target = eqSub.left;
-        var remove = eqSub.take;
-        var start = eqSub.total;
-        return makeQuestion(3, "เลือกประโยคสัญลักษณ์", "ข้อใดมีคำตอบเท่ากับ " + target + "?", start + " - " + remove, makeEquationOptions(start, remove, "-", 10, target), "", start + " - " + remove + " = " + target);
-      }
-      if (type === 6) {
-        var leftExpr = makeSubExpr();
-        var rightExpr = makeSubExpr();
-        return makeQuestion(3, "เปรียบเทียบผลลบ", expressionText(leftExpr) + " ___ " + expressionText(rightExpr) + " ควรใส่เครื่องหมายใด?", compareSymbol(expressionValue(leftExpr), expressionValue(rightExpr)), shuffle([">","<","="]), "", expressionValue(leftExpr) + " " + compareSymbol(expressionValue(leftExpr), expressionValue(rightExpr)) + " " + expressionValue(rightExpr));
-      }
-      var storySub = pickStoryItem();
-      return makeQuestion(3, "โจทย์ปัญหาการลบ", "มี" + storySub.name + " " + total + " ชิ้น ให้เพื่อนไป " + take + " ชิ้น เหลือกี่ชิ้น?", left, uniqOptions(left, 0, 10, 4), emojiGrid(total, storySub.emoji), total + " - " + take + " = " + left);
-    }
-
-    function genUnit4() {
-      var type = rand(1, 5);
-      if (type === 1) {
-        var n = rand(11, 20);
-        return makeQuestion(4, "อ่านจำนวน 11-20", "จำนวนนี้คือข้อใด?", n, uniqOptions(n, 11, 20, 4), tenFrame(n), "มี 10 กับอีก " + (n - 10) + " รวมเป็น " + n);
-      }
-      if (type === 2) {
-        var teen = hardTeenPart();
-        var n2 = teen.n, ones = teen.ones;
-        return makeQuestion(4, "สิบกับหน่วย", "10 + " + ones + " = ?", n2, uniqOptions(n2, 11, 20, 4), tenFrame(n2), "10 + " + ones + " = " + n2);
-      }
-      if (type === 3) {
-        var a = rand(11, 20), b = rand(11, 20);
-        return makeQuestion(4, "เปรียบเทียบ 11-20", a + " ___ " + b + " ควรใส่เครื่องหมายใด?", compareSymbol(a,b), shuffle([">","<","="]), "", a + " " + compareSymbol(a,b) + " " + b);
-      }
-      if (type === 4) {
-        var start = rand(11, 16);
-        var nums = [start, start + 1, start + 2, start + 3];
-        var idx = rand(0, 3);
-        var ans = nums[idx];
-        var shown = nums.map(function(n, i) { return i === idx ? "?" : n; });
-        return makeQuestion(4, "เรียงลำดับ 11-20", "เติมจำนวนที่หายไป: " + shown.join(" , "), ans, uniqOptions(ans, 11, 20, 4), sequenceVisual(nums, idx), "ลำดับคือ " + nums.join(" , "));
-      }
-      var n3 = rand(12, 19);
-      if (Math.random() > 0.5) {
-        return makeQuestion(4, "จำนวนก่อนหน้า", "จำนวนที่น้อยกว่า " + n3 + " อยู่ 1 คือข้อใด?", n3 - 1, uniqOptions(n3 - 1, 11, 20, 4), sequenceVisual(["?", n3], 0), (n3 - 1) + " น้อยกว่า " + n3 + " อยู่ 1");
-      }
-      return makeQuestion(4, "จำนวนถัดไป", "จำนวนที่มากกว่า " + n3 + " อยู่ 1 คือข้อใด?", n3 + 1, uniqOptions(n3 + 1, 11, 20, 4), sequenceVisual([n3, "?"], 1), (n3 + 1) + " มากกว่า " + n3 + " อยู่ 1");
-    }
-
-    function pickStoryItem() {
+    /* =====================================================================
+       ตัวสร้างโจทย์ (คืน object: unit,title,prompt,visual,input,answer,explanation)
+       input.type: choice | compare | operator | pad | tenframe | order | bondmake
+    ===================================================================== */
+    function pickStory(){
       return pick([
-        {name:"แอปเปิล", emoji:"🍎"},
-        {name:"กล้วย", emoji:"🍌"},
-        {name:"แครอท", emoji:"🥕"},
-        {name:"คุกกี้", emoji:"🍪"},
-        {name:"คัพเค้ก", emoji:"🧁"},
-        {name:"ดินสอ", emoji:"✏️"},
-        {name:"หนังสือ", emoji:"📚"},
-        {name:"ลูกบอล", emoji:"⚽"},
-        {name:"น้ำผลไม้", emoji:"🧃"}
+        {name:"แอปเปิล",emoji:"🍎"},{name:"กล้วย",emoji:"🍌"},{name:"แครอท",emoji:"🥕"},
+        {name:"คุกกี้",emoji:"🍪"},{name:"คัพเค้ก",emoji:"🧁"},{name:"ดินสอ",emoji:"✏️"},
+        {name:"หนังสือ",emoji:"📚"},{name:"ลูกบอล",emoji:"⚽"},{name:"สตรอว์เบอร์รี",emoji:"🍓"}
       ]);
     }
+    function addPair(max){ var s=rand(4,max); var a=rand(1,s-1); return {a:a,b:s-a,sum:s}; }
+    function subPair(max){ var t=rand(4,max); var k=rand(1,t-1); return {t:t,k:k,l:t-k}; }
 
-    function makeEquationOptions(a, b, op, max, targetValue) {
-      var answer = a + " " + op + " " + b;
-      var options = [answer];
-      var guard = 0;
-      while (options.length < 4 && guard < 80) {
-        var x, y;
-        if (op === "+") {
-          var p = hardAddPair();
-          x = p.a;
-          y = p.b;
-        } else {
-          var s = hardSubPair();
-          x = s.total;
-          y = s.take;
-        }
-        var text = x + " " + op + " " + y;
-        var value = op === "+" ? x + y : x - y;
-        if (value !== targetValue && options.indexOf(text) === -1) options.push(text);
-        guard++;
+    // ---- หน่วย 1 : 1-10 และ 0 ----
+    function genUnit1(){
+      var type=rand(1,8);
+      if(type===1){ // นับรูป -> pad
+        var n=rand(3,10), e=pick(icons);
+        return {unit:1,title:"นับจำนวน",prompt:"มีทั้งหมดกี่ชิ้น?",visual:emojiGrid(n,e),
+          input:{type:"pad",max:10},answer:n,explanation:"นับได้ "+n+" ชิ้น"};
       }
-      return shuffle(options);
+      if(type===2){ // ระบายให้ครบ -> tenframe
+        var m=rand(3,10);
+        return {unit:1,title:"ระบายให้ครบ",prompt:"แตะช่องให้ครบ "+m+" ช่อง",visual:"",
+          input:{type:"tenframe",cells:10},answer:m,explanation:"ระบายครบ "+m+" ช่อง"};
+      }
+      if(type===3){ // เปรียบเทียบ -> compare
+        var a=rand(0,10),b=rand(0,10);
+        return {unit:1,title:"เปรียบเทียบจำนวน",prompt:a+"  ⬜  "+b,visual:"",
+          input:{type:"compare"},answer:compareSymbol(a,b),explanation:a+" "+compareSymbol(a,b)+" "+b};
+      }
+      if(type===4){ // เรียงลำดับ -> order
+        var base=rand(1,5), asc=Math.random()>0.5;
+        var nums=shuffle([base,base+1,base+2,base+3]);
+        return {unit:1,title:"เรียงลำดับจำนวน",prompt:asc?"เรียงจากน้อยไปมาก":"เรียงจากมากไปน้อย",visual:"",
+          input:{type:"order",items:nums,asc:asc},answer:"",explanation:"เรียงถูกต้อง"};
+      }
+      if(type===5){ // ส่วนย่อย-ส่วนรวม เติมส่วนที่หาย -> pad
+        var t=rand(5,10), p=rand(1,t-1), q=t-p, hide=Math.random()>0.5;
+        return {unit:1,title:"ส่วนย่อย-ส่วนรวม",prompt:"เติมจำนวนในช่อง ?",
+          visual:bondVisual(t, hide?"?":p, hide?q:"?"),
+          input:{type:"pad",max:10},answer:hide?p:q,explanation:p+" กับ "+q+" รวมกันได้ "+t};
+      }
+      if(type===6){ // ตอบได้หลายคำตอบ -> bondmake
+        var w=rand(4,10);
+        return {unit:1,title:"แยกส่วน (ตอบได้หลายแบบ)",prompt:"แตะสองจำนวนที่รวมกันได้ "+w,
+          visual:bondVisual(w,"?","?"),input:{type:"bondmake",whole:w,max:10},answer:w,
+          explanation:"สองจำนวนที่รวมกันได้ "+w};
+      }
+      if(type===7){ // อันดับที่ -> choice
+        var pos=rand(1,6);
+        var allOrd=["ที่ 1","ที่ 2","ที่ 3","ที่ 4","ที่ 5","ที่ 6"];
+        var wrong=shuffle(allOrd.filter(function(x){return x!=="ที่ "+pos;})).slice(0,3);
+        return {unit:1,title:"อันดับที่",prompt:"ดาวสีเหลืองทองอยู่อันดับที่เท่าไร?",visual:ordinalVisual(pos),
+          input:{type:"choice",style:"text",options:shuffle(["ที่ "+pos].concat(wrong))},
+          answer:"ที่ "+pos,explanation:"อยู่อันดับที่ "+pos};
+      }
+      // จำนวนก่อนหน้า/ถัดไป -> pad
+      var base2=rand(1,9), next=Math.random()>0.5;
+      var ans=next?base2+1:base2-1;
+      return {unit:1,title:next?"จำนวนถัดไป":"จำนวนก่อนหน้า",
+        prompt:(next?"จำนวนที่อยู่ถัดจาก ":"จำนวนที่อยู่ก่อน ")+base2+" คือเท่าไร?",visual:"",
+        input:{type:"pad",max:10},answer:ans,explanation:"คำตอบคือ "+ans};
     }
 
-    function makeSubExpr() {
-      var pair = hardSubPair();
-      return {a: pair.total, b: pair.take, op:"-"};
+    // ---- หน่วย 2 : บวกไม่เกิน 10 ----
+    function genUnit2(){
+      var type=rand(1,7);
+      if(type===1){ var p=addPair(10);
+        return {unit:2,title:"การบวก",prompt:p.a+" + "+p.b+" = ?",visual:"",
+          input:{type:"pad",max:10},answer:p.sum,explanation:p.a+" + "+p.b+" = "+p.sum}; }
+      if(type===2){ var p=addPair(10);
+        return {unit:2,title:"บวกจากรูปภาพ",prompt:"รวมทั้งสองกลุ่มมีกี่ชิ้น?",visual:twoGroups(p.a,p.b,pick(icons),pick(icons)),
+          input:{type:"pad",max:10},answer:p.sum,explanation:p.a+" + "+p.b+" = "+p.sum}; }
+      if(type===3){ var p=addPair(10);
+        return {unit:2,title:"เติมตัวไม่ทราบค่า",prompt:p.a+" + ⬜ = "+p.sum,visual:bondVisual(p.sum,p.a,"?"),
+          input:{type:"pad",max:10},answer:p.b,explanation:p.a+" + "+p.b+" = "+p.sum}; }
+      if(type===4){ var p=addPair(10);
+        return {unit:2,title:"การสลับที่ของการบวก",prompt:"ถ้า "+p.a+" + "+p.b+" = "+p.sum+" แล้ว "+p.b+" + "+p.a+" = ?",visual:"",
+          input:{type:"pad",max:10},answer:p.sum,explanation:"สลับที่แล้วได้ "+p.sum+" เท่าเดิม"}; }
+      if(type===5){ // ศูนย์กับการบวก
+        var n=rand(1,10), left=Math.random()>0.5;
+        return {unit:2,title:"ศูนย์กับการบวก",prompt:(left?n+" + 0":"0 + "+n)+" = ?",visual:"",
+          input:{type:"pad",max:10},answer:n,explanation:"บวกศูนย์ได้จำนวนเดิม = "+n}; }
+      if(type===6){ // เลือกประโยคที่ได้ผลเท่ากับ
+        var target=rand(5,10);
+        var correct; do{ var a=rand(1,target-1); correct=a+" + "+(target-a); }while(false);
+        var opts=[correct], g=0;
+        while(opts.length<4 && g<60){ var x=rand(1,9),y=rand(1,9); var t=x+" + "+y; if(x+y!==target && opts.indexOf(t)===-1) opts.push(t); g++; }
+        return {unit:2,title:"เลือกประโยคสัญลักษณ์",prompt:"ข้อใดมีผลบวกเท่ากับ "+target+"?",visual:"",
+          input:{type:"choice",style:"text",options:shuffle(opts)},answer:correct,explanation:correct+" = "+target}; }
+      var p=addPair(10), st=pickStory();
+      return {unit:2,title:"โจทย์ปัญหาการบวก",prompt:"มี"+st.name+" "+p.a+" ชิ้น ซื้อเพิ่ม "+p.b+" ชิ้น รวมมีกี่ชิ้น?",
+        visual:twoGroups(p.a,p.b,st.emoji,st.emoji),input:{type:"pad",max:10},answer:p.sum,explanation:p.a+" + "+p.b+" = "+p.sum};
     }
 
-    function tenFrame(n) {
-      var ones = n - 10;
-      var full = '<div class="bg-sky-100 border-2 border-sky-200 rounded-2xl p-3 mb-2"><div class="text-xs font-black text-sky-600 text-center mb-1">10</div>' + emojiGrid(10, "🔵") + '</div>';
-      var extra = '<div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-3"><div class="text-xs font-black text-emerald-600 text-center mb-1">อีก ' + ones + '</div>' + emojiGrid(ones, "🟢") + '</div>';
-      return full + extra;
+    // ---- หน่วย 3 : ลบไม่เกิน 10 ----
+    function genUnit3(){
+      var type=rand(1,7);
+      if(type===1){ var s=subPair(10);
+        return {unit:3,title:"การลบ",prompt:s.t+" - "+s.k+" = ?",visual:"",
+          input:{type:"pad",max:10},answer:s.l,explanation:s.t+" - "+s.k+" = "+s.l}; }
+      if(type===2){ var s=subPair(10);
+        return {unit:3,title:"ลบจากรูปภาพ",prompt:"มี "+s.t+" ชิ้น เอาออก "+s.k+" ชิ้น เหลือกี่ชิ้น?",visual:emojiGrid(s.t,pick(icons)),
+          input:{type:"pad",max:10},answer:s.l,explanation:s.t+" - "+s.k+" = "+s.l}; }
+      if(type===3){ var s=subPair(10);
+        return {unit:3,title:"เติมตัวไม่ทราบค่า",prompt:s.t+" - ⬜ = "+s.l,visual:bondVisual(s.t,"?",s.l),
+          input:{type:"pad",max:10},answer:s.k,explanation:s.t+" - "+s.k+" = "+s.l}; }
+      if(type===4){ // ลบด้วยศูนย์ / ลบตัวเอง
+        var n=rand(1,10), self=Math.random()>0.5;
+        return {unit:3,title:"การลบด้วยศูนย์",prompt:(self?n+" - "+n:n+" - 0")+" = ?",visual:"",
+          input:{type:"pad",max:10},answer:self?0:n,explanation:self?"ลบตัวเองได้ 0":"ลบศูนย์ได้จำนวนเดิม = "+n}; }
+      if(type===5){ // บ้านความสัมพันธ์ -> pad หนึ่งประโยค
+        var p=addPair(10);
+        var facts=[{q:p.a+" + "+p.b+" = ?",a:p.sum},{q:p.b+" + "+p.a+" = ?",a:p.sum},
+                   {q:p.sum+" - "+p.a+" = ?",a:p.b},{q:p.sum+" - "+p.b+" = ?",a:p.a}];
+        var f=pick(facts);
+        return {unit:3,title:"บ้านความสัมพันธ์ บวก-ลบ",prompt:f.q,visual:bondVisual(p.sum,p.a,p.b),
+          input:{type:"pad",max:10},answer:f.a,explanation:"ครอบครัวจำนวน "+p.a+", "+p.b+", "+p.sum}; }
+      if(type===6){ // เลือกเครื่องหมาย + หรือ -
+        var makePlus=Math.random()>0.5, a,b,c;
+        if(makePlus){ var p=addPair(10); a=p.a; b=p.b; c=p.sum; }
+        else { var s=subPair(10); a=s.t; b=s.k; c=s.l; }
+        return {unit:3,title:"เติมเครื่องหมาย",prompt:a+"  ⬜  "+b+"  =  "+c,visual:"",
+          input:{type:"operator"},answer:makePlus?"+":"-",explanation:a+" "+(makePlus?"+":"-")+" "+b+" = "+c}; }
+      var s=subPair(10), st=pickStory();
+      return {unit:3,title:"โจทย์ปัญหาการลบ",prompt:"มี"+st.name+" "+s.t+" ชิ้น ให้เพื่อนไป "+s.k+" ชิ้น เหลือกี่ชิ้น?",
+        visual:emojiGrid(s.t,st.emoji),input:{type:"pad",max:10},answer:s.l,explanation:s.t+" - "+s.k+" = "+s.l};
     }
 
-    function buildQuiz(mode) {
-      var result = [];
-      var units = mode === "all" ? [1,2,3,4] : [mode];
-      units.forEach(function(unit) {
-        for (var i = 0; i < 15; i++) {
-          if (unit === 1) result.push(genUnit1());
-          if (unit === 2) result.push(genUnit2());
-          if (unit === 3) result.push(genUnit3());
-          if (unit === 4) result.push(genUnit4());
-        }
-      });
-      return shuffle(result);
+    // ---- หน่วย 4 : 11-20 ----
+    function genUnit4(){
+      var type=rand(1,6);
+      if(type===1){ var n=rand(11,20);
+        return {unit:4,title:"อ่านจำนวน 11-20",prompt:"ในภาพมีทั้งหมดเท่าไร?",visual:tenFrame(n),
+          input:{type:"pad",max:20},answer:n,explanation:"10 กับอีก "+(n-10)+" รวมเป็น "+n}; }
+      if(type===2){ var n=rand(11,20);
+        return {unit:4,title:"สิบกับหน่วย",prompt:"10 + "+(n-10)+" = ?",visual:tenFrame(n),
+          input:{type:"pad",max:20},answer:n,explanation:"10 + "+(n-10)+" = "+n}; }
+      if(type===3){ var n=rand(11,20); // รูปกระจาย ย้อนกลับ
+        return {unit:4,title:"การเขียนแบบกระจาย",prompt:n+" = 10 + ⬜",visual:"",
+          input:{type:"pad",max:10},answer:n-10,explanation:n+" = 10 + "+(n-10)}; }
+      if(type===4){ // เปรียบเทียบ (บางครั้งใช้ 10+x)
+        var a=rand(11,20),b=rand(11,20), useExpr=Math.random()>0.5;
+        var right=useExpr?("10 + "+(b-10)):b;
+        return {unit:4,title:"เปรียบเทียบ 11-20",prompt:a+"  ⬜  "+right,visual:"",
+          input:{type:"compare"},answer:compareSymbol(a,b),explanation:a+" "+compareSymbol(a,b)+" "+b}; }
+      if(type===5){ var base=rand(11,16), asc=Math.random()>0.5;
+        var nums=shuffle([base,base+1,base+2,base+3]);
+        return {unit:4,title:"เรียงลำดับ 11-20",prompt:asc?"เรียงจากน้อยไปมาก":"เรียงจากมากไปน้อย",visual:"",
+          input:{type:"order",items:nums,asc:asc},answer:"",explanation:"เรียงถูกต้อง"}; }
+      var n=rand(12,19), next=Math.random()>0.5;
+      return {unit:4,title:next?"มากกว่าอยู่ 1":"น้อยกว่าอยู่ 1",
+        prompt:(next?"จำนวนที่มากกว่า "+n+" อยู่ 1":"จำนวนที่น้อยกว่า "+n+" อยู่ 1")+" คือเท่าไร?",visual:"",
+        input:{type:"pad",max:20},answer:next?n+1:n-1,explanation:"คำตอบคือ "+(next?n+1:n-1)};
     }
 
-    function startQuiz(mode) {
-      selectedMode = mode;
-      quiz = buildQuiz(mode);
-      current = 0;
-      score = 0;
-      unitScores = {};
-      [1,2,3,4].forEach(function(u) { unitScores[u] = {right:0, total:0}; });
+    // ---- หน่วย 5 : บวกไม่เกิน 20 ----
+    function genUnit5(){
+      var type=rand(1,5);
+      if(type===1){ var a=rand(5,15), b=rand(1,20-a);
+        return {unit:5,title:"การบวกไม่เกิน 20",prompt:a+" + "+b+" = ?",visual:"",
+          input:{type:"pad",max:20},answer:a+b,explanation:a+" + "+b+" = "+(a+b)}; }
+      if(type===2){ // บวกสามจำนวน
+        var a=rand(1,7),b=rand(1,7),c=rand(1,Math.max(1,20-a-b));
+        return {unit:5,title:"การบวกสามจำนวน",prompt:a+" + "+b+" + "+c+" = ?",visual:"",
+          input:{type:"pad",max:20},answer:a+b+c,explanation:a+" + "+b+" + "+c+" = "+(a+b+c)}; }
+      if(type===3){ var sum=rand(11,20), a=rand(1,sum-1), b=sum-a;
+        return {unit:5,title:"เติมตัวไม่ทราบค่า",prompt:a+" + ⬜ = "+sum,visual:"",
+          input:{type:"pad",max:20},answer:b,explanation:a+" + "+b+" = "+sum}; }
+      if(type===4){ // เปรียบเทียบผลบวก
+        var a=rand(3,12),b=rand(1,8),c=rand(3,12),d=rand(1,8);
+        return {unit:5,title:"เปรียบเทียบผลบวก",prompt:a+" + "+b+"  ⬜  "+c+" + "+d,visual:"",
+          input:{type:"compare"},answer:compareSymbol(a+b,c+d),explanation:(a+b)+" "+compareSymbol(a+b,c+d)+" "+(c+d)}; }
+      var a=rand(6,14), b=rand(1,20-a), st=pickStory();
+      return {unit:5,title:"โจทย์ปัญหาการบวก",prompt:"มี"+st.name+" "+a+" ชิ้น ได้เพิ่ม "+b+" ชิ้น รวมกี่ชิ้น?",visual:"",
+        input:{type:"pad",max:20},answer:a+b,explanation:a+" + "+b+" = "+(a+b)};
+    }
+
+    // ---- หน่วย 6 : ลบไม่เกิน 20 ----
+    function genUnit6(){
+      var type=rand(1,5);
+      if(type===1){ var t=rand(11,20), k=rand(1,t-1);
+        return {unit:6,title:"การลบไม่เกิน 20",prompt:t+" - "+k+" = ?",visual:"",
+          input:{type:"pad",max:20},answer:t-k,explanation:t+" - "+k+" = "+(t-k)}; }
+      if(type===2){ // ความสัมพันธ์บวก-ลบ
+        var a=rand(4,12), b=rand(3,8), sum=a+b>20?20:a+b; b=sum-a;
+        return {unit:6,title:"ความสัมพันธ์ บวก-ลบ",prompt:"ถ้า "+a+" + "+b+" = "+sum+" แล้ว "+sum+" - "+a+" = ?",visual:"",
+          input:{type:"pad",max:20},answer:b,explanation:sum+" - "+a+" = "+b}; }
+      if(type===3){ var t=rand(11,20), l=rand(1,t-1), k=t-l;
+        return {unit:6,title:"เติมตัวไม่ทราบค่า",prompt:t+" - ⬜ = "+l,visual:"",
+          input:{type:"pad",max:20},answer:k,explanation:t+" - "+k+" = "+l}; }
+      if(type===4){ // เลือกเครื่องหมาย
+        var makePlus=Math.random()>0.5, a,b,c;
+        if(makePlus){ a=rand(6,12); b=rand(1,20-a); c=a+b; }
+        else { a=rand(11,20); b=rand(1,a-1); c=a-b; }
+        return {unit:6,title:"เติมเครื่องหมาย",prompt:a+"  ⬜  "+b+"  =  "+c,visual:"",
+          input:{type:"operator"},answer:makePlus?"+":"-",explanation:a+" "+(makePlus?"+":"-")+" "+b+" = "+c}; }
+      var t=rand(12,20), k=rand(1,t-1), st=pickStory();
+      return {unit:6,title:"โจทย์ปัญหาการลบ",prompt:"มี"+st.name+" "+t+" ชิ้น ใช้ไป "+k+" ชิ้น เหลือกี่ชิ้น?",visual:"",
+        input:{type:"pad",max:20},answer:t-k,explanation:t+" - "+k+" = "+(t-k)};
+    }
+
+    // ---- หน่วย 7 : รูปเรขาคณิต ----
+    function shapeBox(html){ return '<div class="w-28 h-28 mx-auto">'+html+'</div>'; }
+    function genUnit7(){
+      var type=rand(1,5);
+      if(type===1){ // ชื่อรูป 2 มิติ
+        var s=pick(shapes2D), col=pick(COLORS);
+        var opts=[s.name].concat(shuffle(shapes2D.filter(function(x){return x.key!==s.key;})).slice(0,3).map(function(x){return x.name;}));
+        return {unit:7,title:"รูปเรขาคณิต 2 มิติ",prompt:"รูปนี้ชื่ออะไร?",visual:shapeBox(svg2D(s.key,col)),
+          input:{type:"choice",style:"text",options:shuffle(opts)},answer:s.name,explanation:"นี่คือ"+s.name}; }
+      if(type===2){ // แตะรูปตามชื่อ
+        var s=pick(shapes2D);
+        var others=shuffle(shapes2D.filter(function(x){return x.key!==s.key;})).slice(0,3);
+        var all=shuffle([s].concat(others));
+        var opts=all.map(function(x){ return {html:shapeBox(svg2D(x.key,pick(COLORS))),value:x.name}; });
+        return {unit:7,title:"หารูปตามชื่อ",prompt:"แตะรูป"+s.name,visual:"",
+          input:{type:"choice",style:"shape",options:opts},answer:s.name,explanation:"นี่คือ"+s.name}; }
+      if(type===3){ // นับรูปสามเหลี่ยม (นับรูปชนิดหนึ่ง)
+        var target=pick(shapes2D);
+        var tCount=rand(2,5), oCount=rand(2,5);
+        var arr=[];
+        for(var i=0;i<tCount;i++) arr.push(target.key);
+        var pool=shapes2D.filter(function(x){return x.key!==target.key;});
+        for(var j=0;j<oCount;j++) arr.push(pick(pool).key);
+        arr=shuffle(arr);
+        var vis='<div class="bg-white rounded-2xl border border-slate-200 p-2 flex flex-wrap justify-center gap-1">'+
+          arr.map(function(k){ return '<div class="w-14 h-14">'+svg2D(k,pick(COLORS))+'</div>'; }).join("")+'</div>';
+        return {unit:7,title:"นับรูปเรขาคณิต",prompt:"มี"+target.name+"กี่รูป?",visual:vis,
+          input:{type:"pad",max:10},answer:tCount,explanation:"มี"+target.name+" "+tCount+" รูป"}; }
+      if(type===4){ // ชื่อรูป 3 มิติ
+        var s=pick(shapes3D), col=pick(COLORS);
+        var opts=[s.name].concat(shuffle(shapes3D.filter(function(x){return x.key!==s.key;})).slice(0,3).map(function(x){return x.name;}));
+        return {unit:7,title:"รูปเรขาคณิต 3 มิติ",prompt:"รูปทรงนี้ชื่ออะไร?",visual:shapeBox(svg3D(s.key,col)),
+          input:{type:"choice",style:"text",options:shuffle(opts)},answer:s.name,explanation:"นี่คือ"+s.name}; }
+      // แตะรูปทรง 3 มิติ ตามชื่อ
+      var s=pick(shapes3D);
+      var others=shuffle(shapes3D.filter(function(x){return x.key!==s.key;})).slice(0,3);
+      var all=shuffle([s].concat(others));
+      var opts=all.map(function(x){ return {html:shapeBox(svg3D(x.key,pick(COLORS))),value:x.name}; });
+      return {unit:7,title:"หารูปทรงตามชื่อ",prompt:"แตะ"+s.name,visual:"",
+        input:{type:"choice",style:"shape",options:opts},answer:s.name,explanation:"นี่คือ"+s.name};
+    }
+
+    var generators={1:genUnit1,2:genUnit2,3:genUnit3,4:genUnit4,5:genUnit5,6:genUnit6,7:genUnit7};
+
+    /* =====================================================================
+       สร้างชุดข้อสอบ
+    ===================================================================== */
+    var quiz=[], current=0, score=0, selectedMode="all", unitScores={}, answered=false;
+
+    function buildQuiz(mode){
+      var result=[];
+      if(mode==="all"){
+        ALL_UNITS.forEach(function(u){ for(var i=0;i<6;i++) result.push(generators[u]()); });
+        return shuffle(result);
+      }
+      for(var i=0;i<12;i++) result.push(generators[mode]());
+      return result;
+    }
+
+    function startQuiz(mode){
+      selectedMode=mode;
+      quiz=buildQuiz(mode);
+      current=0; score=0; unitScores={};
+      ALL_UNITS.forEach(function(u){ unitScores[u]={right:0,total:0}; });
       document.getElementById("home-screen").classList.add("hidden");
       document.getElementById("result-screen").classList.add("hidden");
       document.getElementById("quiz-screen").classList.remove("hidden");
-      document.getElementById("total-display").innerText = quiz.length;
-      document.getElementById("question-total").innerText = quiz.length;
+      document.getElementById("total-display").innerText=quiz.length;
+      document.getElementById("question-total").innerText=quiz.length;
+      window.scrollTo(0,0);
       loadQuestion();
     }
-
-    function restartSameMode() {
-      startQuiz(selectedMode);
-    }
-
-    function goHome() {
+    function restartSameMode(){ startQuiz(selectedMode); }
+    function goHome(){
       document.getElementById("quiz-screen").classList.add("hidden");
       document.getElementById("result-screen").classList.add("hidden");
       document.getElementById("home-screen").classList.remove("hidden");
     }
 
-    function loadQuestion() {
-      var q = quiz[current];
-      document.getElementById("score-display").innerText = score;
-      document.getElementById("question-number").innerText = current + 1;
-      document.getElementById("progress-bar").style.width = (current / quiz.length * 100) + "%";
-      document.getElementById("unit-badge").innerText = "หน่วย " + q.unit + ": " + unitNames[q.unit];
-      document.getElementById("question-title").innerText = q.title;
-      document.getElementById("question-prompt").innerText = q.prompt;
-      document.getElementById("question-visual").innerHTML = q.visual;
-      document.getElementById("feedback").classList.add("hidden");
+    /* =====================================================================
+       แสดงโจทย์ + ช่องตอบตามชนิด input
+    ===================================================================== */
+    function loadQuestion(){
+      answered=false;
+      var q=quiz[current];
+      document.getElementById("score-display").innerText=score;
+      document.getElementById("question-number").innerText=current+1;
+      document.getElementById("progress-bar").style.width=(current/quiz.length*100)+"%";
+      document.getElementById("unit-badge").innerText="หน่วย "+q.unit+": "+unitNames[q.unit];
+      document.getElementById("question-title").innerText=q.title;
+      document.getElementById("question-prompt").innerText=q.prompt;
+      document.getElementById("question-visual").innerHTML=q.visual||"";
+      var fb=document.getElementById("feedback"); fb.classList.add("hidden");
       document.getElementById("next-btn").classList.add("hidden");
+      renderInput(q);
+    }
 
-      var options = document.getElementById("options");
-      options.innerHTML = "";
-      q.options.forEach(function(opt) {
-        var btn = document.createElement("button");
-        btn.className = "bg-white border-2 border-sky-200 hover:bg-sky-50 text-slate-800 font-black text-2xl min-h-[64px] rounded-2xl shadow-sm active:scale-95 transition";
-        btn.innerText = opt;
-        btn.onclick = function() { chooseAnswer(opt, btn); };
-        options.appendChild(btn);
+    function renderInput(q){
+      var area=document.getElementById("answer-area");
+      area.innerHTML="";
+      var t=q.input.type;
+      if(t==="choice") renderChoice(q,area);
+      else if(t==="compare") renderSymbols(q,area,[">","<","="]);
+      else if(t==="operator") renderSymbols(q,area,["+","-"]);
+      else if(t==="pad") renderPad(q,area);
+      else if(t==="tenframe") renderTenFrame(q,area);
+      else if(t==="order") renderOrder(q,area);
+      else if(t==="bondmake") renderBondMake(q,area);
+    }
+
+    // ---------- choice ----------
+    function renderChoice(q,area){
+      var isShape=q.input.style==="shape";
+      var grid=document.createElement("div");
+      grid.className="grid grid-cols-2 gap-3";
+      q.input.options.forEach(function(opt){
+        var value=typeof opt==="object"?opt.value:opt;
+        var html=typeof opt==="object"?opt.html:null;
+        var btn=document.createElement("button");
+        btn.setAttribute("data-v",String(value));
+        if(isShape){
+          btn.className="bg-white border-2 border-sky-200 hover:bg-sky-50 rounded-2xl p-2 shadow-sm active:scale-95 transition flex items-center justify-center";
+          btn.innerHTML=html;
+        } else {
+          var isSym=String(value).length<=2;
+          btn.className="bg-white border-2 border-sky-200 hover:bg-sky-50 text-slate-800 font-black rounded-2xl shadow-sm active:scale-95 transition "+(isSym?"text-3xl min-h-[64px]":"text-xl min-h-[64px] px-2");
+          btn.innerText=value;
+        }
+        btn.onclick=function(){ if(answered)return; commitChoice(q,value,btn,area); };
+        grid.appendChild(btn);
       });
+      area.appendChild(grid);
+    }
+    function commitChoice(q,value,btn,area){
+      answered=true; sfx("tap");
+      var correct=String(value)===String(q.answer);
+      var buttons=area.querySelectorAll("button");
+      buttons.forEach(function(b){
+        b.classList.add("pointer-events-none");
+        if(b.getAttribute("data-v")===String(q.answer)){ b.classList.add("ring-4","ring-emerald-400","bg-emerald-50"); }
+      });
+      if(!correct){ btn.classList.add("ring-4","ring-rose-400","bg-rose-50","shake"); }
+      finish(q,correct);
     }
 
-    function chooseAnswer(opt, btn) {
-      var q = quiz[current];
-      var buttons = document.querySelectorAll("#options button");
-      buttons.forEach(function(b) { b.classList.add("pointer-events-none"); });
-      unitScores[q.unit].total++;
+    // ---------- symbols (compare / operator) ----------
+    function renderSymbols(q,area,syms){
+      var grid=document.createElement("div");
+      grid.className=syms.length===2?"grid grid-cols-2 gap-3 max-w-xs mx-auto":"grid grid-cols-3 gap-3";
+      syms.forEach(function(s){
+        var btn=document.createElement("button");
+        btn.className="bg-white border-2 border-sky-300 hover:bg-sky-50 text-sky-700 font-black text-4xl min-h-[72px] rounded-2xl shadow-sm active:scale-95 transition";
+        btn.innerText=s;
+        btn.onclick=function(){
+          if(answered)return; answered=true; sfx("tap");
+          var correct=s===q.answer;
+          area.querySelectorAll("button").forEach(function(b){
+            b.classList.add("pointer-events-none");
+            if(b.innerText===q.answer) b.classList.add("ring-4","ring-emerald-400","bg-emerald-50");
+          });
+          if(!correct){ btn.classList.add("ring-4","ring-rose-400","bg-rose-50","shake"); }
+          finish(q,correct);
+        };
+        grid.appendChild(btn);
+      });
+      area.appendChild(grid);
+    }
 
-      var feedback = document.getElementById("feedback");
-      feedback.classList.remove("hidden");
-      if (String(opt) === q.answer) {
-        playSoundEffect("correct");
-        score++;
-        unitScores[q.unit].right++;
-        btn.className = "bg-emerald-500 border-2 border-emerald-600 text-white font-black text-2xl min-h-[64px] rounded-2xl shadow-sm";
-        feedback.className = "rounded-2xl p-3 mb-4 text-center font-bold bg-emerald-50 text-emerald-700 border border-emerald-200";
-        feedback.innerText = "ถูกต้อง เก่งมาก! " + q.explanation;
-      } else {
-        playSoundEffect("wrong");
-        btn.className = "bg-rose-500 border-2 border-rose-600 text-white font-black text-2xl min-h-[64px] rounded-2xl shadow-sm";
-        buttons.forEach(function(b) {
-          if (b.innerText === q.answer) {
-            b.className = "bg-emerald-500 border-2 border-emerald-600 text-white font-black text-2xl min-h-[64px] rounded-2xl shadow-sm";
+    // ---------- number pad ----------
+    function renderPad(q,area){
+      var max=q.input.max||10;
+      var cols=max<=10?6:7;
+      var wrap=document.createElement("div");
+      wrap.className="grid gap-2";
+      wrap.style.gridTemplateColumns="repeat("+cols+",minmax(0,1fr))";
+      for(var i=0;i<=max;i++){
+        (function(n){
+          var btn=document.createElement("button");
+          btn.className="bg-white border-2 border-slate-200 hover:bg-sky-50 text-slate-800 font-black text-xl h-12 rounded-xl shadow-sm active:scale-95 transition";
+          btn.innerText=n;
+          btn.onclick=function(){
+            if(answered)return; answered=true; sfx("tap");
+            var correct=n===q.answer;
+            wrap.querySelectorAll("button").forEach(function(b){
+              b.classList.add("pointer-events-none");
+              if(parseInt(b.innerText,10)===q.answer) b.classList.add("ring-4","ring-emerald-400","bg-emerald-50");
+            });
+            if(!correct){ btn.classList.add("ring-4","ring-rose-400","bg-rose-50","shake"); }
+            finish(q,correct);
+          };
+          wrap.appendChild(btn);
+        })(i);
+      }
+      area.appendChild(wrap);
+    }
+
+    // ---------- ten frame (แตะระบาย) ----------
+    function renderTenFrame(q,area){
+      var cells=q.input.cells||10, lit=0;
+      var info=document.createElement("div");
+      info.className="text-center text-sm font-bold text-slate-500 mb-2";
+      info.innerHTML='ระบายแล้ว <span class="text-sky-600 text-lg" id="lit-count">0</span> ช่อง';
+      area.appendChild(info);
+      var grid=document.createElement("div");
+      grid.className="grid grid-cols-5 gap-2 max-w-xs mx-auto mb-3";
+      for(var i=0;i<cells;i++){
+        var cell=document.createElement("button");
+        cell.className="aspect-square rounded-xl border-2 border-slate-300 bg-white active:scale-90 transition text-2xl flex items-center justify-center";
+        cell.setAttribute("data-on","0");
+        cell.onclick=function(){
+          if(answered)return; sfx("tap");
+          var on=this.getAttribute("data-on")==="1";
+          if(on){ this.setAttribute("data-on","0"); this.className="aspect-square rounded-xl border-2 border-slate-300 bg-white active:scale-90 transition text-2xl flex items-center justify-center"; this.innerText=""; lit--; }
+          else { this.setAttribute("data-on","1"); this.className="aspect-square rounded-xl border-2 border-sky-400 bg-sky-400 active:scale-90 transition text-2xl flex items-center justify-center pop"; this.innerText="🔵"; lit++; }
+          document.getElementById("lit-count").innerText=lit;
+        };
+        grid.appendChild(cell);
+      }
+      area.appendChild(grid);
+      var ok=document.createElement("button");
+      ok.className="w-full bg-sky-600 hover:bg-sky-700 text-white font-black py-3 rounded-2xl shadow active:scale-95 transition";
+      ok.innerText="ตรวจคำตอบ ✓";
+      ok.onclick=function(){
+        if(answered)return; answered=true;
+        grid.querySelectorAll("button").forEach(function(b){ b.classList.add("pointer-events-none"); });
+        finish(q, lit===q.answer);
+      };
+      area.appendChild(ok);
+    }
+
+    // ---------- order (แตะเรียงลำดับ) ----------
+    function renderOrder(q,area){
+      var items=q.input.items.slice();
+      var target=items.slice().sort(function(a,b){ return q.input.asc?a-b:b-a; });
+      var picked=[];
+      var info=document.createElement("div");
+      info.className="text-center text-xs font-bold text-slate-400 mb-2";
+      info.innerText="แตะการ์ดทีละใบ ตามลำดับที่ถูกต้อง";
+      area.appendChild(info);
+      var row=document.createElement("div");
+      row.className="flex flex-wrap justify-center gap-3";
+      items.forEach(function(n){
+        var btn=document.createElement("button");
+        btn.className="relative w-16 h-16 rounded-2xl border-2 border-sky-300 bg-white text-slate-800 font-black text-2xl shadow-sm active:scale-95 transition";
+        btn.innerText=n;
+        btn.setAttribute("data-n",n);
+        btn.onclick=function(){
+          if(answered||this.getAttribute("data-used")==="1")return; sfx("tap");
+          this.setAttribute("data-used","1");
+          picked.push(parseInt(this.getAttribute("data-n"),10));
+          this.classList.add("bg-sky-100","opacity-70");
+          var badge=document.createElement("span");
+          badge.className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-amber-400 text-white text-xs font-black flex items-center justify-center";
+          badge.innerText=picked.length;
+          this.appendChild(badge);
+          if(picked.length===items.length){
+            answered=true;
+            var correct=picked.join(",")===target.join(",");
+            row.querySelectorAll("button").forEach(function(b){ b.classList.add("pointer-events-none"); });
+            finish(q,correct,"ลำดับที่ถูกคือ "+target.join(" , "));
           }
-        });
-        feedback.className = "rounded-2xl p-3 mb-4 text-center font-bold bg-rose-50 text-rose-700 border border-rose-200";
-        feedback.innerText = "ยังไม่ใช่จ้า คำตอบคือ " + q.answer + " เพราะ " + q.explanation;
-      }
-      document.getElementById("score-display").innerText = score;
-      document.getElementById("next-btn").classList.remove("hidden");
+        };
+        row.appendChild(btn);
+      });
+      area.appendChild(row);
     }
 
-    function nextQuestion() {
-      if (current >= quiz.length - 1) {
-        showResult();
+    // ---------- bond make (ตอบได้หลายแบบ) ----------
+    function renderBondMake(q,area){
+      var whole=q.input.whole, max=q.input.max||10;
+      var picks=[];
+      var slots=document.createElement("div");
+      slots.className="flex items-center justify-center gap-3 mb-3";
+      slots.innerHTML='<span class="text-sm font-bold text-slate-500">เลือกสองจำนวนที่รวมกันได้ '+whole+'</span>';
+      area.appendChild(slots);
+      var disp=document.createElement("div");
+      disp.className="text-center text-2xl font-black text-slate-700 mb-3";
+      disp.id="bond-disp"; disp.innerText="? + ? = "+whole;
+      area.appendChild(disp);
+      var wrap=document.createElement("div");
+      wrap.className="grid gap-2"; wrap.style.gridTemplateColumns="repeat(6,minmax(0,1fr))";
+      for(var i=0;i<=max;i++){
+        (function(n){
+          var btn=document.createElement("button");
+          btn.className="bg-white border-2 border-slate-200 hover:bg-emerald-50 text-slate-800 font-black text-lg h-12 rounded-xl shadow-sm active:scale-95 transition";
+          btn.innerText=n;
+          btn.onclick=function(){
+            if(answered)return; sfx("tap"); picks.push(n);
+            this.classList.add("bg-emerald-100","ring-2","ring-emerald-300");
+            document.getElementById("bond-disp").innerText=(picks[0]!=null?picks[0]:"?")+" + "+(picks[1]!=null?picks[1]:"?")+" = "+whole;
+            if(picks.length===2){
+              answered=true;
+              wrap.querySelectorAll("button").forEach(function(b){ b.classList.add("pointer-events-none"); });
+              var correct=(picks[0]+picks[1])===whole;
+              finish(q,correct,(picks[0]+picks[1])+" ≠ "+whole+" ตัวอย่างที่ถูก เช่น 0 + "+whole);
+            }
+          };
+          wrap.appendChild(btn);
+        })(i);
+      }
+      area.appendChild(wrap);
+    }
+
+    /* =====================================================================
+       สรุปผลข้อเดียว + feedback
+    ===================================================================== */
+    function finish(q,correct,customWrong){
+      unitScores[q.unit].total++;
+      var fb=document.getElementById("feedback");
+      fb.classList.remove("hidden");
+      if(correct){
+        sfx("correct"); score++; unitScores[q.unit].right++;
+        fb.className="rounded-2xl p-3 mb-3 text-center font-bold bg-emerald-50 text-emerald-700 border border-emerald-200";
+        fb.innerText="🎉 ถูกต้อง เก่งมาก! "+q.explanation;
       } else {
-        current++;
-        loadQuestion();
+        sfx("wrong");
+        fb.className="rounded-2xl p-3 mb-3 text-center font-bold bg-rose-50 text-rose-700 border border-rose-200";
+        fb.innerText="💪 ยังไม่ใช่จ้า — "+(customWrong||q.explanation);
       }
+      document.getElementById("score-display").innerText=score;
+      var next=document.getElementById("next-btn");
+      next.classList.remove("hidden");
+      next.innerText=current>=quiz.length-1?"ดูสรุปคะแนน 🏁":"ข้อถัดไป ➜";
     }
 
-    function showResult() {
+    function nextQuestion(){
+      if(current>=quiz.length-1) showResult();
+      else { current++; window.scrollTo(0,0); loadQuestion(); }
+    }
+
+    function showResult(){
       document.getElementById("quiz-screen").classList.add("hidden");
       document.getElementById("result-screen").classList.remove("hidden");
-      document.getElementById("final-score").innerText = score;
-      document.getElementById("final-total").innerText = quiz.length;
-      document.getElementById("result-icon").innerText = score === quiz.length ? "👑" : score >= quiz.length * 0.8 ? "🏆" : score >= quiz.length * 0.6 ? "✨" : "💪";
-      var summary = document.getElementById("unit-summary");
-      summary.innerHTML = "";
-      [1,2,3,4].forEach(function(u) {
-        if (unitScores[u].total > 0) {
-          var row = document.createElement("div");
-          row.className = "bg-slate-50 border border-slate-200 rounded-xl p-3 flex justify-between items-center";
-          row.innerHTML = '<span class="font-bold text-slate-700">หน่วย ' + u + '</span><span class="font-black text-sky-700">' + unitScores[u].right + '/' + unitScores[u].total + '</span>';
+      document.getElementById("final-score").innerText=score;
+      document.getElementById("final-total").innerText=quiz.length;
+      var ratio=score/quiz.length;
+      document.getElementById("result-icon").innerText=ratio===1?"👑":ratio>=0.8?"🏆":ratio>=0.6?"✨":"💪";
+      var summary=document.getElementById("unit-summary");
+      summary.innerHTML="";
+      ALL_UNITS.forEach(function(u){
+        if(unitScores[u].total>0){
+          var row=document.createElement("div");
+          row.className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex justify-between items-center";
+          row.innerHTML='<span class="font-bold text-slate-700 text-sm">หน่วย '+u+': '+unitNames[u]+'</span><span class="font-black text-sky-700">'+unitScores[u].right+'/'+unitScores[u].total+'</span>';
           summary.appendChild(row);
         }
       });
     }
+
+    /* =====================================================================
+       สร้างปุ่มหน่วยบนหน้าแรก
+    ===================================================================== */
+    (function buildHome(){
+      var box=document.getElementById("unit-buttons");
+      ALL_UNITS.forEach(function(u){
+        var btn=document.createElement("button");
+        btn.className="bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 text-left rounded-2xl p-3.5 active:scale-95 transition";
+        btn.onclick=function(){ startQuiz(u); };
+        btn.innerHTML='<div class="font-black">หน่วย '+u+': '+unitNames[u]+'</div><div class="text-xs text-slate-500 font-semibold">'+unitSub[u]+'</div>';
+        box.appendChild(btn);
+      });
+    })();
   </script>
 </body>
 </html>
