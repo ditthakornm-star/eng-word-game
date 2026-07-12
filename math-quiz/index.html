@@ -263,59 +263,84 @@
         {name:"หนังสือ",emoji:"📚"},{name:"ลูกบอล",emoji:"⚽"},{name:"สตรอว์เบอร์รี",emoji:"🍓"}
       ]);
     }
-    function addPair(max){ var s=rand(4,max); var a=rand(1,s-1); return {a:a,b:s-a,sum:s}; }
-    function subPair(max){ var t=rand(4,max); var k=rand(1,t-1); return {t:t,k:k,l:t-k}; }
+    // คู่จำนวนที่ยากพอ (เลี่ยง +0/+1 และ -0/-1/ลบตัวเอง)
+    function addPair(max, minSum, minAdd){
+      minAdd=minAdd||2; minSum=minSum||(minAdd*2);
+      var g=0,a,b,sum;
+      do{ sum=rand(minSum,max); a=rand(minAdd,sum-minAdd); b=sum-a; g++; }while(b<minAdd && g<60);
+      return {a:a,b:b,sum:sum};
+    }
+    function subPair(max, minTotal, minRes){
+      minRes=minRes||1; minTotal=minTotal||5;
+      var g=0,t,k,l;
+      do{ t=rand(minTotal,max); k=rand(2,t-minRes); l=t-k; g++; }while((l<minRes||k<2) && g<60);
+      return {t:t,k:k,l:l};
+    }
+    function distinctNums(count,min,max){
+      var s=[],g=0;
+      while(s.length<count && g<300){ var n=rand(min,max); if(s.indexOf(n)<0) s.push(n); g++; }
+      return s;
+    }
+    // ลำดับเลขคณิต เว้นช่องหายไว้ตรงกลาง (นับทีละ step)
+    function seqMissing(start,step,len){
+      var nums=[]; for(var i=0;i<len;i++) nums.push(start+i*step);
+      var idx=rand(1,len-1);
+      var shown=nums.map(function(n,i){ return i===idx?"?":n; });
+      return {nums:nums,shown:shown,ans:nums[idx],step:step,idx:idx};
+    }
 
     // ---- หน่วย 1 : 1-10 และ 0 ----
     function genUnit1(){
-      var type=rand(1,8);
-      if(type===1){ // นับรูป -> pad
-        var n=rand(3,10), e=pick(icons);
-        return {unit:1,title:"นับจำนวน",prompt:"มีทั้งหมดกี่ชิ้น?",visual:emojiGrid(n,e),
+      var type=rand(1,9);
+      if(type===1){ // นับรูป (สองแถว นับยากขึ้น)
+        var n=rand(5,10), e=pick(icons);
+        return {unit:1,title:"นับจำนวน",prompt:"นับว่ามีทั้งหมดกี่ชิ้น?",visual:emojiGrid(n,e),
           input:{type:"pad",max:10},answer:n,explanation:"นับได้ "+n+" ชิ้น"};
       }
-      if(type===2){ // ระบายให้ครบ -> tenframe
-        var m=rand(3,10);
+      if(type===2){ // ระบายให้ครบ
+        var m=rand(4,10);
         return {unit:1,title:"ระบายให้ครบ",prompt:"แตะช่องให้ครบ "+m+" ช่อง",visual:"",
           input:{type:"tenframe",cells:10},answer:m,explanation:"ระบายครบ "+m+" ช่อง"};
       }
-      if(type===3){ // เปรียบเทียบ -> compare
+      if(type===3){ // เปรียบเทียบ
         var a=rand(0,10),b=rand(0,10);
         return {unit:1,title:"เปรียบเทียบจำนวน",prompt:a+"  ⬜  "+b,visual:"",
           input:{type:"compare"},answer:compareSymbol(a,b),explanation:a+" "+compareSymbol(a,b)+" "+b};
       }
-      if(type===4){ // เรียงลำดับ -> order
-        var base=rand(1,5), asc=Math.random()>0.5;
-        var nums=shuffle([base,base+1,base+2,base+3]);
+      if(type===4){ // เรียงลำดับ (สุ่มไม่ติดกัน)
+        var asc=Math.random()>0.5, nums=distinctNums(4,0,10);
         return {unit:1,title:"เรียงลำดับจำนวน",prompt:asc?"เรียงจากน้อยไปมาก":"เรียงจากมากไปน้อย",visual:"",
           input:{type:"order",items:nums,asc:asc},answer:"",explanation:"เรียงถูกต้อง"};
       }
-      if(type===5){ // ส่วนย่อย-ส่วนรวม เติมส่วนที่หาย -> pad
-        var t=rand(5,10), p=rand(1,t-1), q=t-p, hide=Math.random()>0.5;
+      if(type===5){ // ส่วนย่อย-ส่วนรวม เติมส่วนที่หาย
+        var t=rand(6,10), p=rand(2,t-2), q=t-p, hide=Math.random()>0.5;
         return {unit:1,title:"ส่วนย่อย-ส่วนรวม",prompt:"เติมจำนวนในช่อง ?",
           visual:bondVisual(t, hide?"?":p, hide?q:"?"),
           input:{type:"pad",max:10},answer:hide?p:q,explanation:p+" กับ "+q+" รวมกันได้ "+t};
       }
-      if(type===6){ // ตอบได้หลายคำตอบ -> bondmake
-        var w=rand(4,10);
+      if(type===6){ // ตอบได้หลายคำตอบ
+        var w=rand(5,10);
         return {unit:1,title:"แยกส่วน (ตอบได้หลายแบบ)",prompt:"แตะสองจำนวนที่รวมกันได้ "+w,
           visual:bondVisual(w,"?","?"),input:{type:"bondmake",whole:w,max:10},answer:w,
           explanation:"สองจำนวนที่รวมกันได้ "+w};
       }
-      if(type===7){ // อันดับที่ -> choice
-        var pos=rand(1,6);
-        var allOrd=["ที่ 1","ที่ 2","ที่ 3","ที่ 4","ที่ 5","ที่ 6"];
-        var wrong=shuffle(allOrd.filter(function(x){return x!=="ที่ "+pos;})).slice(0,3);
-        return {unit:1,title:"อันดับที่",prompt:"ดาวสีเหลืองทองอยู่อันดับที่เท่าไร?",visual:ordinalVisual(pos),
-          input:{type:"choice",style:"text",options:shuffle(["ที่ "+pos].concat(wrong))},
-          answer:"ที่ "+pos,explanation:"อยู่อันดับที่ "+pos};
+      if(type===7){ // เติมจำนวนที่หายกลางลำดับ / นับทีละ 2
+        var step=Math.random()>0.5?2:1, start=rand(0,10-step*3), s=seqMissing(start,step,4);
+        return {unit:1,title:step===2?"นับเพิ่มทีละ 2":"เติมจำนวนที่หายไป",prompt:s.shown.join("   ,   "),visual:"",
+          input:{type:"pad",max:10},answer:s.ans,explanation:"ลำดับคือ "+s.nums.join(" , ")};
       }
-      // จำนวนก่อนหน้า/ถัดไป -> pad
-      var base2=rand(1,9), next=Math.random()>0.5;
-      var ans=next?base2+1:base2-1;
-      return {unit:1,title:next?"จำนวนถัดไป":"จำนวนก่อนหน้า",
-        prompt:(next?"จำนวนที่อยู่ถัดจาก ":"จำนวนที่อยู่ก่อน ")+base2+" คือเท่าไร?",visual:"",
-        input:{type:"pad",max:10},answer:ans,explanation:"คำตอบคือ "+ans};
+      if(type===8){ // อยู่ระหว่าง
+        var mid=rand(2,9);
+        return {unit:1,title:"จำนวนอยู่ระหว่าง",prompt:"จำนวนใดอยู่ระหว่าง "+(mid-1)+" กับ "+(mid+1)+"?",visual:"",
+          input:{type:"pad",max:10},answer:mid,explanation:mid+" อยู่ระหว่าง "+(mid-1)+" กับ "+(mid+1)};
+      }
+      // อันดับที่
+      var pos=rand(2,6);
+      var allOrd=["ที่ 1","ที่ 2","ที่ 3","ที่ 4","ที่ 5","ที่ 6"];
+      var wrong=shuffle(allOrd.filter(function(x){return x!=="ที่ "+pos;})).slice(0,3);
+      return {unit:1,title:"อันดับที่",prompt:"ดาวสีเหลืองทองอยู่อันดับที่เท่าไร?",visual:ordinalVisual(pos),
+        input:{type:"choice",style:"text",options:shuffle(["ที่ "+pos].concat(wrong))},
+        answer:"ที่ "+pos,explanation:"อยู่อันดับที่ "+pos};
     }
 
     // ---- หน่วย 2 : บวกไม่เกิน 10 ----
@@ -327,58 +352,53 @@
       if(type===2){ var p=addPair(10);
         return {unit:2,title:"บวกจากรูปภาพ",prompt:"รวมทั้งสองกลุ่มมีกี่ชิ้น?",visual:twoGroups(p.a,p.b,pick(icons),pick(icons)),
           input:{type:"pad",max:10},answer:p.sum,explanation:p.a+" + "+p.b+" = "+p.sum}; }
-      if(type===3){ var p=addPair(10);
-        return {unit:2,title:"เติมตัวไม่ทราบค่า",prompt:p.a+" + ⬜ = "+p.sum,visual:bondVisual(p.sum,p.a,"?"),
-          input:{type:"pad",max:10},answer:p.b,explanation:p.a+" + "+p.b+" = "+p.sum}; }
+      if(type===3){ var p=addPair(10), front=Math.random()>0.5; // เติมตัวหน้า/หลัง
+        return {unit:2,title:"เติมตัวไม่ทราบค่า",prompt:front?"⬜ + "+p.b+" = "+p.sum:p.a+" + ⬜ = "+p.sum,
+          visual:bondVisual(p.sum, front?"?":p.a, front?p.b:"?"),
+          input:{type:"pad",max:10},answer:front?p.a:p.b,explanation:p.a+" + "+p.b+" = "+p.sum}; }
       if(type===4){ var p=addPair(10);
         return {unit:2,title:"การสลับที่ของการบวก",prompt:"ถ้า "+p.a+" + "+p.b+" = "+p.sum+" แล้ว "+p.b+" + "+p.a+" = ?",visual:"",
           input:{type:"pad",max:10},answer:p.sum,explanation:"สลับที่แล้วได้ "+p.sum+" เท่าเดิม"}; }
-      if(type===5){ // ศูนย์กับการบวก
-        var n=rand(1,10), left=Math.random()>0.5;
-        return {unit:2,title:"ศูนย์กับการบวก",prompt:(left?n+" + 0":"0 + "+n)+" = ?",visual:"",
-          input:{type:"pad",max:10},answer:n,explanation:"บวกศูนย์ได้จำนวนเดิม = "+n}; }
+      if(type===5){ var x=addPair(10), y=addPair(10); // เปรียบเทียบผลบวก (แทนโจทย์ +0)
+        return {unit:2,title:"เปรียบเทียบผลบวก",prompt:x.a+" + "+x.b+"  ⬜  "+y.a+" + "+y.b,visual:"",
+          input:{type:"compare"},answer:compareSymbol(x.sum,y.sum),explanation:x.sum+" "+compareSymbol(x.sum,y.sum)+" "+y.sum}; }
       if(type===6){ // เลือกประโยคที่ได้ผลเท่ากับ
-        var target=rand(5,10);
-        var correct; do{ var a=rand(1,target-1); correct=a+" + "+(target-a); }while(false);
+        var target=rand(6,10), a=rand(2,target-2), correct=a+" + "+(target-a);
         var opts=[correct], g=0;
-        while(opts.length<4 && g<60){ var x=rand(1,9),y=rand(1,9); var t=x+" + "+y; if(x+y!==target && opts.indexOf(t)===-1) opts.push(t); g++; }
+        while(opts.length<4 && g<80){ var x=rand(1,9),y=rand(1,9); var tx=x+" + "+y; if(x+y!==target && opts.indexOf(tx)===-1) opts.push(tx); g++; }
         return {unit:2,title:"เลือกประโยคสัญลักษณ์",prompt:"ข้อใดมีผลบวกเท่ากับ "+target+"?",visual:"",
           input:{type:"choice",style:"text",options:shuffle(opts)},answer:correct,explanation:correct+" = "+target}; }
       var p=addPair(10), st=pickStory();
-      return {unit:2,title:"โจทย์ปัญหาการบวก",prompt:"มี"+st.name+" "+p.a+" ชิ้น ซื้อเพิ่ม "+p.b+" ชิ้น รวมมีกี่ชิ้น?",
+      return {unit:2,title:"โจทย์ปัญหาการบวก",prompt:"มี"+st.name+" "+p.a+" ชิ้น ซื้อเพิ่มอีก "+p.b+" ชิ้น รวมมีกี่ชิ้น?",
         visual:twoGroups(p.a,p.b,st.emoji,st.emoji),input:{type:"pad",max:10},answer:p.sum,explanation:p.a+" + "+p.b+" = "+p.sum};
     }
 
     // ---- หน่วย 3 : ลบไม่เกิน 10 ----
     function genUnit3(){
-      var type=rand(1,7);
-      if(type===1){ var s=subPair(10);
-        return {unit:3,title:"การลบ",prompt:s.t+" - "+s.k+" = ?",visual:"",
-          input:{type:"pad",max:10},answer:s.l,explanation:s.t+" - "+s.k+" = "+s.l}; }
-      if(type===2){ var s=subPair(10);
-        return {unit:3,title:"ลบจากรูปภาพ",prompt:"มี "+s.t+" ชิ้น เอาออก "+s.k+" ชิ้น เหลือกี่ชิ้น?",visual:emojiGrid(s.t,pick(icons)),
-          input:{type:"pad",max:10},answer:s.l,explanation:s.t+" - "+s.k+" = "+s.l}; }
-      if(type===3){ var s=subPair(10);
-        return {unit:3,title:"เติมตัวไม่ทราบค่า",prompt:s.t+" - ⬜ = "+s.l,visual:bondVisual(s.t,"?",s.l),
-          input:{type:"pad",max:10},answer:s.k,explanation:s.t+" - "+s.k+" = "+s.l}; }
-      if(type===4){ // ลบด้วยศูนย์ / ลบตัวเอง
-        var n=rand(1,10), self=Math.random()>0.5;
-        return {unit:3,title:"การลบด้วยศูนย์",prompt:(self?n+" - "+n:n+" - 0")+" = ?",visual:"",
-          input:{type:"pad",max:10},answer:self?0:n,explanation:self?"ลบตัวเองได้ 0":"ลบศูนย์ได้จำนวนเดิม = "+n}; }
-      if(type===5){ // บ้านความสัมพันธ์ -> pad หนึ่งประโยค
+      var type=rand(1,8);
+      var s=subPair(10);
+      if(type===1)
+        return {unit:3,title:"การลบ",prompt:s.t+" - "+s.k+" = ?",visual:"",input:{type:"pad",max:10},answer:s.l,explanation:s.t+" - "+s.k+" = "+s.l};
+      if(type===2)
+        return {unit:3,title:"ลบจากรูปภาพ",prompt:"มี "+s.t+" ชิ้น เอาออก "+s.k+" ชิ้น เหลือกี่ชิ้น?",visual:emojiGrid(s.t,pick(icons)),input:{type:"pad",max:10},answer:s.l,explanation:s.t+" - "+s.k+" = "+s.l};
+      if(type===3)
+        return {unit:3,title:"เติมตัวลบ",prompt:s.t+" - ⬜ = "+s.l,visual:bondVisual(s.t,"?",s.l),input:{type:"pad",max:10},answer:s.k,explanation:s.t+" - "+s.k+" = "+s.l};
+      if(type===4) // เติมตัวตั้ง (คิดย้อน)
+        return {unit:3,title:"เติมตัวตั้ง",prompt:"⬜ - "+s.k+" = "+s.l,visual:"",input:{type:"pad",max:10},answer:s.t,explanation:s.t+" - "+s.k+" = "+s.l};
+      if(type===5){ // ศูนย์กับการลบ (เชิงเหตุผล ไม่ใช่ 6-0)
+        var n=rand(3,10);
+        return Math.random()>0.5
+          ? {unit:3,title:"ลบแล้วเหลือศูนย์",prompt:"⬜ - "+n+" = 0",visual:"",input:{type:"pad",max:10},answer:n,explanation:n+" - "+n+" = 0"}
+          : {unit:3,title:"ลบด้วยศูนย์",prompt:n+" - ⬜ = "+n,visual:"",input:{type:"pad",max:10},answer:0,explanation:n+" - 0 = "+n}; }
+      if(type===6){ // บ้านความสัมพันธ์ (เน้นการลบ)
         var p=addPair(10);
-        var facts=[{q:p.a+" + "+p.b+" = ?",a:p.sum},{q:p.b+" + "+p.a+" = ?",a:p.sum},
-                   {q:p.sum+" - "+p.a+" = ?",a:p.b},{q:p.sum+" - "+p.b+" = ?",a:p.a}];
-        var f=pick(facts);
-        return {unit:3,title:"บ้านความสัมพันธ์ บวก-ลบ",prompt:f.q,visual:bondVisual(p.sum,p.a,p.b),
-          input:{type:"pad",max:10},answer:f.a,explanation:"ครอบครัวจำนวน "+p.a+", "+p.b+", "+p.sum}; }
-      if(type===6){ // เลือกเครื่องหมาย + หรือ -
+        var f=pick([{q:p.sum+" - "+p.a+" = ?",a:p.b},{q:p.sum+" - "+p.b+" = ?",a:p.a}]);
+        return {unit:3,title:"บ้านความสัมพันธ์ บวก-ลบ",prompt:f.q,visual:bondVisual(p.sum,p.a,p.b),input:{type:"pad",max:10},answer:f.a,explanation:"ครอบครัวจำนวน "+p.a+", "+p.b+", "+p.sum}; }
+      if(type===7){ // เลือกเครื่องหมาย
         var makePlus=Math.random()>0.5, a,b,c;
-        if(makePlus){ var p=addPair(10); a=p.a; b=p.b; c=p.sum; }
-        else { var s=subPair(10); a=s.t; b=s.k; c=s.l; }
-        return {unit:3,title:"เติมเครื่องหมาย",prompt:a+"  ⬜  "+b+"  =  "+c,visual:"",
-          input:{type:"operator"},answer:makePlus?"+":"-",explanation:a+" "+(makePlus?"+":"-")+" "+b+" = "+c}; }
-      var s=subPair(10), st=pickStory();
+        if(makePlus){ var pp=addPair(10); a=pp.a; b=pp.b; c=pp.sum; } else { var ss=subPair(10); a=ss.t; b=ss.k; c=ss.l; }
+        return {unit:3,title:"เติมเครื่องหมาย",prompt:a+"  ⬜  "+b+"  =  "+c,visual:"",input:{type:"operator"},answer:makePlus?"+":"-",explanation:a+" "+(makePlus?"+":"-")+" "+b+" = "+c}; }
+      var st=pickStory();
       return {unit:3,title:"โจทย์ปัญหาการลบ",prompt:"มี"+st.name+" "+s.t+" ชิ้น ให้เพื่อนไป "+s.k+" ชิ้น เหลือกี่ชิ้น?",
         visual:emojiGrid(s.t,st.emoji),input:{type:"pad",max:10},answer:s.l,explanation:s.t+" - "+s.k+" = "+s.l};
     }
@@ -392,74 +412,70 @@
       if(type===2){ var n=rand(11,20);
         return {unit:4,title:"สิบกับหน่วย",prompt:"10 + "+(n-10)+" = ?",visual:tenFrame(n),
           input:{type:"pad",max:20},answer:n,explanation:"10 + "+(n-10)+" = "+n}; }
-      if(type===3){ var n=rand(11,20); // รูปกระจาย ย้อนกลับ
-        return {unit:4,title:"การเขียนแบบกระจาย",prompt:n+" = 10 + ⬜",visual:"",
-          input:{type:"pad",max:10},answer:n-10,explanation:n+" = 10 + "+(n-10)}; }
-      if(type===4){ // เปรียบเทียบ (บางครั้งใช้ 10+x)
-        var a=rand(11,20),b=rand(11,20), useExpr=Math.random()>0.5;
+      if(type===3){ var n=rand(11,20), rev=Math.random()>0.5; // รูปกระจาย 2 ทิศ
+        return rev
+          ? {unit:4,title:"การเขียนแบบกระจาย",prompt:n+" = ⬜ + "+(n-10),visual:"",input:{type:"pad",max:20},answer:10,explanation:n+" = 10 + "+(n-10)}
+          : {unit:4,title:"การเขียนแบบกระจาย",prompt:n+" = 10 + ⬜",visual:"",input:{type:"pad",max:10},answer:n-10,explanation:n+" = 10 + "+(n-10)}; }
+      if(type===4){ var a=rand(11,20),b=rand(11,20), useExpr=Math.random()>0.5;
         var right=useExpr?("10 + "+(b-10)):b;
         return {unit:4,title:"เปรียบเทียบ 11-20",prompt:a+"  ⬜  "+right,visual:"",
           input:{type:"compare"},answer:compareSymbol(a,b),explanation:a+" "+compareSymbol(a,b)+" "+b}; }
-      if(type===5){ var base=rand(11,16), asc=Math.random()>0.5;
-        var nums=shuffle([base,base+1,base+2,base+3]);
+      if(type===5){ var asc=Math.random()>0.5, nums=distinctNums(4,11,20);
         return {unit:4,title:"เรียงลำดับ 11-20",prompt:asc?"เรียงจากน้อยไปมาก":"เรียงจากมากไปน้อย",visual:"",
           input:{type:"order",items:nums,asc:asc},answer:"",explanation:"เรียงถูกต้อง"}; }
-      var n=rand(12,19), next=Math.random()>0.5;
-      return {unit:4,title:next?"มากกว่าอยู่ 1":"น้อยกว่าอยู่ 1",
-        prompt:(next?"จำนวนที่มากกว่า "+n+" อยู่ 1":"จำนวนที่น้อยกว่า "+n+" อยู่ 1")+" คือเท่าไร?",visual:"",
-        input:{type:"pad",max:20},answer:next?n+1:n-1,explanation:"คำตอบคือ "+(next?n+1:n-1)};
+      // เติมจำนวนที่หายไป / นับทีละ 2 ในช่วง 11-20
+      var step=Math.random()>0.5?2:1, start=rand(11,20-step*3), s=seqMissing(start,step,4);
+      return {unit:4,title:step===2?"นับเพิ่มทีละ 2":"เติมจำนวนที่หายไป",prompt:s.shown.join("   ,   "),visual:"",
+        input:{type:"pad",max:20},answer:s.ans,explanation:"ลำดับคือ "+s.nums.join(" , ")};
     }
 
     // ---- หน่วย 5 : บวกไม่เกิน 20 ----
     function genUnit5(){
       var type=rand(1,5);
-      if(type===1){ var a=rand(5,15), b=rand(1,20-a);
-        return {unit:5,title:"การบวกไม่เกิน 20",prompt:a+" + "+b+" = ?",visual:"",
-          input:{type:"pad",max:20},answer:a+b,explanation:a+" + "+b+" = "+(a+b)}; }
-      if(type===2){ // บวกสามจำนวน
-        var a=rand(1,7),b=rand(1,7),c=rand(1,Math.max(1,20-a-b));
+      if(type===1){ var p=addPair(20,11); // ผลบวก 11-20 มักทดข้ามสิบ
+        return {unit:5,title:"การบวกไม่เกิน 20",prompt:p.a+" + "+p.b+" = ?",visual:"",
+          input:{type:"pad",max:20},answer:p.sum,explanation:p.a+" + "+p.b+" = "+p.sum}; }
+      if(type===2){ // บวกสามจำนวน (แต่ละตัว >= 2)
+        var a=rand(2,7),b=rand(2,7),c=rand(2,Math.max(2,20-a-b));
         return {unit:5,title:"การบวกสามจำนวน",prompt:a+" + "+b+" + "+c+" = ?",visual:"",
           input:{type:"pad",max:20},answer:a+b+c,explanation:a+" + "+b+" + "+c+" = "+(a+b+c)}; }
-      if(type===3){ var sum=rand(11,20), a=rand(1,sum-1), b=sum-a;
-        return {unit:5,title:"เติมตัวไม่ทราบค่า",prompt:a+" + ⬜ = "+sum,visual:"",
-          input:{type:"pad",max:20},answer:b,explanation:a+" + "+b+" = "+sum}; }
-      if(type===4){ // เปรียบเทียบผลบวก
-        var a=rand(3,12),b=rand(1,8),c=rand(3,12),d=rand(1,8);
-        return {unit:5,title:"เปรียบเทียบผลบวก",prompt:a+" + "+b+"  ⬜  "+c+" + "+d,visual:"",
-          input:{type:"compare"},answer:compareSymbol(a+b,c+d),explanation:(a+b)+" "+compareSymbol(a+b,c+d)+" "+(c+d)}; }
-      var a=rand(6,14), b=rand(1,20-a), st=pickStory();
-      return {unit:5,title:"โจทย์ปัญหาการบวก",prompt:"มี"+st.name+" "+a+" ชิ้น ได้เพิ่ม "+b+" ชิ้น รวมกี่ชิ้น?",visual:"",
-        input:{type:"pad",max:20},answer:a+b,explanation:a+" + "+b+" = "+(a+b)};
+      if(type===3){ var p=addPair(20,11), front=Math.random()>0.5;
+        return {unit:5,title:"เติมตัวไม่ทราบค่า",prompt:front?"⬜ + "+p.b+" = "+p.sum:p.a+" + ⬜ = "+p.sum,visual:"",
+          input:{type:"pad",max:20},answer:front?p.a:p.b,explanation:p.a+" + "+p.b+" = "+p.sum}; }
+      if(type===4){ var x=addPair(20,8), y=addPair(20,8);
+        return {unit:5,title:"เปรียบเทียบผลบวก",prompt:x.a+" + "+x.b+"  ⬜  "+y.a+" + "+y.b,visual:"",
+          input:{type:"compare"},answer:compareSymbol(x.sum,y.sum),explanation:x.sum+" "+compareSymbol(x.sum,y.sum)+" "+y.sum}; }
+      var p=addPair(20,11), st=pickStory();
+      return {unit:5,title:"โจทย์ปัญหาการบวก",prompt:"มี"+st.name+" "+p.a+" ชิ้น ได้เพิ่มอีก "+p.b+" ชิ้น รวมมีกี่ชิ้น?",visual:"",
+        input:{type:"pad",max:20},answer:p.sum,explanation:p.a+" + "+p.b+" = "+p.sum};
     }
 
     // ---- หน่วย 6 : ลบไม่เกิน 20 ----
     function genUnit6(){
-      var type=rand(1,5);
-      if(type===1){ var t=rand(11,20), k=rand(1,t-1);
-        return {unit:6,title:"การลบไม่เกิน 20",prompt:t+" - "+k+" = ?",visual:"",
-          input:{type:"pad",max:20},answer:t-k,explanation:t+" - "+k+" = "+(t-k)}; }
-      if(type===2){ // ความสัมพันธ์บวก-ลบ
-        var a=rand(4,12), b=rand(3,8), sum=a+b>20?20:a+b; b=sum-a;
-        return {unit:6,title:"ความสัมพันธ์ บวก-ลบ",prompt:"ถ้า "+a+" + "+b+" = "+sum+" แล้ว "+sum+" - "+a+" = ?",visual:"",
-          input:{type:"pad",max:20},answer:b,explanation:sum+" - "+a+" = "+b}; }
-      if(type===3){ var t=rand(11,20), l=rand(1,t-1), k=t-l;
-        return {unit:6,title:"เติมตัวไม่ทราบค่า",prompt:t+" - ⬜ = "+l,visual:"",
-          input:{type:"pad",max:20},answer:k,explanation:t+" - "+k+" = "+l}; }
-      if(type===4){ // เลือกเครื่องหมาย
-        var makePlus=Math.random()>0.5, a,b,c;
-        if(makePlus){ a=rand(6,12); b=rand(1,20-a); c=a+b; }
-        else { a=rand(11,20); b=rand(1,a-1); c=a-b; }
-        return {unit:6,title:"เติมเครื่องหมาย",prompt:a+"  ⬜  "+b+"  =  "+c,visual:"",
-          input:{type:"operator"},answer:makePlus?"+":"-",explanation:a+" "+(makePlus?"+":"-")+" "+b+" = "+c}; }
-      var t=rand(12,20), k=rand(1,t-1), st=pickStory();
-      return {unit:6,title:"โจทย์ปัญหาการลบ",prompt:"มี"+st.name+" "+t+" ชิ้น ใช้ไป "+k+" ชิ้น เหลือกี่ชิ้น?",visual:"",
-        input:{type:"pad",max:20},answer:t-k,explanation:t+" - "+k+" = "+(t-k)};
+      var type=rand(1,6);
+      var s=subPair(20,12);
+      if(type===1)
+        return {unit:6,title:"การลบไม่เกิน 20",prompt:s.t+" - "+s.k+" = ?",visual:"",input:{type:"pad",max:20},answer:s.l,explanation:s.t+" - "+s.k+" = "+s.l};
+      if(type===2){ var p=addPair(20,11);
+        return {unit:6,title:"ความสัมพันธ์ บวก-ลบ",prompt:"ถ้า "+p.a+" + "+p.b+" = "+p.sum+" แล้ว "+p.sum+" - "+p.a+" = ?",visual:"",
+          input:{type:"pad",max:20},answer:p.b,explanation:p.sum+" - "+p.a+" = "+p.b}; }
+      if(type===3)
+        return {unit:6,title:"เติมตัวลบ",prompt:s.t+" - ⬜ = "+s.l,visual:"",input:{type:"pad",max:20},answer:s.k,explanation:s.t+" - "+s.k+" = "+s.l};
+      if(type===4) // เติมตัวตั้ง (คิดย้อน)
+        return {unit:6,title:"เติมตัวตั้ง",prompt:"⬜ - "+s.k+" = "+s.l,visual:"",input:{type:"pad",max:20},answer:s.t,explanation:s.t+" - "+s.k+" = "+s.l};
+      if(type===5){ // โจทย์ปัญหาสองขั้นตอน (บวกแล้วลบ)
+        var start=rand(10,15), add=rand(2,20-start), give=rand(2,start+add-1), ans=start+add-give, st=pickStory();
+        return {unit:6,title:"โจทย์ปัญหาสองขั้นตอน",prompt:"มี"+st.name+" "+start+" ชิ้น ซื้อเพิ่ม "+add+" ชิ้น แล้วให้เพื่อนไป "+give+" ชิ้น เหลือกี่ชิ้น?",visual:"",
+          input:{type:"pad",max:20},answer:ans,explanation:start+" + "+add+" - "+give+" = "+ans}; }
+      var st=pickStory();
+      return {unit:6,title:"โจทย์ปัญหาการลบ",prompt:"มี"+st.name+" "+s.t+" ชิ้น ใช้ไป "+s.k+" ชิ้น เหลือกี่ชิ้น?",visual:"",
+        input:{type:"pad",max:20},answer:s.l,explanation:s.t+" - "+s.k+" = "+s.l};
     }
 
     // ---- หน่วย 7 : รูปเรขาคณิต ----
     function shapeBox(html){ return '<div class="w-28 h-28 mx-auto">'+html+'</div>'; }
     function genUnit7(){
-      var type=rand(1,5);
+      var type=rand(1,6);
       if(type===1){ // ชื่อรูป 2 มิติ
         var s=pick(shapes2D), col=pick(COLORS);
         var opts=[s.name].concat(shuffle(shapes2D.filter(function(x){return x.key!==s.key;})).slice(0,3).map(function(x){return x.name;}));
@@ -472,16 +488,16 @@
         var opts=all.map(function(x){ return {html:shapeBox(svg2D(x.key,pick(COLORS))),value:x.name}; });
         return {unit:7,title:"หารูปตามชื่อ",prompt:"แตะรูป"+s.name,visual:"",
           input:{type:"choice",style:"shape",options:opts},answer:s.name,explanation:"นี่คือ"+s.name}; }
-      if(type===3){ // นับรูปสามเหลี่ยม (นับรูปชนิดหนึ่ง)
+      if(type===3){ // นับรูปชนิดหนึ่ง (ปนหลายรูป)
         var target=pick(shapes2D);
-        var tCount=rand(2,5), oCount=rand(2,5);
+        var tCount=rand(2,5), oCount=rand(3,6);
         var arr=[];
         for(var i=0;i<tCount;i++) arr.push(target.key);
         var pool=shapes2D.filter(function(x){return x.key!==target.key;});
         for(var j=0;j<oCount;j++) arr.push(pick(pool).key);
         arr=shuffle(arr);
         var vis='<div class="bg-white rounded-2xl border border-slate-200 p-2 flex flex-wrap justify-center gap-1">'+
-          arr.map(function(k){ return '<div class="w-14 h-14">'+svg2D(k,pick(COLORS))+'</div>'; }).join("")+'</div>';
+          arr.map(function(k){ return '<div class="w-12 h-12">'+svg2D(k,pick(COLORS))+'</div>'; }).join("")+'</div>';
         return {unit:7,title:"นับรูปเรขาคณิต",prompt:"มี"+target.name+"กี่รูป?",visual:vis,
           input:{type:"pad",max:10},answer:tCount,explanation:"มี"+target.name+" "+tCount+" รูป"}; }
       if(type===4){ // ชื่อรูป 3 มิติ
@@ -489,6 +505,14 @@
         var opts=[s.name].concat(shuffle(shapes3D.filter(function(x){return x.key!==s.key;})).slice(0,3).map(function(x){return x.name;}));
         return {unit:7,title:"รูปเรขาคณิต 3 มิติ",prompt:"รูปทรงนี้ชื่ออะไร?",visual:shapeBox(svg3D(s.key,col)),
           input:{type:"choice",style:"text",options:shuffle(opts)},answer:s.name,explanation:"นี่คือ"+s.name}; }
+      if(type===5){ // สมบัติของรูป (เชิงเหตุผล)
+        var props=[{q:"รูปใดมี 3 มุม 3 ด้าน?",key:"triangle"},{q:"รูปใดมี 4 ด้านยาวเท่ากันทุกด้าน?",key:"square"},{q:"รูปใดไม่มีมุมเลย?",key:"circle"}];
+        var pr=pick(props);
+        var target=shapes2D.filter(function(x){return x.key===pr.key;})[0];
+        var others=shuffle(shapes2D.filter(function(x){return x.key!==pr.key;})).slice(0,3);
+        var all=shuffle([target].concat(others));
+        var opts=all.map(function(x){ return {html:shapeBox(svg2D(x.key,pick(COLORS))),value:x.name}; });
+        return {unit:7,title:"สมบัติของรูป",prompt:pr.q,visual:"",input:{type:"choice",style:"shape",options:opts},answer:target.name,explanation:"คือ"+target.name}; }
       // แตะรูปทรง 3 มิติ ตามชื่อ
       var s=pick(shapes3D);
       var others=shuffle(shapes3D.filter(function(x){return x.key!==s.key;})).slice(0,3);
