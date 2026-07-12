@@ -136,13 +136,24 @@
       spoken = spoken.replace(/(\d+)\s*\+\s*(\d+)/g, "$1 รวมกับ $2");
       spoken = spoken.replace(/(\d+)\s*-\s*(\d+)/g, "$1 เอาออก $2");
       return spoken
+        .replace(/ผลบวก/g, "ผลรวม")
+        .replace(/การบวก/g, "การรวม")
+        .replace(/บวกจำนวน/g, "รวมจำนวน")
+        .replace(/บวกจากรูปภาพ/g, "รวมจากรูปภาพ")
+        .replace(/สลับที่การบวก/g, "สลับที่การรวม")
+        .replace(/โจทย์ปัญหาการบวก/g, "โจทย์ปัญหาการรวม")
+        .replace(/ต้องบวก/g, "ต้องรวมกับ")
+        .replace(/บวก/g, "รวมกับ")
         .replace(/การลบ/g, "การเอาออก")
         .replace(/ผลลบ/g, "ผลที่เหลือ")
         .replace(/ลบจำนวน/g, "โจทย์เอาออก")
         .replace(/โจทย์ปัญหาการลบ/g, "โจทย์ปัญหาการเอาออก")
+        .replace(/ลบ/g, "เอาออก")
         .replace(/=/g, " เท่ากับ ")
         .replace(/>/g, " มากกว่า ")
         .replace(/</g, " น้อยกว่า ")
+        .replace(/ข้อใด\?/g, "ข้อใด")
+        .replace(/เครื่องหมายใด\?/g, "เครื่องหมายใด")
         .replace(/\?/g, " อะไร ")
         .replace(/___/g, " เติมเครื่องหมาย ");
     }
@@ -567,7 +578,7 @@
     function playQuestionAudio() {
       if (!quiz[current]) return;
       var q = quiz[current];
-      safeSpeak(speakMathText(q.title + ". " + q.prompt), "th-TH", 0.85);
+      safeSpeak(speakMathText(q.prompt), "th-TH", 0.85);
     }
 
     function loadQuestion() {
