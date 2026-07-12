@@ -292,7 +292,7 @@
         return makeQuestion(1, "เปรียบเทียบจำนวน", a + " ___ " + b + " ควรใส่เครื่องหมายใด?", compareSymbol(a,b), shuffle([">","<","="]), "", a + " " + compareSymbol(a,b) + " " + b);
       }
       if (type === 4) {
-        var total = rand(2, 10), p = rand(0, total), q = total - p;
+        var total = rand(4, 10), p = rand(1, total - 1), q = total - p;
         return makeQuestion(1, "ส่วนย่อย-ส่วนรวม", p + " + " + q + " = ?", total, uniqOptions(total, 0, 10, 4), partWholeQuestion(total, p, q, "total"), p + " รวมกับ " + q + " ได้ " + total);
       }
       if (type === 5) {
@@ -323,9 +323,34 @@
       return html + '</div>';
     }
 
+    function hardAddPair() {
+      var sum = rand(6, 10);
+      var a = rand(2, sum - 2);
+      var b = sum - a;
+      return {a: a, b: b, result: sum};
+    }
+
+    function hardSubPair() {
+      var total = rand(6, 10);
+      var take = rand(2, total - 2);
+      var left = total - take;
+      return {total: total, take: take, left: left};
+    }
+
+    function hardAddExpr() {
+      var pair = hardAddPair();
+      return {a: pair.a, b: pair.b, op: "+"};
+    }
+
+    function hardTeenPart() {
+      var n = rand(12, 19);
+      return {n: n, ones: n - 10};
+    }
+
     function genUnit2() {
       var type = rand(1, 7);
-      var a = rand(0, 9), b = rand(0, 10 - a), sum = a + b;
+      var pair = hardAddPair();
+      var a = pair.a, b = pair.b, sum = pair.result;
       if (type === 1) {
         return makeQuestion(2, "บวกจำนวน", a + " + " + b + " = ?", sum, uniqOptions(sum, 0, 10, 4), "", a + " + " + b + " = " + sum);
       }
@@ -333,21 +358,23 @@
         return makeQuestion(2, "บวกจากรูปภาพ", "กลุ่มที่ 1 รวมกับกลุ่มที่ 2 มีทั้งหมดกี่ชิ้น?", sum, uniqOptions(sum, 0, 10, 4), twoGroups(a, b, pick(icons), pick(icons)), a + " + " + b + " = " + sum);
       }
       if (type === 3) {
-        var total = rand(1, 10), known = rand(0, total), miss = total - known;
+        var hidden = hardAddPair();
+        var total = hidden.result, known = hidden.a, miss = hidden.b;
         return makeQuestion(2, "เติมตัวไม่ทราบค่า", known + " + ? = " + total, miss, uniqOptions(miss, 0, 10, 4), partWholeQuestion(total, known, miss, "b"), known + " ต้องบวก " + miss + " จึงได้ " + total);
       }
       if (type === 4) {
         return makeQuestion(2, "สลับที่การบวก", b + " + " + a + " = ?", sum, uniqOptions(sum, 0, 10, 4), "", "การบวกสลับที่ได้ " + sum + " เหมือนกัน");
       }
       if (type === 5) {
-        var target = rand(2, 10);
-        var x = rand(0, target);
-        var y = target - x;
+        var targetPair = hardAddPair();
+        var target = targetPair.result;
+        var x = targetPair.a;
+        var y = targetPair.b;
         return makeQuestion(2, "เลือกประโยคสัญลักษณ์", "ข้อใดมีผลบวกเท่ากับ " + target + "?", x + " + " + y, makeEquationOptions(x, y, "+", 10, target), "", x + " + " + y + " = " + target);
       }
       if (type === 6) {
-        var left = {a: rand(0, 5), b: rand(0, 5), op: "+"};
-        var right = {a: rand(0, 5), b: rand(0, 5), op: "+"};
+        var left = hardAddExpr();
+        var right = hardAddExpr();
         return makeQuestion(2, "เปรียบเทียบผลบวก", expressionText(left) + " ___ " + expressionText(right) + " ควรใส่เครื่องหมายใด?", compareSymbol(expressionValue(left), expressionValue(right)), shuffle([">","<","="]), "", expressionValue(left) + " " + compareSymbol(expressionValue(left), expressionValue(right)) + " " + expressionValue(right));
       }
       var thing = pick(["ลูกอม","ดินสอ","ขนม","ลูกบอล","ส้ม"]);
@@ -356,7 +383,8 @@
 
     function genUnit3() {
       var type = rand(1, 7);
-      var total = rand(0, 10), take = rand(0, total), left = total - take;
+      var sub = hardSubPair();
+      var total = sub.total, take = sub.take, left = sub.left;
       if (type === 1) {
         return makeQuestion(3, "ลบจำนวน", total + " - " + take + " = ?", left, uniqOptions(left, 0, 10, 4), "", total + " - " + take + " = " + left);
       }
@@ -367,13 +395,15 @@
         return makeQuestion(3, "เติมตัวไม่ทราบค่า", total + " - ? = " + left, take, uniqOptions(take, 0, 10, 4), partWholeQuestion(total, take, left, "a"), total + " ลบ " + take + " เหลือ " + left);
       }
       if (type === 4) {
-        var a = rand(0, 9), b = rand(0, 10 - a), sum = a + b;
+        var rel = hardAddPair();
+        var a = rel.a, b = rel.b, sum = rel.result;
         return makeQuestion(3, "ความสัมพันธ์บวกและลบ", sum + " - " + a + " = ?", b, uniqOptions(b, 0, 10, 4), partWholeQuestion(sum, a, b, "b"), "เพราะ " + a + " + " + b + " = " + sum);
       }
       if (type === 5) {
-        var target = rand(0, 9);
-        var remove = rand(0, 10 - target);
-        var start = target + remove;
+        var eqSub = hardSubPair();
+        var target = eqSub.left;
+        var remove = eqSub.take;
+        var start = eqSub.total;
         return makeQuestion(3, "เลือกประโยคสัญลักษณ์", "ข้อใดมีคำตอบเท่ากับ " + target + "?", start + " - " + remove, makeEquationOptions(start, remove, "-", 10, target), "", start + " - " + remove + " = " + target);
       }
       if (type === 6) {
@@ -392,7 +422,8 @@
         return makeQuestion(4, "อ่านจำนวน 11-20", "จำนวนนี้คือข้อใด?", n, uniqOptions(n, 11, 20, 4), tenFrame(n), "มี 10 กับอีก " + (n - 10) + " รวมเป็น " + n);
       }
       if (type === 2) {
-        var n2 = rand(11, 20), ones = n2 - 10;
+        var teen = hardTeenPart();
+        var n2 = teen.n, ones = teen.ones;
         return makeQuestion(4, "สิบกับหน่วย", "10 + " + ones + " = ?", n2, uniqOptions(n2, 11, 20, 4), tenFrame(n2), "10 + " + ones + " = " + n2);
       }
       if (type === 3) {
@@ -416,8 +447,16 @@
       var options = [answer];
       var guard = 0;
       while (options.length < 4 && guard < 80) {
-        var x = rand(0, max);
-        var y = op === "+" ? rand(0, max - x) : rand(0, x);
+        var x, y;
+        if (op === "+") {
+          var p = hardAddPair();
+          x = p.a;
+          y = p.b;
+        } else {
+          var s = hardSubPair();
+          x = s.total;
+          y = s.take;
+        }
         var text = x + " " + op + " " + y;
         var value = op === "+" ? x + y : x - y;
         if (value !== targetValue && options.indexOf(text) === -1) options.push(text);
@@ -427,9 +466,8 @@
     }
 
     function makeSubExpr() {
-      var a = rand(0, 10);
-      var b = rand(0, a);
-      return {a:a, b:b, op:"-"};
+      var pair = hardSubPair();
+      return {a: pair.total, b: pair.take, op:"-"};
     }
 
     function tenFrame(n) {
