@@ -31,6 +31,10 @@
             <div class="text-lg font-black">🎯 ทำรวมทุกหน่วย</div>
             <div class="text-xs font-semibold text-sky-100">สุ่มหน่วยละ 6 ข้อ รวม 42 ข้อ พร้อมสรุปแยกหน่วย</div>
           </button>
+          <button onclick="startQuiz('hard')" class="bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-600 hover:to-orange-600 text-white text-left rounded-2xl p-4 shadow-md active:scale-95 transition">
+            <div class="text-lg font-black">🔥 โหมดยาก (คิดในใจ)</div>
+            <div class="text-xs font-semibold text-orange-50">คละทุกเรื่อง ไม่มีรูปช่วย · คิดสองขั้น หาตัวที่หาย เลือกข้อที่ถูก 20 ข้อ</div>
+          </button>
           <div id="unit-buttons" class="grid gap-2.5"></div>
         </div>
 
@@ -525,6 +529,58 @@
     var generators={1:genUnit1,2:genUnit2,3:genUnit3,4:genUnit4,5:genUnit5,6:genUnit6,7:genUnit7};
 
     /* =====================================================================
+       โหมดยาก — ยากอย่างมีนัยสำคัญ ไม่ใช่แค่ตัวเลขใหญ่ขึ้น:
+       1) คละทุกเรื่องในชุดเดียว เดาไม่ได้ว่าจะบวกหรือลบ
+       2) ไม่มีรูป/ten-frame ช่วย ต้องคิดในใจล้วนๆ
+       3) หลายขั้นตอน (a + b - c, โจทย์สองขั้น)
+       4) หาตัวไม่ทราบค่าได้ทุกตำแหน่ง (⬜ - 5 = 7)
+       5) ประเมินแล้วตัดสิน (เลือกประโยคที่ถูก, เทียบสองนิพจน์)
+       6) ใช้ช่วงเลขบนสุดของระดับชั้น เน้นทดข้ามสิบ
+    ===================================================================== */
+    function hMixed(){ // คิดสองขั้น บวกแล้วลบ / ลบแล้วบวก
+      var a,b,c,ans,expr;
+      if(Math.random()>0.5){ var p=addPair(20,11); a=p.a; b=p.b; c=rand(2,a+b-1); ans=a+b-c; expr=a+" + "+b+" - "+c; }
+      else { a=rand(12,20); b=rand(2,a-2); c=rand(2,20-(a-b)); ans=a-b+c; expr=a+" - "+b+" + "+c; }
+      return {unit:5,title:"คิดสองขั้น (บวก-ลบ)",prompt:expr+" = ?",visual:"",input:{type:"pad",max:20},answer:ans,explanation:expr+" = "+ans};
+    }
+    function hReverse(){ // หาตัวไม่ทราบค่าได้ทุกตำแหน่ง
+      var t=rand(1,4), p=addPair(20,11), s=subPair(20,12);
+      function mk(prompt,ans,ex){ return {unit:6,title:"หาตัวที่หายไป",prompt:prompt,visual:"",input:{type:"pad",max:20},answer:ans,explanation:ex}; }
+      if(t===1) return mk("⬜ + "+p.b+" = "+p.sum, p.a, p.a+" + "+p.b+" = "+p.sum);
+      if(t===2) return mk(p.a+" + ⬜ = "+p.sum, p.b, p.a+" + "+p.b+" = "+p.sum);
+      if(t===3) return mk("⬜ - "+s.k+" = "+s.l, s.t, s.t+" - "+s.k+" = "+s.l);
+      return mk(s.t+" - ⬜ = "+s.l, s.k, s.t+" - "+s.k+" = "+s.l);
+    }
+    function hCompareMixed(){ // เทียบค่าของสองนิพจน์ (คละบวก-ลบ)
+      function expr(){ if(Math.random()>0.5){ var p=addPair(20,8); return {t:p.a+" + "+p.b, v:p.sum}; } var s=subPair(20,10); return {t:s.t+" - "+s.k, v:s.l}; }
+      var L=expr(), R=expr();
+      return {unit:5,title:"เปรียบเทียบค่า",prompt:L.t+"  ⬜  "+R.t,visual:"",input:{type:"compare"},answer:compareSymbol(L.v,R.v),explanation:L.v+" "+compareSymbol(L.v,R.v)+" "+R.v};
+    }
+    function hTruth(){ // เลือกประโยคที่ "ถูกต้อง" (ตัวลวงเป็นประโยคที่ผิด)
+      function eq(correct){
+        if(Math.random()>0.5){ var p=addPair(20,8); var r=correct?p.sum:p.sum+(rand(0,1)?1:2); return {s:p.a+" + "+p.b+" = "+r, ok:correct}; }
+        var s=subPair(20,8); var r2=correct?s.l:s.l+(rand(0,1)?1:2); return {s:s.t+" - "+s.k+" = "+r2, ok:correct};
+      }
+      var correct=eq(true).s, opts=[correct], g=0;
+      while(opts.length<4 && g<120){ var w=eq(false).s; if(opts.indexOf(w)===-1) opts.push(w); g++; }
+      return {unit:2,title:"ข้อใดถูกต้อง",prompt:"ประโยคใดถูกต้อง?",visual:"",input:{type:"choice",style:"text",options:shuffle(opts)},answer:correct,explanation:correct+" ถูกต้อง"};
+    }
+    function hSeq(){ // ลำดับ นับทีละ 2 หรือ 3 เว้นช่องกลาง
+      var step=rand(2,3), start=rand(1,20-step*3), s=seqMissing(start,step,4);
+      return {unit:4,title:"เติมลำดับ (นับทีละ "+step+")",prompt:s.shown.join("   ,   "),visual:"",input:{type:"pad",max:20},answer:s.ans,explanation:"ลำดับคือ "+s.nums.join(" , ")};
+    }
+    function hThree(){ // บวกสามจำนวน ค่ามาก
+      var a=rand(3,8),b=rand(3,8),c=rand(2,Math.max(2,20-a-b));
+      return {unit:5,title:"บวกสามจำนวน",prompt:a+" + "+b+" + "+c+" = ?",visual:"",input:{type:"pad",max:20},answer:a+b+c,explanation:a+" + "+b+" + "+c+" = "+(a+b+c)};
+    }
+    function hWord2(){ // โจทย์ปัญหาสองขั้น ต้องตีความว่าบวกหรือลบเอง
+      var start=rand(8,15), add=rand(3,20-start), give=rand(3,start+add-2), ans=start+add-give, st=pickStory();
+      return {unit:6,title:"โจทย์ปัญหาสองขั้น",prompt:"มี"+st.name+" "+start+" ชิ้น ได้เพิ่มอีก "+add+" ชิ้น แล้วแบ่งให้เพื่อน "+give+" ชิ้น เหลือกี่ชิ้น?",visual:"",input:{type:"pad",max:20},answer:ans,explanation:start+" + "+add+" - "+give+" = "+ans};
+    }
+    var hardGens=[hMixed,hMixed,hMixed,hReverse,hReverse,hCompareMixed,hTruth,hTruth,hSeq,hThree,hWord2,hWord2];
+    function genHard(){ return pick(hardGens)(); }
+
+    /* =====================================================================
        สร้างชุดข้อสอบ
     ===================================================================== */
     var quiz=[], current=0, score=0, selectedMode="all", unitScores={}, answered=false;
@@ -534,6 +590,10 @@
       if(mode==="all"){
         ALL_UNITS.forEach(function(u){ for(var i=0;i<6;i++) result.push(generators[u]()); });
         return shuffle(result);
+      }
+      if(mode==="hard"){
+        for(var h=0;h<20;h++) result.push(genHard());
+        return result;
       }
       for(var i=0;i<12;i++) result.push(generators[mode]());
       return result;
@@ -568,7 +628,7 @@
       document.getElementById("score-display").innerText=score;
       document.getElementById("question-number").innerText=current+1;
       document.getElementById("progress-bar").style.width=(current/quiz.length*100)+"%";
-      document.getElementById("unit-badge").innerText="หน่วย "+q.unit+": "+unitNames[q.unit];
+      document.getElementById("unit-badge").innerText = selectedMode==="hard" ? "🔥 โหมดยาก · "+q.title : "หน่วย "+q.unit+": "+unitNames[q.unit];
       document.getElementById("question-title").innerText=q.title;
       document.getElementById("question-prompt").innerText=q.prompt;
       document.getElementById("question-visual").innerHTML=q.visual||"";
@@ -819,6 +879,13 @@
       document.getElementById("result-icon").innerText=ratio===1?"👑":ratio>=0.8?"🏆":ratio>=0.6?"✨":"💪";
       var summary=document.getElementById("unit-summary");
       summary.innerHTML="";
+      if(selectedMode==="hard"){
+        var row=document.createElement("div");
+        row.className="bg-rose-50 border border-rose-200 rounded-xl p-3 flex justify-between items-center";
+        row.innerHTML='<span class="font-bold text-rose-700 text-sm">🔥 โหมดยาก · คิดในใจ</span><span class="font-black text-rose-700">'+score+'/'+quiz.length+'</span>';
+        summary.appendChild(row);
+        return;
+      }
       ALL_UNITS.forEach(function(u){
         if(unitScores[u].total>0){
           var row=document.createElement("div");
