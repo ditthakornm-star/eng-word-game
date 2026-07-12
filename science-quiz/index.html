@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>แบบทดสอบวิทยาศาสตร์ ป.1 — ตัวเรา พืช และสัตว์</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { -webkit-text-size-adjust: 100%; }
+    button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    .pop { animation: pop .18s ease; }
+    @keyframes pop { 0% { transform: scale(.9); } 60% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    .shake { animation: shake .3s; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+  </style>
+</head>
+<body class="min-h-screen bg-emerald-50 p-3 font-sans select-none">
+  <main class="max-w-lg mx-auto">
+    <!-- ================= HOME ================= -->
+    <section id="home-screen" class="min-h-screen flex flex-col justify-center">
+      <div class="bg-white border-4 border-emerald-200 rounded-3xl shadow-xl p-5">
+        <div class="text-center mb-5">
+          <div class="text-5xl mb-2">🔬</div>
+          <p class="text-xs font-black text-emerald-500 uppercase tracking-wider">Grade 1 Science</p>
+          <h1 class="text-2xl font-black text-slate-800">แบบทดสอบวิทยาศาสตร์ ป.1</h1>
+          <p class="text-sm font-bold text-slate-500 mt-1">ตัวเรา พืช และสัตว์ · สุ่มใหม่ทุกครั้ง · แนวข้อสอบ</p>
+        </div>
+
+        <div class="grid gap-2.5 mb-4">
+          <button onclick="startQuiz('all')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-left rounded-2xl p-4 shadow-md active:scale-95 transition">
+            <div class="text-lg font-black">🎯 ทำรวมทุกบท</div>
+            <div class="text-xs font-semibold text-emerald-100">สุ่มบทละ 7 ข้อ รวม 21 ข้อ พร้อมสรุปแยกบท</div>
+          </button>
+          <div id="lesson-buttons" class="grid gap-2.5"></div>
+        </div>
+
+        <a href="../" class="block text-center text-xs font-bold text-slate-500 underline">กลับหน้าเลือกแบบฝึกหัด</a>
+      </div>
+    </section>
+
+    <!-- ================= QUIZ ================= -->
+    <section id="quiz-screen" class="hidden py-3">
+      <div class="bg-white border-4 border-emerald-200 rounded-3xl shadow-xl p-4">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <button onclick="goHome()" class="text-xs bg-slate-100 text-slate-700 font-bold px-3 py-2 rounded-full active:scale-95 transition">🏠 หน้าแรก</button>
+          <button onclick="restartSameMode()" class="text-xs bg-amber-100 text-amber-700 font-bold px-3 py-2 rounded-full active:scale-95 transition">สุ่มใหม่ 🔄</button>
+        </div>
+
+        <div class="flex items-center justify-between mb-3">
+          <span id="lesson-badge" class="bg-emerald-100 text-emerald-700 font-black px-3 py-1 rounded-full text-xs">บทที่ 1</span>
+          <span class="text-amber-500 font-black">⭐ <span id="score-display">0</span>/<span id="total-display">21</span></span>
+        </div>
+
+        <div class="w-full bg-slate-100 rounded-full h-2 mb-3 overflow-hidden">
+          <div id="progress-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+
+        <div class="text-center text-xs font-black text-slate-400 mb-2">
+          ข้อที่ <span id="question-number">1</span>/<span id="question-total">21</span>
+        </div>
+
+        <div id="question-card" class="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 mb-3">
+          <div id="question-visual" class="text-center"></div>
+          <p id="question-prompt" class="text-lg font-black text-center text-slate-800 leading-relaxed"></p>
+        </div>
+
+        <div id="answer-area" class="mb-3"></div>
+
+        <div id="feedback" class="hidden rounded-2xl p-3 mb-3 text-center font-bold"></div>
+
+        <button id="next-btn" onclick="nextQuestion()" class="hidden w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 rounded-2xl shadow-md active:scale-95 transition text-lg">ข้อถัดไป ➜</button>
+      </div>
+    </section>
+
+    <!-- ================= RESULT ================= -->
+    <section id="result-screen" class="hidden min-h-screen flex flex-col justify-center">
+      <div class="bg-white border-4 border-amber-300 rounded-3xl shadow-xl p-5 text-center">
+        <div id="result-icon" class="text-6xl mb-3">🏆</div>
+        <h2 class="text-2xl font-black text-slate-800 mb-2">สรุปคะแนน</h2>
+        <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 mb-4">
+          <div class="text-sm font-bold text-emerald-600">คะแนนรวม</div>
+          <div class="text-5xl font-black text-emerald-900"><span id="final-score">0</span>/<span id="final-total">21</span></div>
+        </div>
+        <div id="lesson-summary" class="space-y-2 text-left mb-5"></div>
+        <button onclick="restartSameMode()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 rounded-2xl shadow-md active:scale-95 transition mb-3">สุ่มโจทย์ใหม่อีกชุด</button>
+        <button onclick="goHome()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-black py-3 rounded-2xl active:scale-95 transition">กลับหน้าแรก</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* =====================================================================
+       ข้อมูลบทเรียน + คลังข้อสอบ
+       แต่ละข้อ: {q:คำถาม, v:อีโมจิประกอบ(ถ้ามี), o:[ตัวเลือก...ข้อแรกคือคำตอบถูก], ex:คำอธิบาย}
+    ===================================================================== */
+    var lessons = {
+      1: { name:"ตัวเรา (ร่างกาย)", emoji:"🧍", sub:"อวัยวะ หน้าที่ การดูแล ความปลอดภัย", bank:[
+        {q:"อวัยวะใดใช้มองเห็นสิ่งต่าง ๆ", v:"👁️", o:["ตา","หู","จมูก","ลิ้น"], ex:"ตาใช้มองเห็น"},
+        {q:"เมื่อได้ยินเสียงเพลง เราใช้อวัยวะใด", v:"👂", o:["หู","ตา","ปาก","มือ"], ex:"หูใช้ฟังเสียง"},
+        {q:"อวัยวะใดใช้ดมกลิ่นและหายใจ", v:"👃", o:["จมูก","ปาก","หู","ฟัน"], ex:"จมูกใช้ดมกลิ่นและหายใจ"},
+        {q:"เรารับรสเปรี้ยว หวาน เค็ม ด้วยอวัยวะใด", v:"👅", o:["ลิ้น","ฟัน","จมูก","คอ"], ex:"ลิ้นทำหน้าที่รับรส"},
+        {q:"อวัยวะใดช่วยเคี้ยวอาหารให้ละเอียด", v:"🦷", o:["ฟัน","ลิ้น","ริมฝีปาก","คอ"], ex:"ฟันใช้เคี้ยวอาหาร"},
+        {q:"อวัยวะใดต่อไปนี้เป็น “อวัยวะภายใน”", o:["หัวใจ","ตา","มือ","ผิวหนัง"], ex:"หัวใจอยู่ภายในร่างกาย"},
+        {q:"ข้อใด “ไม่ใช่” อวัยวะภายใน", o:["เท้า","ปอด","สมอง","ลำไส้"], ex:"เท้าเป็นอวัยวะภายนอก"},
+        {q:"อวัยวะใดทำหน้าที่สูบฉีดเลือดไปเลี้ยงร่างกาย", v:"🫀", o:["หัวใจ","ปอด","สมอง","กระเพาะอาหาร"], ex:"หัวใจสูบฉีดเลือด"},
+        {q:"อวัยวะใดช่วยให้เราหายใจ", v:"🫁", o:["ปอด","หัวใจ","กระเพาะอาหาร","ลำไส้"], ex:"ปอดใช้ในการหายใจ"},
+        {q:"อวัยวะใดทำหน้าที่คิดและสั่งการร่างกาย", v:"🧠", o:["สมอง","หัวใจ","ปอด","กระเพาะอาหาร"], ex:"สมองควบคุมการทำงานของร่างกาย"},
+        {q:"อาหารที่เรากินเข้าไปถูกย่อยที่อวัยวะใด", o:["กระเพาะอาหาร","ปอด","หัวใจ","สมอง"], ex:"กระเพาะอาหารย่อยอาหาร"},
+        {q:"อวัยวะใดปกคลุมร่างกายและช่วยป้องกันเชื้อโรค", o:["ผิวหนัง","ปอด","หัวใจ","ลิ้น"], ex:"ผิวหนังห่อหุ้มและปกป้องร่างกาย"},
+        {q:"เราใช้อวัยวะใดในการเดินและวิ่ง", v:"🦵", o:["ขาและเท้า","มือ","หู","ตา"], ex:"ขาและเท้าใช้เคลื่อนที่"},
+        {q:"ควรแปรงฟันอย่างน้อยวันละกี่ครั้ง", v:"🪥", o:["2 ครั้ง","1 ครั้ง","5 ครั้ง","ไม่ต้องแปรง"], ex:"ควรแปรงฟันอย่างน้อยวันละ 2 ครั้ง เช้าและก่อนนอน"},
+        {q:"การอ่านหนังสือในที่มีแสงสว่างเพียงพอ เป็นการดูแลอวัยวะใด", o:["ตา","หู","ฟัน","เท้า"], ex:"ช่วยถนอมสายตา"},
+        {q:"ข้อใดเป็นการดูแลรักษาดวงตาที่ถูกต้อง", o:["ไม่ใช้มือสกปรกขยี้ตา","อ่านหนังสือในที่มืด","จ้องจอนาน ๆ","ขยี้ตาแรง ๆ"], ex:"ไม่ควรขยี้ตาด้วยมือสกปรก"},
+        {q:"เพื่อไม่ให้หูเสีย เราไม่ควรทำสิ่งใด", o:["ฟังเสียงดังมาก ๆ","ล้างหูเบา ๆ","ไปหาหมอเมื่อหูเจ็บ","อุดหูเมื่อเสียงดัง"], ex:"เสียงดังเกินไปทำให้หูเสีย"},
+        {q:"ก่อนรับประทานอาหารทุกครั้งควรทำสิ่งใด", v:"🧼", o:["ล้างมือให้สะอาด","วิ่งเล่น","ดูโทรทัศน์","นอนพัก"], ex:"ล้างมือก่อนกินเพื่อไม่ให้เชื้อโรคเข้าสู่ร่างกาย"},
+        {q:"เมื่อขี่จักรยาน ควรสวมสิ่งใดเพื่อป้องกันศีรษะ", v:"🚴", o:["หมวกกันน็อก","หมวกแก๊ป","แว่นกันแดด","ถุงมือ"], ex:"หมวกกันน็อกช่วยป้องกันศีรษะเมื่อล้ม"},
+        {q:"เมื่ออากาศมีฝุ่นควันมาก ควรสวมอะไร", v:"😷", o:["หน้ากากอนามัย","แว่นตา","หมวก","รองเท้า"], ex:"หน้ากากช่วยกรองฝุ่นก่อนหายใจเข้า"},
+        {q:"การตัดเล็บและล้างมือให้สะอาด เป็นการดูแลอวัยวะใด", o:["มือ","ตา","หู","ฟัน"], ex:"ดูแลความสะอาดของมือ"},
+        {q:"ข้อใดเป็นอวัยวะภายในทั้งหมด", o:["หัวใจ ปอด สมอง","ตา หู จมูก","มือ ขา เท้า","ผม ฟัน ผิวหนัง"], ex:"หัวใจ ปอด สมอง อยู่ภายในร่างกาย"},
+        {q:"อวัยวะใดดูดซึมสารอาหารเข้าสู่ร่างกาย", o:["ลำไส้เล็ก","ปอด","หัวใจ","สมอง"], ex:"ลำไส้เล็กดูดซึมสารอาหาร"},
+        {q:"ถ้ามือเปื้อนสกปรก เราควรทำอย่างไรก่อนหยิบอาหาร", o:["ล้างมือด้วยสบู่","เช็ดกับเสื้อ","เป่าให้แห้ง","หยิบได้เลย"], ex:"ล้างมือด้วยสบู่ให้สะอาด"}
+      ]},
+      2: { name:"พืช", emoji:"🌱", sub:"ส่วนของพืช หน้าที่ ความสำคัญ ความหลากหลาย", bank:[
+        {q:"ส่วนใดของพืชอยู่ใต้ดินและดูดน้ำจากดิน", v:"🥕", o:["ราก","ใบ","ดอก","ผล"], ex:"รากดูดน้ำและธาตุอาหารจากดิน"},
+        {q:"ส่วนใดของพืชทำหน้าที่สร้างอาหาร", v:"🍃", o:["ใบ","ราก","ดอก","เมล็ด"], ex:"ใบสร้างอาหารให้พืช"},
+        {q:"ส่วนใดของพืชช่วยล่อแมลงให้มาผสมเกสร", v:"🌸", o:["ดอก","ราก","ลำต้น","ใบ"], ex:"ดอกมีสีสันและกลิ่นล่อแมลง"},
+        {q:"ส่วนใดของพืชห่อหุ้มเมล็ดเอาไว้", v:"🍎", o:["ผล","ใบ","ราก","ลำต้น"], ex:"ผลห่อหุ้มเมล็ด"},
+        {q:"ส่วนใดของพืชนำไปปลูกแล้วงอกเป็นต้นใหม่ได้", v:"🌰", o:["เมล็ด","ใบ","ดอก","ราก"], ex:"เมล็ดใช้ขยายพันธุ์"},
+        {q:"ส่วนใดของพืชชูกิ่ง ก้าน ใบ และลำเลียงน้ำ", v:"🌳", o:["ลำต้น","ราก","ดอก","ผล"], ex:"ลำต้นชูส่วนต่าง ๆ และลำเลียงน้ำ"},
+        {q:"ใบทำหน้าที่สร้างอาหาร หายใจ และทำสิ่งใด", v:"🍃", o:["คายน้ำ","ดูดน้ำ","ผสมเกสร","ยึดดิน"], ex:"ใบสร้างอาหาร หายใจ และคายน้ำ"},
+        {q:"ถ้าถอนต้นไม้จนไม่มีราก ต้นไม้จะเป็นอย่างไร", o:["เหี่ยวเฉาและตาย","โตเร็วขึ้น","ออกดอกมากขึ้น","ไม่เป็นอะไร"], ex:"ไม่มีรากจึงขาดน้ำและอาหาร ทำให้เหี่ยวเฉาและตาย"},
+        {q:"ถ้าเด็ดใบพืชออกจนหมด พืชจะเป็นอย่างไร", o:["ขาดอาหาร","แข็งแรงขึ้น","รากยาวขึ้น","ออกผลมากขึ้น"], ex:"ใบสร้างอาหาร ถ้าไม่มีใบพืชจะขาดอาหาร"},
+        {q:"เพราะเหตุใดพืชจึงต้องมีดอก", o:["เพื่อสืบพันธุ์","เพื่อดูดน้ำ","เพื่อยึดดิน","เพื่อหายใจ"], ex:"ดอกช่วยในการสืบพันธุ์และขยายพันธุ์"},
+        {q:"เมื่อนำเมล็ดไปปลูก ส่วนใดมักงอกออกมาเป็นส่วนแรก", o:["ราก","ดอก","ผล","ลำต้น"], ex:"รากงอกก่อนเพื่อดูดน้ำและยึดดิน"},
+        {q:"น้ำและธาตุอาหารจากรากถูกลำเลียงขึ้นไปด้วยส่วนใด", o:["ลำต้น","ดอก","ผล","เมล็ด"], ex:"ลำต้นเป็นทางลำเลียงน้ำและอาหาร"},
+        {q:"รากที่มีรากหลักขนาดใหญ่เพียงรากเดียว เรียกว่าอะไร", o:["รากแก้ว","รากฝอย","รากลอย","รากอากาศ"], ex:"รากแก้วเป็นรากหลักขนาดใหญ่"},
+        {q:"ข้อใดเป็นส่วนของพืชทั้งหมด", o:["ราก ลำต้น ใบ","ปีก ครีบ หาง","ตา หู จมูก","ขน เกล็ด เล็บ"], ex:"ราก ลำต้น ใบ เป็นส่วนของพืช"},
+        {q:"หน้าที่หลักของรากคือข้อใด", o:["ยึดลำต้นและดูดน้ำ","สร้างอาหาร","ล่อแมลง","ห่อหุ้มเมล็ด"], ex:"รากยึดลำต้นให้ตั้งอยู่และดูดน้ำ"},
+        {q:"สิ่งใดทำให้พืชโค่นล้มง่ายเมื่อลมแรง", o:["ไม่มีรากยึดดิน","มีใบมาก","มีดอกสวย","มีผลดก"], ex:"รากช่วยยึดลำต้น ถ้าไม่มีรากจะล้มง่าย"},
+        {q:"ผลของพืชมีประโยชน์อย่างไร", o:["ห่อหุ้มและปกป้องเมล็ด","ดูดน้ำจากดิน","สร้างอาหาร","ยึดลำต้น"], ex:"ผลห่อหุ้มเมล็ดไว้"},
+        {q:"พืชคายน้ำออกทางส่วนใดเป็นหลัก", o:["ใบ","ราก","ผล","เมล็ด"], ex:"พืชคายน้ำทางใบ"},
+        {q:"ข้อใดคือหน้าที่ของใบ", o:["สร้างอาหาร","ดูดน้ำจากดิน","ยึดลำต้นกับดิน","ห่อหุ้มเมล็ด"], ex:"ใบสร้างอาหารให้พืช"},
+        {q:"ต้นไม้ต่างชนิดกันมีรูปร่างใบ ดอก และผลเป็นอย่างไร", o:["แตกต่างกันหลากหลาย","เหมือนกันทุกต้น","ไม่มีเลย","เท่ากันเสมอ"], ex:"พืชมีความหลากหลาย รูปร่างต่างกัน"},
+        {q:"เมล็ดมีความสำคัญต่อพืชอย่างไร", o:["ใช้ขยายพันธุ์เป็นต้นใหม่","ดูดน้ำจากดิน","ล่อแมลง","คายน้ำ"], ex:"เมล็ดงอกเป็นต้นใหม่ได้"}
+      ]},
+      3: { name:"สัตว์", emoji:"🐾", sub:"อวัยวะ หน้าที่ การเคลื่อนที่ ผิวหนัง", bank:[
+        {q:"นกใช้ส่วนใดในการบิน", v:"🐦", o:["ปีก","ครีบ","ขา","หาง"], ex:"นกใช้ปีกบิน"},
+        {q:"ปลาใช้ส่วนใดในการว่ายน้ำ", v:"🐟", o:["ครีบ","ปีก","ขา","งวง"], ex:"ปลาใช้ครีบว่ายน้ำ"},
+        {q:"ช้างใช้ส่วนใดหยิบจับอาหารเข้าปาก", v:"🐘", o:["งวง","ปีก","ครีบ","เขา"], ex:"ช้างใช้งวงหยิบจับ"},
+        {q:"สุนัขและแมวใช้ส่วนใดในการเดินและวิ่ง", v:"🐕", o:["ขาและเท้า","ปีก","ครีบ","หาง"], ex:"สุนัขใช้ขาและเท้าเคลื่อนที่"},
+        {q:"หางของสัตว์หลายชนิดช่วยในเรื่องใด", o:["ช่วยทรงตัว","ใช้มองเห็น","ใช้ดมกลิ่น","ใช้หายใจ"], ex:"หางช่วยการทรงตัว"},
+        {q:"สัตว์ใดต่อไปนี้เคลื่อนที่โดยการบิน", o:["นก","ปลา","ช้าง","งู"], ex:"นกบินได้"},
+        {q:"สัตว์ใดเคลื่อนที่โดยการว่ายน้ำเป็นหลัก", o:["ปลา","นก","ม้า","แมว"], ex:"ปลาว่ายน้ำ"},
+        {q:"ผิวหนังของปลาปกคลุมด้วยอะไร", o:["เกล็ด","ขน","ขนนก","เปลือกแข็ง"], ex:"ปลามีเกล็ดปกคลุมตัว"},
+        {q:"แมวและสุนัขมีอะไรปกคลุมผิวหนัง", v:"🐈", o:["ขน","เกล็ด","ขนนก","เปลือก"], ex:"แมวและสุนัขมีขนปกคลุม"},
+        {q:"สัตว์ใดมีเกล็ดปกคลุมลำตัวและเลื้อยไปตามพื้น", v:"🐍", o:["งู","นก","กระต่าย","ช้าง"], ex:"งูมีเกล็ดและเลื้อย"},
+        {q:"เท้าที่มีพังผืดสำหรับว่ายน้ำเป็นของสัตว์ใด", v:"🦆", o:["เป็ด","แมว","ม้า","เสือ"], ex:"เป็ดมีพังผืดที่เท้าช่วยว่ายน้ำ"},
+        {q:"เท้าที่เป็นกีบเป็นของสัตว์ใด", v:"🐴", o:["ม้า","แมว","เป็ด","นก"], ex:"ม้ามีกีบเท้า"},
+        {q:"สัตว์ใช้ส่วนใดในการดมกลิ่นและหายใจ", o:["จมูก","ตา","หู","หาง"], ex:"จมูกใช้ดมกลิ่นและหายใจ"},
+        {q:"สัตว์และคนต่างก็ใช้อวัยวะใดในการมองเห็นเหมือนกัน", v:"👁️", o:["ตา","ปีก","ครีบ","เกล็ด"], ex:"ทั้งคนและสัตว์ใช้ตามองเห็น"},
+        {q:"ข้อใดเป็นสัตว์ที่มีปีกทั้งหมด", o:["นก เป็ด ไก่","ปลา งู ช้าง","ม้า แมว สุนัข","เสือ กระต่าย วัว"], ex:"นก เป็ด ไก่ มีปีก"},
+        {q:"สัตว์ใดใช้ขาในการเคลื่อนที่บนบก", o:["ม้า","ปลา","ปลาดาว","หอย"], ex:"ม้าใช้ขาเดินและวิ่ง"},
+        {q:"รอยเท้าที่มีพังผืดติดกันน่าจะเป็นของสัตว์ใด", o:["เป็ด","เสือ","ม้า","ช้าง"], ex:"เป็ดมีพังผืดจึงเกิดรอยเท้าแบบนั้น"},
+        {q:"ปีก ครีบ และขา เป็นอวัยวะที่ช่วยสัตว์ในเรื่องใด", o:["การเคลื่อนที่","การมองเห็น","การได้ยิน","การดมกลิ่น"], ex:"ปีก ครีบ ขา ใช้เคลื่อนที่"},
+        {q:"สัตว์ใช้ส่วนใดในการกินอาหาร", v:"🐶", o:["ปาก","หาง","ปีก","ครีบ"], ex:"สัตว์ใช้ปากกินอาหาร"},
+        {q:"ข้อใดกล่าวถูกต้องเกี่ยวกับสัตว์", o:["สัตว์แต่ละชนิดมีอวัยวะและการเคลื่อนที่ต่างกัน","สัตว์ทุกชนิดบินได้","สัตว์ทุกชนิดมีเกล็ด","สัตว์ไม่มีอวัยวะ"], ex:"สัตว์มีความหลากหลาย อวัยวะและการเคลื่อนที่ต่างกัน"},
+        {q:"สัตว์ปีกอย่างนก ใช้อะไรปกคลุมลำตัว", v:"🪶", o:["ขนนก","เกล็ด","กีบ","เปลือกแข็ง"], ex:"นกมีขนนกปกคลุมตัว"}
+      ]}
+    };
+    var ALL_LESSONS = [1,2,3];
+
+    /* =====================================================================
+       สุ่ม / ช่วยเหลือ
+    ===================================================================== */
+    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+    function shuffle(arr){
+      var c=arr.slice();
+      for(var i=c.length-1;i>0;i--){ var j=rand(0,i); var t=c[i]; c[i]=c[j]; c[j]=t; }
+      return c;
+    }
+    function sample(arr,n){ return shuffle(arr).slice(0, Math.min(n, arr.length)); }
+
+    /* =====================================================================
+       เสียงเอฟเฟกต์
+    ===================================================================== */
+    var audioCtx=null;
+    function initAudio(){
+      try{
+        if(!audioCtx && (window.AudioContext||window.webkitAudioContext)){
+          audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+        }
+        if(audioCtx && audioCtx.state==="suspended") audioCtx.resume();
+      }catch(e){}
+    }
+    function tone(freq,wave,dur,delay){
+      try{
+        if(!audioCtx)return;
+        var o=audioCtx.createOscillator(), g=audioCtx.createGain();
+        o.type=wave; o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination);
+        var t=audioCtx.currentTime;
+        g.gain.setValueAtTime(0.18,t+delay);
+        g.gain.exponentialRampToValueAtTime(0.01,t+delay+dur);
+        o.start(t+delay); o.stop(t+delay+dur);
+      }catch(e){}
+    }
+    function sfx(type){
+      initAudio();
+      if(type==="correct"){ tone(523.25,"sine",0.1,0); tone(659.25,"sine",0.1,0.1); tone(783.99,"sine",0.24,0.2); }
+      else if(type==="tap"){ tone(440,"sine",0.05,0); }
+      else { tone(260,"triangle",0.18,0); tone(180,"triangle",0.24,0.14); }
+    }
+
+    /* =====================================================================
+       สร้างชุดข้อสอบ
+    ===================================================================== */
+    var quiz=[], current=0, score=0, selectedMode="all", lessonScores={}, answered=false;
+
+    function makeItem(lessonId, item){
+      // ข้อแรกของ o[] คือคำตอบถูก แล้วสลับตำแหน่งตัวเลือก
+      var answer=item.o[0];
+      return {
+        lesson: lessonId,
+        q: item.q,
+        v: item.v || "",
+        options: shuffle(item.o.slice()),
+        answer: answer,
+        ex: item.ex || ("คำตอบคือ " + answer)
+      };
+    }
+
+    function buildQuiz(mode){
+      var result=[];
+      if(mode==="all"){
+        ALL_LESSONS.forEach(function(id){
+          sample(lessons[id].bank, 7).forEach(function(it){ result.push(makeItem(id, it)); });
+        });
+        return shuffle(result);
+      }
+      sample(lessons[mode].bank, 12).forEach(function(it){ result.push(makeItem(mode, it)); });
+      return result;
+    }
+
+    function startQuiz(mode){
+      selectedMode=mode;
+      quiz=buildQuiz(mode);
+      current=0; score=0; lessonScores={};
+      ALL_LESSONS.forEach(function(id){ lessonScores[id]={right:0,total:0}; });
+      document.getElementById("home-screen").classList.add("hidden");
+      document.getElementById("result-screen").classList.add("hidden");
+      document.getElementById("quiz-screen").classList.remove("hidden");
+      document.getElementById("total-display").innerText=quiz.length;
+      document.getElementById("question-total").innerText=quiz.length;
+      window.scrollTo(0,0);
+      loadQuestion();
+    }
+    function restartSameMode(){ startQuiz(selectedMode); }
+    function goHome(){
+      document.getElementById("quiz-screen").classList.add("hidden");
+      document.getElementById("result-screen").classList.add("hidden");
+      document.getElementById("home-screen").classList.remove("hidden");
+    }
+
+    /* =====================================================================
+       แสดงโจทย์ + ตัวเลือก
+    ===================================================================== */
+    function loadQuestion(){
+      answered=false;
+      var q=quiz[current];
+      document.getElementById("score-display").innerText=score;
+      document.getElementById("question-number").innerText=current+1;
+      document.getElementById("progress-bar").style.width=(current/quiz.length*100)+"%";
+      document.getElementById("lesson-badge").innerText="บทที่ "+q.lesson+": "+lessons[q.lesson].name;
+      document.getElementById("question-visual").innerHTML = q.v ? '<div class="text-6xl mb-2 pop">'+q.v+'</div>' : "";
+      document.getElementById("question-prompt").innerText=q.q;
+      document.getElementById("feedback").classList.add("hidden");
+      document.getElementById("next-btn").classList.add("hidden");
+
+      var area=document.getElementById("answer-area");
+      area.innerHTML="";
+      var grid=document.createElement("div");
+      grid.className="grid gap-2.5";
+      q.options.forEach(function(opt){
+        var btn=document.createElement("button");
+        btn.setAttribute("data-v", opt);
+        btn.className="bg-white border-2 border-emerald-200 hover:bg-emerald-50 text-slate-800 font-bold text-base min-h-[54px] rounded-2xl shadow-sm active:scale-95 transition px-3 py-2 text-center leading-snug";
+        btn.innerText=opt;
+        btn.onclick=function(){ if(answered)return; choose(q,opt,btn,area); };
+        grid.appendChild(btn);
+      });
+      area.appendChild(grid);
+    }
+
+    function choose(q,opt,btn,area){
+      answered=true; sfx("tap");
+      var correct = opt===q.answer;
+      area.querySelectorAll("button").forEach(function(b){
+        b.classList.add("pointer-events-none");
+        if(b.getAttribute("data-v")===q.answer) b.classList.add("ring-4","ring-emerald-400","bg-emerald-50");
+      });
+      if(!correct) btn.classList.add("ring-4","ring-rose-400","bg-rose-50","shake");
+      finish(q, correct);
+    }
+
+    function finish(q, correct){
+      lessonScores[q.lesson].total++;
+      var fb=document.getElementById("feedback");
+      fb.classList.remove("hidden");
+      if(correct){
+        sfx("correct"); score++; lessonScores[q.lesson].right++;
+        fb.className="rounded-2xl p-3 mb-3 text-center font-bold bg-emerald-50 text-emerald-700 border border-emerald-200";
+        fb.innerText="🎉 ถูกต้อง เก่งมาก! "+q.ex;
+      } else {
+        sfx("wrong");
+        fb.className="rounded-2xl p-3 mb-3 text-center font-bold bg-rose-50 text-rose-700 border border-rose-200";
+        fb.innerText="💪 ยังไม่ใช่จ้า — คำตอบคือ “"+q.answer+"” "+q.ex;
+      }
+      document.getElementById("score-display").innerText=score;
+      var next=document.getElementById("next-btn");
+      next.classList.remove("hidden");
+      next.innerText = current>=quiz.length-1 ? "ดูสรุปคะแนน 🏁" : "ข้อถัดไป ➜";
+    }
+
+    function nextQuestion(){
+      if(current>=quiz.length-1) showResult();
+      else { current++; window.scrollTo(0,0); loadQuestion(); }
+    }
+
+    function showResult(){
+      document.getElementById("quiz-screen").classList.add("hidden");
+      document.getElementById("result-screen").classList.remove("hidden");
+      document.getElementById("final-score").innerText=score;
+      document.getElementById("final-total").innerText=quiz.length;
+      var ratio=score/quiz.length;
+      document.getElementById("result-icon").innerText=ratio===1?"👑":ratio>=0.8?"🏆":ratio>=0.6?"✨":"💪";
+      var summary=document.getElementById("lesson-summary");
+      summary.innerHTML="";
+      ALL_LESSONS.forEach(function(id){
+        if(lessonScores[id].total>0){
+          var row=document.createElement("div");
+          row.className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex justify-between items-center";
+          row.innerHTML='<span class="font-bold text-slate-700 text-sm">'+lessons[id].emoji+' บทที่ '+id+': '+lessons[id].name+'</span><span class="font-black text-emerald-700">'+lessonScores[id].right+'/'+lessonScores[id].total+'</span>';
+          summary.appendChild(row);
+        }
+      });
+    }
+
+    /* =====================================================================
+       สร้างปุ่มบทบนหน้าแรก
+    ===================================================================== */
+    (function buildHome(){
+      var box=document.getElementById("lesson-buttons");
+      ALL_LESSONS.forEach(function(id){
+        var L=lessons[id];
+        var btn=document.createElement("button");
+        btn.className="bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 text-left rounded-2xl p-3.5 active:scale-95 transition";
+        btn.onclick=function(){ startQuiz(id); };
+        btn.innerHTML='<div class="font-black">'+L.emoji+' บทที่ '+id+': '+L.name+'</div><div class="text-xs text-slate-500 font-semibold">'+L.sub+'</div>';
+        box.appendChild(btn);
+      });
+    })();
+  </script>
+</body>
+</html>
