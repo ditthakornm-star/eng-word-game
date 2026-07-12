@@ -126,9 +126,20 @@
     }
 
     function speakMathText(text) {
-      return String(text)
-        .replace(/-/g, " ลบ ")
-        .replace(/\+/g, " บวก ")
+      var spoken = String(text);
+      spoken = spoken.replace(/(\d+)\s*-\s*(\d+)\s*=\s*\?/g, "$1 เอาออก $2 เหลือเท่าไร");
+      spoken = spoken.replace(/(\d+)\s*-\s*\?\s*=\s*(\d+)/g, "$1 เอาออกเท่าไร เหลือ $2");
+      spoken = spoken.replace(/\?\s*-\s*(\d+)\s*=\s*(\d+)/g, "จำนวนใด เอาออก $1 แล้วเหลือ $2");
+      spoken = spoken.replace(/(\d+)\s*\+\s*(\d+)\s*=\s*\?/g, "$1 รวมกับ $2 ได้เท่าไร");
+      spoken = spoken.replace(/(\d+)\s*\+\s*\?\s*=\s*(\d+)/g, "$1 รวมกับเท่าไร ได้ $2");
+      spoken = spoken.replace(/\?\s*\+\s*(\d+)\s*=\s*(\d+)/g, "จำนวนใด รวมกับ $1 แล้วได้ $2");
+      spoken = spoken.replace(/(\d+)\s*\+\s*(\d+)/g, "$1 รวมกับ $2");
+      spoken = spoken.replace(/(\d+)\s*-\s*(\d+)/g, "$1 เอาออก $2");
+      return spoken
+        .replace(/การลบ/g, "การเอาออก")
+        .replace(/ผลลบ/g, "ผลที่เหลือ")
+        .replace(/ลบจำนวน/g, "โจทย์เอาออก")
+        .replace(/โจทย์ปัญหาการลบ/g, "โจทย์ปัญหาการเอาออก")
         .replace(/=/g, " เท่ากับ ")
         .replace(/>/g, " มากกว่า ")
         .replace(/</g, " น้อยกว่า ")
