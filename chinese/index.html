@@ -320,7 +320,7 @@
         return item({unit:2,title:"แปลความหมาย",h:v.h,p:v.p,visual:v.e?v.e:"",prompt:"คำนี้แปลว่าอะไร?",say:v.h,
           options:shuffle([v.th].concat(others(VOCAB,"th",v.th,3))),answer:v.th,ex:v.h+" ("+v.p+") = "+v.th}); }
       if(t===2){
-        return item({unit:2,title:"เลือกคำจีน",prompt:'"'+v.th+'" เขียนเป็นภาษาจีนว่าอะไร?',say:"",
+        return item({unit:2,title:v.e?"ดูรูป เลือกคำจีน":"เลือกคำจีน",visual:v.e?v.e:"",prompt:'"'+v.th+'" เขียนเป็นภาษาจีนว่าอะไร?',say:"",
           options:shuffle([v.h].concat(others(VOCAB,"h",v.h,3))),answer:v.h,ex:v.th+" = "+v.h+" ("+v.p+")"}); }
       return item({unit:2,title:"อ่านพินอิน",h:v.h,visual:v.e?v.e:"",prompt:"คำนี้อ่านว่าอะไร (พินอิน)?",say:v.h,
         options:shuffle([v.p].concat(others(VOCAB,"p",v.p,3))),answer:v.p,ex:v.h+" อ่านว่า "+v.p+" = "+v.th});
@@ -396,14 +396,16 @@
       document.getElementById("learn-screen").classList.remove("hidden");
       flashIdx=0; showFlash();
     }
+    var HANZI_EMOJI={}; VOCAB.forEach(function(v){ if(v.e) HANZI_EMOJI[v.h]=v.e; });
     function showFlash(){
       flashFlipped=false;
       var c=FLASH[flashIdx];
+      var pic=HANZI_EMOJI[c.h] ? '<div class="text-7xl mb-2">'+HANZI_EMOJI[c.h]+'</div>' : '';
       document.getElementById("flash-unit").innerText=c.u;
       document.getElementById("flash-pos").innerText=(flashIdx+1)+"/"+FLASH.length;
-      document.getElementById("flash-front").innerHTML='<div class="text-6xl font-black text-red-700 leading-tight mb-1">'+c.h+'</div><div class="text-xl font-bold text-slate-500">'+c.p+'</div>';
+      document.getElementById("flash-front").innerHTML=pic+'<div class="text-6xl font-black text-red-700 leading-tight mb-1">'+c.h+'</div><div class="text-xl font-bold text-slate-500">'+c.p+'</div>';
       var back=document.getElementById("flash-back");
-      back.innerHTML='<div class="text-4xl font-black text-red-700 mb-1">'+c.h+'</div><div class="text-base font-bold text-slate-500 mb-2">'+c.p+'</div><div class="text-2xl font-black text-emerald-600">'+c.th+'</div>'+(c.ex?'<div class="text-sm font-semibold text-slate-500 mt-2">'+c.ex+'</div>':'');
+      back.innerHTML=pic+'<div class="text-4xl font-black text-red-700 mb-1">'+c.h+'</div><div class="text-base font-bold text-slate-500 mb-2">'+c.p+'</div><div class="text-2xl font-black text-emerald-600">'+c.th+'</div>'+(c.ex?'<div class="text-sm font-semibold text-slate-500 mt-2">'+c.ex+'</div>':'');
       back.classList.add("hidden");
       document.getElementById("flash-front").classList.remove("hidden");
       document.getElementById("flash-hint").innerText="แตะการ์ดเพื่อดูคำแปล · กด 🔊 ฟังเสียง";
