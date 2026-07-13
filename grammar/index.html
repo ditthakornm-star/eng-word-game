@@ -262,9 +262,14 @@
         var sing=pair[0], plu=pair[1];
         var opts=[plu].concat([sing, sing+"s", sing+"es"].filter(function(x){return x!==plu;}));
         opts=opts.filter(function(x,i){return opts.indexOf(x)===i;}).slice(0,4);
+        var isIrr=NIRR.some(function(p){return p[0]===sing;});
+        var isEs=NES.some(function(p){return p[0]===sing;});
+        var pex = isIrr ? '"'+sing+'" เป็นคำพิเศษ! ไม่เติม -s แต่เปลี่ยนรูปเป็น "'+plu+'" ต้องจำ'
+                : isEs ? '"'+sing+'" ลงท้าย o/x/z/ch/sh จึงเติม -es เป็น "'+plu+'"'
+                : '"'+sing+'" เติม -s เป็น "'+plu+'" (พหูพจน์ = มากกว่า 1 อัน)';
         return item({unit:1,title:"Plural form",en:'What is the plural of "'+sing+'"?',
-          say:'What is the plural of '+sing+'?',th:'รูปพหูพจน์ (มากกว่า 1) ของ "'+sing+'" คืออะไร',
-          options:shuffle(opts),answer:plu,ex:'"'+sing+'" → "'+plu+'"'}); }
+          say:'What is the plural of '+sing+'?',th:'รูปพหูพจน์ (มากกว่า 1 อัน) ของ "'+sing+'" คืออะไร',
+          options:shuffle(opts),answer:plu,ex:pex}); }
       if(type===2){ // singular form
         var pair=pick(shuffle([].concat(NREG,NES,NIRR)));
         var opts=distinctOpts(pair[0], NREG.map(function(p){return p[0];}).concat(NES.map(function(p){return p[0];})), 4);
@@ -379,19 +384,23 @@
        Flashcards (เรียนรู้กฎ)
     ===================================================================== */
     var FLASH=[
-      {u:"Nouns",q:"พหูพจน์ (มากกว่า 1) ส่วนใหญ่เติมอะไร?",a:"เติม -s",ex:"book → books, pen → pens"},
-      {u:"Nouns",q:"คำที่ลงท้าย o, x, z, ch, sh เติมอะไร?",a:"เติม -es",ex:"fox → foxes, dish → dishes"},
-      {u:"Nouns",q:'พหูพจน์ของ "foot" คือ?',a:"feet (พิเศษ)",ex:"tooth → teeth, man → men"},
-      {u:"Articles",q:"ใช้ a หรือ an หน้าคำที่ขึ้นต้นด้วยพยัญชนะ?",a:"a",ex:"a tiger, a book, a dog"},
-      {u:"Articles",q:"ใช้ a หรือ an หน้าคำที่ขึ้นต้นด้วยสระ a e i o u?",a:"an",ex:"an apple, an egg, an umbrella"},
-      {u:"Pronouns",q:"a boy / a man ใช้สรรพนามใด?",a:"He (เขา ผู้ชาย)",ex:"The boy is tall. → He is tall."},
-      {u:"Pronouns",q:"a girl / a woman ใช้สรรพนามใด?",a:"She (เขา ผู้หญิง)",ex:"Anna is thin. → She is thin."},
-      {u:"Pronouns",q:"สัตว์ / สิ่งของ (1 อัน) ใช้สรรพนามใด?",a:"It (มัน)",ex:"The giraffe is tall. → It is tall."},
-      {u:"Pronouns",q:"คน/สัตว์/สิ่งของหลายอัน ใช้สรรพนามใด?",a:"They (พวกเขา/พวกมัน)",ex:"The oranges are sweet. → They are sweet."},
-      {u:"Pronouns",q:"ฉันกับคนอื่น (…and I) ใช้สรรพนามใด?",a:"We (พวกเรา)",ex:"Tom and I are friends. → We are friends."},
-      {u:"Verb to be",q:'"I" ใช้ verb to be ตัวใด?',a:"am",ex:"I am a student."},
-      {u:"Verb to be",q:"He / She / It / ชื่อคน 1 คน ใช้ตัวใด?",a:"is",ex:"She is a nurse. Ben is a boy."},
-      {u:"Verb to be",q:"You / We / They / ประธานพหูพจน์ ใช้ตัวใด?",a:"are",ex:"They are tigers. We are students."}
+      {u:"Nouns",q:'คำนาม "เอกพจน์" (singular) แปลว่าอะไร?',a:"มีของ 1 อัน",ex:"เช่น a book = หนังสือ 1 เล่ม 📗 · a dog = หมา 1 ตัว 🐶",say:"a book. a dog."},
+      {u:"Nouns",q:'คำนาม "พหูพจน์" (plural) แปลว่าอะไร?',a:"มีของมากกว่า 1 อัน",ex:"ส่วนใหญ่เติม -s เช่น books = หนังสือหลายเล่ม 📚 · dogs = หมาหลายตัว 🐶🐶",say:"books. dogs. pens."},
+      {u:"Nouns",q:"คำที่ลงท้าย o, x, z, ch, sh ทำเป็นพหูพจน์อย่างไร?",a:"เติม -es",ex:"fox → foxes 🦊 · dish → dishes 🍽️ · tomato → tomatoes 🍅",say:"fox, foxes. dish, dishes. tomato, tomatoes."},
+      {u:"Nouns",q:'ทำไม "foot" (เท้า) ถึงเปลี่ยนเป็น "feet"?',a:"เป็นคำพิเศษ ต้องจำ",ex:"foot = เท้า 1 ข้าง 🦶 · feet = เท้าหลายข้าง 🦶🦶 · คำพิเศษไม่เติม -s แต่เปลี่ยนรูปเลย (tooth→teeth ฟัน, man→men ผู้ชาย)",say:"foot, feet. tooth, teeth. man, men."},
+      {u:"Articles",q:"a กับ an คืออะไร ใช้ทำอะไร?",a:"คำนำหน้าคำนาม 1 อัน",ex:"วางไว้หน้าคำนามเอกพจน์ เช่น a cat 🐱, an apple 🍎",say:"a cat. an apple."},
+      {u:"Articles",q:"ใช้ a หรือ an หน้าคำที่ขึ้นต้นด้วยพยัญชนะ?",a:"a",ex:"a tiger 🐯 · a book 📗 · a dog 🐶",say:"a tiger. a book. a dog."},
+      {u:"Articles",q:"ใช้ a หรือ an หน้าคำที่ขึ้นต้นด้วยสระ a e i o u?",a:"an",ex:"an apple 🍎 · an egg 🥚 · an umbrella ☂️",say:"an apple. an egg. an umbrella."},
+      {u:"Pronouns",q:"สรรพนาม (pronoun) คืออะไร?",a:"คำใช้แทนชื่อคน สัตว์ สิ่งของ",ex:"แทน Anna ด้วย She · แทน the cat ด้วย It (จะได้ไม่พูดชื่อซ้ำ)",say:"Anna. She. The cat. It."},
+      {u:"Pronouns",q:"a boy / a man (ผู้ชาย 1 คน) ใช้สรรพนามใด?",a:"He (เขา ผู้ชาย)",ex:"The boy is tall. → He is tall.",say:"The boy is tall. He is tall."},
+      {u:"Pronouns",q:"a girl / a woman (ผู้หญิง 1 คน) ใช้สรรพนามใด?",a:"She (เขา ผู้หญิง)",ex:"Anna is thin. → She is thin.",say:"Anna is thin. She is thin."},
+      {u:"Pronouns",q:"สัตว์ / สิ่งของ (1 อัน) ใช้สรรพนามใด?",a:"It (มัน)",ex:"The giraffe is tall. → It is tall.",say:"The giraffe is tall. It is tall."},
+      {u:"Pronouns",q:"คน/สัตว์/สิ่งของ หลายอัน ใช้สรรพนามใด?",a:"They (พวกเขา/พวกมัน)",ex:"The oranges are sweet. → They are sweet.",say:"The oranges are sweet. They are sweet."},
+      {u:"Pronouns",q:"ฉันกับคนอื่น (…and I) ใช้สรรพนามใด?",a:"We (พวกเรา)",ex:"Tom and I are friends. → We are friends.",say:"Tom and I are friends. We are friends."},
+      {u:"Verb to be",q:"verb to be (am/is/are) แปลว่าอะไร?",a:"เป็น / อยู่ / คือ",ex:"บอกว่าประธานเป็นอะไร เช่น I am a student. (ฉันเป็นนักเรียน)",say:"I am a student."},
+      {u:"Verb to be",q:'"I" (ฉัน) ใช้ verb to be ตัวใด?',a:"am",ex:"I am a student. I am happy.",say:"I am a student. I am happy."},
+      {u:"Verb to be",q:"He / She / It / ชื่อคน 1 คน ใช้ตัวใด?",a:"is",ex:"She is a nurse. Ben is a boy.",say:"She is a nurse. Ben is a boy."},
+      {u:"Verb to be",q:"You / We / They / ประธานหลายคน ใช้ตัวใด?",a:"are",ex:"They are tigers. We are students.",say:"They are tigers. We are students."}
     ];
     var flashIdx=0, flashFlipped=false;
     function openLearn(){
@@ -417,12 +426,12 @@
       flashFlipped=!flashFlipped; sfx("tap");
       document.getElementById("flash-front").classList.toggle("hidden",flashFlipped);
       document.getElementById("flash-back").classList.toggle("hidden",!flashFlipped);
-      document.getElementById("flash-hint").innerText=flashFlipped?"แตะอีกครั้งเพื่อดูคำถาม":"แตะการ์ดเพื่อดูเฉลย";
-      if(flashFlipped) speak(c.ex);
+      document.getElementById("flash-hint").innerText=flashFlipped?"แตะอีกครั้งเพื่อดูคำถาม · กด 🔊 ฟังตัวอย่าง":"แตะการ์ดเพื่อดูเฉลย";
+      if(flashFlipped) speak(c.say||c.a);
     }
     function flashNext(){ sfx("tap"); flashIdx=(flashIdx+1)%FLASH.length; showFlash(); }
     function flashPrev(){ sfx("tap"); flashIdx=(flashIdx-1+FLASH.length)%FLASH.length; showFlash(); }
-    function flashSpeak(){ var c=FLASH[flashIdx]; speak(flashFlipped?c.ex:c.a); }
+    function flashSpeak(){ var c=FLASH[flashIdx]; speak(c.say||c.a); }
 
     /* =====================================================================
        สร้างชุดข้อสอบ + สถานะ
