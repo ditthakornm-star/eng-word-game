@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ภาษาจีนหรรษา ป.1 — 开开汉语</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { -webkit-text-size-adjust: 100%; }
+    button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    .pop { animation: pop .18s ease; }
+    @keyframes pop { 0% { transform: scale(.9); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
+    .shake { animation: shake .3s; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+  </style>
+</head>
+<body class="min-h-screen bg-red-50 p-3 font-sans select-none">
+  <main class="max-w-lg mx-auto">
+    <!-- ================= HOME ================= -->
+    <section id="home-screen" class="min-h-screen flex flex-col justify-center">
+      <div class="bg-white border-4 border-red-200 rounded-3xl shadow-xl p-5">
+        <div class="text-center mb-5">
+          <div class="text-5xl mb-2">🧧🐉</div>
+          <p class="text-xs font-black text-red-500 uppercase tracking-wider">Grade 1 · 中文 Chinese</p>
+          <h1 class="text-2xl font-black text-slate-800">ภาษาจีนหรรษา ป.1</h1>
+          <p class="text-sm font-bold text-slate-500 mt-1">มีเสียงอ่านจีน 🔊 + พินอิน + คำแปลไทย · ทบทวนข้อผิด 🔥</p>
+        </div>
+
+        <button onclick="openLearn()" class="w-full bg-amber-400 hover:bg-amber-500 text-white text-left rounded-2xl p-4 shadow-md active:scale-95 transition mb-2.5">
+          <div class="text-lg font-black">📖 เรียนรู้คำก่อน (Flashcards)</div>
+          <div class="text-xs font-semibold text-amber-50">การ์ดพลิกทบทวนคำจีน + พินอิน + คำแปล กด 🔊 ฟังเสียง</div>
+        </button>
+
+        <div class="grid gap-2.5 mb-4">
+          <button onclick="startQuiz('all')" class="bg-red-600 hover:bg-red-700 text-white text-left rounded-2xl p-4 shadow-md active:scale-95 transition">
+            <div class="text-lg font-black">🎯 ทำรวมทุกเรื่อง</div>
+            <div class="text-xs font-semibold text-red-100">สุ่มเรื่องละ 5 ข้อ รวม 20 ข้อ พร้อมสรุปแยกเรื่อง</div>
+          </button>
+          <div id="unit-buttons" class="grid gap-2.5"></div>
+        </div>
+
+        <a href="../" class="block text-center text-xs font-bold text-slate-500 underline">กลับหน้าเลือกแบบฝึกหัด</a>
+      </div>
+    </section>
+
+    <!-- ================= LEARN (Flashcards) ================= -->
+    <section id="learn-screen" class="hidden min-h-screen flex flex-col justify-center">
+      <div class="bg-white border-4 border-amber-200 rounded-3xl shadow-xl p-5">
+        <div class="flex items-center justify-between mb-3">
+          <button onclick="goHome()" class="text-xs bg-slate-100 text-slate-700 font-bold px-3 py-2 rounded-full active:scale-95 transition">🏠 หน้าแรก</button>
+          <span class="text-xs font-black text-amber-600">Flashcards · <span id="flash-pos">1/1</span></span>
+        </div>
+        <div class="text-center text-xs font-black text-amber-500 mb-2" id="flash-unit">ทักทาย</div>
+        <button id="flash-card" onclick="flipCard()" class="w-full min-h-[230px] bg-amber-50 border-2 border-amber-200 rounded-3xl p-6 flex flex-col items-center justify-center active:scale-[0.98] transition mb-3">
+          <div id="flash-front" class="text-center"></div>
+          <div id="flash-back" class="hidden text-center"></div>
+          <div class="text-[11px] font-bold text-slate-400 mt-4" id="flash-hint">แตะการ์ดเพื่อดูคำแปล</div>
+        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="flashPrev()" class="flex-1 bg-slate-100 text-slate-700 font-black py-3 rounded-2xl active:scale-95 transition">◀ ก่อนหน้า</button>
+          <button onclick="flashSpeak()" class="w-14 h-12 rounded-2xl bg-amber-500 text-white text-xl shadow active:scale-90 transition">🔊</button>
+          <button onclick="flashNext()" class="flex-1 bg-amber-500 text-white font-black py-3 rounded-2xl active:scale-95 transition">ถัดไป ▶</button>
+        </div>
+        <button onclick="startQuiz('all')" class="w-full mt-3 bg-red-600 hover:bg-red-700 text-white font-black py-3 rounded-2xl shadow active:scale-95 transition">พร้อมแล้ว! ทำข้อสอบ 🎯</button>
+      </div>
+    </section>
+
+    <!-- ================= QUIZ ================= -->
+    <section id="quiz-screen" class="hidden py-3">
+      <div class="bg-white border-4 border-red-200 rounded-3xl shadow-xl p-4">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <button onclick="goHome()" class="text-xs bg-slate-100 text-slate-700 font-bold px-3 py-2 rounded-full active:scale-95 transition">🏠 หน้าแรก</button>
+          <div class="flex items-center gap-2">
+            <span id="streak-badge" class="hidden text-xs bg-orange-100 text-orange-600 font-black px-2.5 py-2 rounded-full">🔥 <span id="streak-n">0</span></span>
+            <button onclick="restartSameMode()" class="text-xs bg-amber-100 text-amber-700 font-bold px-3 py-2 rounded-full active:scale-95 transition">สุ่มใหม่ 🔄</button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between mb-3">
+          <span id="unit-badge" class="bg-red-100 text-red-700 font-black px-3 py-1 rounded-full text-xs">บทที่ 1</span>
+          <span class="text-amber-500 font-black">⭐ <span id="score-display">0</span>/<span id="total-display">20</span></span>
+        </div>
+
+        <div class="w-full bg-slate-100 rounded-full h-2 mb-3 overflow-hidden">
+          <div id="progress-bar" class="bg-red-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+
+        <div class="text-center text-xs font-black text-slate-400 mb-2">
+          ข้อที่ <span id="question-number">1</span>/<span id="question-total">20</span>
+        </div>
+
+        <div id="question-card" class="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 mb-3 text-center">
+          <div id="q-visual" class="text-5xl mb-1"></div>
+          <div id="q-hanzi" class="text-5xl font-black text-red-700 leading-tight"></div>
+          <div id="q-pinyin" class="text-lg font-bold text-slate-500 mb-1"></div>
+          <div class="flex items-center justify-center gap-2 mt-1">
+            <button id="speak-btn" class="shrink-0 w-11 h-11 rounded-full bg-red-500 hover:bg-red-600 text-white text-xl shadow active:scale-90 transition" title="ฟังอีกครั้ง">🔊</button>
+            <p id="q-prompt" class="text-base font-black text-slate-800 leading-snug"></p>
+          </div>
+        </div>
+
+        <div id="answer-area" class="mb-3"></div>
+
+        <div id="feedback" class="hidden rounded-2xl p-3 mb-3 text-center font-bold"></div>
+
+        <button id="next-btn" onclick="nextQuestion()" class="hidden w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 rounded-2xl shadow-md active:scale-95 transition text-lg">ข้อถัดไป ➜</button>
+      </div>
+    </section>
+
+    <!-- ================= RESULT ================= -->
+    <section id="result-screen" class="hidden min-h-screen flex flex-col justify-center">
+      <div class="bg-white border-4 border-amber-300 rounded-3xl shadow-xl p-5 text-center">
+        <div id="result-icon" class="text-6xl mb-3">🏆</div>
+        <h2 class="text-2xl font-black text-slate-800 mb-2">สรุปคะแนน</h2>
+        <div class="bg-red-50 border border-red-100 rounded-2xl p-4 mb-3">
+          <div class="text-sm font-bold text-red-600">คะแนนรวม</div>
+          <div class="text-5xl font-black text-red-900"><span id="final-score">0</span>/<span id="final-total">20</span></div>
+          <div class="text-xs font-bold text-orange-500 mt-1">🔥 สตรีคสูงสุด <span id="best-streak">0</span> ข้อติด</div>
+        </div>
+        <div id="unit-summary" class="space-y-2 text-left mb-4"></div>
+        <button id="review-btn" onclick="startReview()" class="hidden w-full bg-rose-500 hover:bg-rose-600 text-white font-black py-3.5 rounded-2xl shadow-md active:scale-95 transition mb-3 text-lg"></button>
+        <button onclick="restartSameMode()" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-3 rounded-2xl shadow-md active:scale-95 transition mb-3">ทำชุดใหม่อีกครั้ง</button>
+        <button onclick="goHome()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-black py-3 rounded-2xl active:scale-95 transition">กลับหน้าแรก</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* =====================================================================
+       ข้อมูลหน่วย
+    ===================================================================== */
+    var unitNames = { 1:"ทักทาย & คำลา", 2:"คำศัพท์", 3:"พินอิน", 4:"วรรณยุกต์" };
+    var unitSub = {
+      1:"你好 您好 老师好 早上好 再见 明天见",
+      2:"我 你 好 老师 爸爸 妈妈 马 兔 梨 八",
+      3:"สระ a o e · พยัญชนะ · ประสมเสียง b+a→ba",
+      4:"4 เสียง: bā(八) bá(拔) bǎ(靶) bà(爸)"
+    };
+    var ALL_UNITS = [1,2,3,4];
+    function isCJK(s){ return /[一-鿿]/.test(String(s)); }
+    function isThai(s){ return /[฀-๿]/.test(String(s)); }
+
+    /* =====================================================================
+       เสียงอ่านภาษาจีน (Web Speech, zh-CN)
+    ===================================================================== */
+    var zhVoice=null;
+    function pickVoice(){
+      try{
+        if(!window.speechSynthesis) return;
+        var vs=window.speechSynthesis.getVoices();
+        zhVoice = vs.filter(function(v){ return /zh[-_]CN/i.test(v.lang); })[0]
+               || vs.filter(function(v){ return /^zh/i.test(v.lang); })[0] || null;
+      }catch(e){}
+    }
+    if(window.speechSynthesis){ pickVoice(); window.speechSynthesis.onvoiceschanged=pickVoice; }
+    function speak(text){
+      try{
+        if(!window.speechSynthesis || !text || !isCJK(text)) return; // อ่านเฉพาะตัวจีน
+        window.speechSynthesis.cancel();
+        var u=new SpeechSynthesisUtterance(String(text));
+        u.lang="zh-CN"; u.rate=0.8; u.pitch=1.02;
+        if(zhVoice) u.voice=zhVoice;
+        window.speechSynthesis.speak(u);
+      }catch(e){}
+    }
+
+    /* =====================================================================
+       เสียงเอฟเฟกต์
+    ===================================================================== */
+    var audioCtx=null;
+    function initAudio(){
+      try{
+        if(!audioCtx && (window.AudioContext||window.webkitAudioContext)){ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }
+        if(audioCtx && audioCtx.state==="suspended") audioCtx.resume();
+      }catch(e){}
+    }
+    function tone(freq,wave,dur,delay){
+      try{ if(!audioCtx)return;
+        var o=audioCtx.createOscillator(), g=audioCtx.createGain();
+        o.type=wave; o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination);
+        var t=audioCtx.currentTime; g.gain.setValueAtTime(0.16,t+delay); g.gain.exponentialRampToValueAtTime(0.01,t+delay+dur);
+        o.start(t+delay); o.stop(t+delay+dur);
+      }catch(e){}
+    }
+    function sfx(type){
+      initAudio();
+      if(type==="correct"){ tone(523.25,"sine",0.1,0); tone(659.25,"sine",0.1,0.1); tone(783.99,"sine",0.24,0.2); }
+      else if(type==="streak"){ tone(659,"sine",0.09,0); tone(880,"sine",0.09,0.09); tone(1046,"sine",0.16,0.18); }
+      else if(type==="tap"){ tone(440,"sine",0.05,0); }
+      else { tone(260,"triangle",0.18,0); tone(180,"triangle",0.24,0.14); }
+    }
+
+    /* =====================================================================
+       สุ่ม / ช่วยเหลือ
+    ===================================================================== */
+    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+    function pick(arr){ return arr[rand(0,arr.length-1)]; }
+    function shuffle(arr){ var c=arr.slice(); for(var i=c.length-1;i>0;i--){ var j=rand(0,i); var t=c[i]; c[i]=c[j]; c[j]=t; } return c; }
+    function uniq(arr){ return arr.filter(function(x,i){ return arr.indexOf(x)===i; }); }
+    function sampleN(arr,n){ return shuffle(uniq(arr)).slice(0,n); }
+    function others(pool,field,notVal,n){ return sampleN(pool.map(function(x){return x[field];}).filter(function(v){return v!==notVal;}),n); }
+
+    /* =====================================================================
+       คลังคำ
+    ===================================================================== */
+    var GREET=[
+      {h:"你好",p:"nǐ hǎo",th:"สวัสดี"},
+      {h:"您好",p:"nín hǎo",th:"สวัสดี (สุภาพ)"},
+      {h:"老师好",p:"lǎoshī hǎo",th:"สวัสดีคุณครู"},
+      {h:"早上好",p:"zǎoshang hǎo",th:"อรุณสวัสดิ์"},
+      {h:"晚上好",p:"wǎnshang hǎo",th:"ราตรีสวัสดิ์"},
+      {h:"你好吗",p:"nǐ hǎo ma",th:"สบายดีไหม"},
+      {h:"我很好",p:"wǒ hěn hǎo",th:"ฉันสบายดี"},
+      {h:"再见",p:"zàijiàn",th:"แล้วพบกันใหม่"},
+      {h:"明天见",p:"míngtiān jiàn",th:"พบกันพรุ่งนี้"}
+    ];
+    var SIT=[
+      {q:"ตอนเช้า เราทักทายว่าอะไร?",a:"早上好",ex:"早上好 (zǎoshang hǎo) = อรุณสวัสดิ์"},
+      {q:"ตอนกลางคืน เราทักทายว่าอะไร?",a:"晚上好",ex:"晚上好 (wǎnshang hǎo) = ราตรีสวัสดิ์"},
+      {q:"เจอคุณครู เราทักทายว่าอะไร?",a:"老师好",ex:"老师好 (lǎoshī hǎo) = สวัสดีคุณครู"},
+      {q:"เวลาจะจากลากัน พูดว่าอะไร?",a:"再见",ex:"再见 (zàijiàn) = แล้วพบกันใหม่"},
+      {q:"จะเจอกันวันพรุ่งนี้ พูดว่าอะไร?",a:"明天见",ex:"明天见 (míngtiān jiàn) = พบกันพรุ่งนี้"},
+      {q:"อยากถามเพื่อนว่า “สบายดีไหม” พูดว่าอะไร?",a:"你好吗",ex:"你好吗 (nǐ hǎo ma) = สบายดีไหม"},
+      {q:"อยากตอบว่า “ฉันสบายดี” พูดว่าอะไร?",a:"我很好",ex:"我很好 (wǒ hěn hǎo) = ฉันสบายดี"}
+    ];
+    var VOCAB=[
+      {h:"我",p:"wǒ",th:"ฉัน / ผม"},
+      {h:"你",p:"nǐ",th:"เธอ / คุณ"},
+      {h:"您",p:"nín",th:"คุณ / ท่าน (สุภาพ)"},
+      {h:"好",p:"hǎo",th:"ดี"},
+      {h:"很",p:"hěn",th:"มาก"},
+      {h:"吗",p:"ma",th:"ไหม (คำถาม)"},
+      {h:"老师",p:"lǎoshī",th:"ครู / อาจารย์"},
+      {h:"学生",p:"xuésheng",th:"นักเรียน"},
+      {h:"爸爸",p:"bàba",th:"พ่อ",e:"👨"},
+      {h:"妈妈",p:"māma",th:"แม่",e:"👩"},
+      {h:"弟弟",p:"dìdi",th:"น้องชาย",e:"👦"},
+      {h:"马",p:"mǎ",th:"ม้า",e:"🐴"},
+      {h:"木",p:"mù",th:"ไม้ / ต้นไม้",e:"🪵"},
+      {h:"兔",p:"tù",th:"กระต่าย",e:"🐰"},
+      {h:"梨",p:"lí",th:"สาลี่ (ลูกแพร์)",e:"🍐"},
+      {h:"路",p:"lù",th:"ทาง / ถนน",e:"🛣️"},
+      {h:"八",p:"bā",th:"แปด (8)",e:"8️⃣"}
+    ];
+    var VOWELS=["a","o","e"];
+    var CONSO=["b","p","m","f","d","t","n","l","g","k","h"];
+    var TONE=[{m:"ā",t:1},{m:"á",t:2},{m:"ǎ",t:3},{m:"à",t:4}];
+    var TONEW=[{h:"八",p:"bā",t:1,th:"แปด"},{h:"拔",p:"bá",t:2,th:"ถอน"},{h:"靶",p:"bǎ",t:3,th:"เป้า"},{h:"爸爸",p:"bàba",t:4,th:"พ่อ"}];
+
+    // แผนที่ พินอิน สำหรับแสดงใต้ตัวเลือกจีน
+    var PINYIN={};
+    [].concat(GREET,VOCAB,TONEW).forEach(function(x){ PINYIN[x.h]=x.p; });
+
+    function item(o){
+      return { unit:o.unit, title:o.title, h:o.h||"", p:o.p||"", visual:o.visual||"",
+        prompt:o.prompt, say:o.say||"", options:o.options, answer:String(o.answer), ex:o.ex||"" };
+    }
+
+    /* =====================================================================
+       ตัวสร้างโจทย์
+    ===================================================================== */
+    // ---- บทที่ 1: ทักทาย & คำลา ----
+    function genU1(){
+      var t=rand(1,3);
+      if(t===1){ var g=pick(GREET);
+        return item({unit:1,title:"แปลความหมาย",h:g.h,p:g.p,prompt:"คำนี้แปลว่าอะไร?",say:g.h,
+          options:shuffle([g.th].concat(others(GREET,"th",g.th,3))),answer:g.th,ex:g.h+" ("+g.p+") = "+g.th}); }
+      if(t===2){ var g=pick(GREET);
+        return item({unit:1,title:"เลือกคำจีน",prompt:'"'+g.th+'" เขียนเป็นภาษาจีนว่าอะไร?',say:"",
+          options:shuffle([g.h].concat(others(GREET,"h",g.h,3))),answer:g.h,ex:g.th+" = "+g.h+" ("+g.p+")"}); }
+      var s=pick(SIT);
+      return item({unit:1,title:"ใช้ให้ถูกสถานการณ์",prompt:s.q,say:"",
+        options:shuffle([s.a].concat(others(GREET,"h",s.a,3))),answer:s.a,ex:s.ex});
+    }
+
+    // ---- บทที่ 2: คำศัพท์ ----
+    function genU2(){
+      var t=rand(1,3); var v=pick(VOCAB);
+      if(t===1){
+        return item({unit:2,title:"แปลความหมาย",h:v.h,p:v.p,visual:v.e?v.e:"",prompt:"คำนี้แปลว่าอะไร?",say:v.h,
+          options:shuffle([v.th].concat(others(VOCAB,"th",v.th,3))),answer:v.th,ex:v.h+" ("+v.p+") = "+v.th}); }
+      if(t===2){
+        return item({unit:2,title:"เลือกคำจีน",prompt:'"'+v.th+'" เขียนเป็นภาษาจีนว่าอะไร?',say:"",
+          options:shuffle([v.h].concat(others(VOCAB,"h",v.h,3))),answer:v.h,ex:v.th+" = "+v.h+" ("+v.p+")"}); }
+      return item({unit:2,title:"อ่านพินอิน",h:v.h,visual:v.e?v.e:"",prompt:"คำนี้อ่านว่าอะไร (พินอิน)?",say:v.h,
+        options:shuffle([v.p].concat(others(VOCAB,"p",v.p,3))),answer:v.p,ex:v.h+" อ่านว่า "+v.p+" = "+v.th});
+    }
+
+    // ---- บทที่ 3: พินอิน ----
+    function genU3(){
+      var t=rand(1,3);
+      if(t===1){ var vow=pick(VOWELS);
+        return item({unit:3,title:"สระ (元音)",prompt:"ตัวอักษรใดเป็น “สระ” ในภาษาจีน?",say:"",
+          options:shuffle([vow].concat(sampleN(CONSO,3))),answer:vow,ex:'สระที่เรียนคือ a, o, e · "'+vow+'" เป็นสระ'}); }
+      if(t===2){ var v=pick(VOCAB.filter(function(x){return /^[a-z]/.test(x.p);}));
+        var init=v.p[0];
+        return item({unit:3,title:"พยัญชนะต้น",h:v.h,p:v.p,prompt:"คำนี้ขึ้นต้นด้วยพยัญชนะตัวใด?",say:v.h,
+          options:shuffle([init].concat(sampleN(CONSO.concat(VOWELS).filter(function(c){return c!==init;}),3))),
+          answer:init,ex:'"'+v.p+'" ขึ้นต้นด้วย "'+init+'"'}); }
+      var ini=pick(["b","p","m","f","d","t","l","h"]), fin=pick(VOWELS), ans=ini+fin;
+      var distract=uniq([fin+ini, pick(CONSO)+fin, ini+pick(VOWELS.filter(function(x){return x!==fin;}))]).filter(function(x){return x!==ans;});
+      return item({unit:3,title:"ประสมเสียง",prompt:'"'+ini+' + '+fin+'" ประสมกันอ่านว่าอะไร?',say:"",
+        options:shuffle([ans].concat(distract).slice(0,4)),answer:ans,ex:ini+" + "+fin+" = "+ans});
+    }
+
+    // ---- บทที่ 4: วรรณยุกต์ ----
+    function genU4(){
+      var t=rand(1,4);
+      if(t===1){ var x=pick(TONE);
+        return item({unit:4,title:"วรรณยุกต์",prompt:'เครื่องหมาย "'+x.m+'" เป็นวรรณยุกต์เสียงที่เท่าไร?',say:"",
+          options:shuffle(["เสียงที่ 1","เสียงที่ 2","เสียงที่ 3","เสียงที่ 4"]),answer:"เสียงที่ "+x.t,ex:'"'+x.m+'" คือวรรณยุกต์เสียงที่ '+x.t}); }
+      if(t===2){ var x=pick(TONE);
+        return item({unit:4,title:"วรรณยุกต์",prompt:"วรรณยุกต์เสียงที่ "+x.t+" เขียนเครื่องหมายแบบใด (บน a)?",say:"",
+          options:shuffle(TONE.map(function(z){return z.m;})),answer:x.m,ex:"เสียงที่ "+x.t+" ใช้เครื่องหมาย "+x.m}); }
+      if(t===3){
+        return item({unit:4,title:"วรรณยุกต์",prompt:"ภาษาจีนกลางมีวรรณยุกต์กี่เสียง?",say:"",
+          options:shuffle(["4 เสียง","2 เสียง","3 เสียง","5 เสียง"]),answer:"4 เสียง",ex:"ภาษาจีนกลางมี 4 เสียง: ā á ǎ à"}); }
+      var w=pick(TONEW);
+      return item({unit:4,title:"เสียงต่าง ความหมายต่าง",h:w.h,p:w.p,prompt:"คำนี้แปลว่าอะไร?",say:w.h,
+        options:shuffle([w.th].concat(others(TONEW,"th",w.th,3))),answer:w.th,ex:w.h+" ("+w.p+") = "+w.th+" · เสียงต่างกัน ความหมายต่างกัน"});
+    }
+
+    var generators={1:genU1,2:genU2,3:genU3,4:genU4};
+
+    /* =====================================================================
+       Flashcards
+    ===================================================================== */
+    var FLASH=[
+      {u:"ทักทาย",h:"你好",p:"nǐ hǎo",th:"สวัสดี",ex:"ใช้ทักทายทั่วไป"},
+      {u:"ทักทาย",h:"您好",p:"nín hǎo",th:"สวัสดี (สุภาพ)",ex:"ใช้กับผู้ใหญ่ / คุณครู"},
+      {u:"ทักทาย",h:"老师好",p:"lǎoshī hǎo",th:"สวัสดีคุณครู",ex:"老师 lǎoshī = ครู"},
+      {u:"ทักทาย",h:"早上好",p:"zǎoshang hǎo",th:"อรุณสวัสดิ์",ex:"ใช้ทักทายตอนเช้า"},
+      {u:"ทักทาย",h:"晚上好",p:"wǎnshang hǎo",th:"ราตรีสวัสดิ์",ex:"ใช้ทักทายตอนกลางคืน"},
+      {u:"ทักทาย",h:"你好吗",p:"nǐ hǎo ma",th:"สบายดีไหม",ex:"吗 ma = ไหม (คำถาม)"},
+      {u:"ทักทาย",h:"我很好",p:"wǒ hěn hǎo",th:"ฉันสบายดี",ex:"我 ฉัน · 很 มาก · 好 ดี"},
+      {u:"คำลา",h:"再见",p:"zàijiàn",th:"แล้วพบกันใหม่",ex:"ใช้ตอนจากลากัน"},
+      {u:"คำลา",h:"明天见",p:"míngtiān jiàn",th:"พบกันพรุ่งนี้",ex:"明天 míngtiān = พรุ่งนี้"},
+      {u:"คำศัพท์",h:"我",p:"wǒ",th:"ฉัน / ผม",ex:"我很好 = ฉันสบายดี"},
+      {u:"คำศัพท์",h:"你",p:"nǐ",th:"เธอ / คุณ",ex:"你好 = สวัสดี"},
+      {u:"คำศัพท์",h:"老师",p:"lǎoshī",th:"ครู / อาจารย์",ex:"老师好 = สวัสดีคุณครู"},
+      {u:"คำศัพท์",h:"学生",p:"xuésheng",th:"นักเรียน",ex:""},
+      {u:"คำศัพท์",h:"爸爸",p:"bàba",th:"พ่อ 👨",ex:"妈妈 māma = แม่"},
+      {u:"คำศัพท์",h:"妈妈",p:"māma",th:"แม่ 👩",ex:"爸爸 bàba = พ่อ"},
+      {u:"คำศัพท์",h:"马",p:"mǎ",th:"ม้า 🐴",ex:"เสียงคล้าย 妈 (แม่) แต่คนละวรรณยุกต์"},
+      {u:"คำศัพท์",h:"兔",p:"tù",th:"กระต่าย 🐰",ex:""},
+      {u:"คำศัพท์",h:"梨",p:"lí",th:"สาลี่ (ลูกแพร์) 🍐",ex:""},
+      {u:"คำศัพท์",h:"八",p:"bā",th:"แปด (8) 8️⃣",ex:""},
+      {u:"วรรณยุกต์",h:"ā á ǎ à",p:"4 เสียง",th:"วรรณยุกต์ 4 เสียง",ex:"เสียงต่างกัน ความหมายต่างกัน เช่น bā(八)แปด · bà(爸)พ่อ",say:"八 爸爸"},
+      {u:"พินอิน",h:"a o e",p:"yuányīn 元音",th:"สระในภาษาจีน",ex:"พินอินช่วยบอกวิธีอ่านออกเสียงคำจีน",say:"啊 喔 鹅"}
+    ];
+    var flashIdx=0, flashFlipped=false;
+    function flashCardSay(c){ return isCJK(c.h)?c.h:(c.say||""); }
+    function openLearn(){
+      initAudio();
+      document.getElementById("home-screen").classList.add("hidden");
+      document.getElementById("learn-screen").classList.remove("hidden");
+      flashIdx=0; showFlash();
+    }
+    function showFlash(){
+      flashFlipped=false;
+      var c=FLASH[flashIdx];
+      document.getElementById("flash-unit").innerText=c.u;
+      document.getElementById("flash-pos").innerText=(flashIdx+1)+"/"+FLASH.length;
+      document.getElementById("flash-front").innerHTML='<div class="text-6xl font-black text-red-700 leading-tight mb-1">'+c.h+'</div><div class="text-xl font-bold text-slate-500">'+c.p+'</div>';
+      var back=document.getElementById("flash-back");
+      back.innerHTML='<div class="text-4xl font-black text-red-700 mb-1">'+c.h+'</div><div class="text-base font-bold text-slate-500 mb-2">'+c.p+'</div><div class="text-2xl font-black text-emerald-600">'+c.th+'</div>'+(c.ex?'<div class="text-sm font-semibold text-slate-500 mt-2">'+c.ex+'</div>':'');
+      back.classList.add("hidden");
+      document.getElementById("flash-front").classList.remove("hidden");
+      document.getElementById("flash-hint").innerText="แตะการ์ดเพื่อดูคำแปล · กด 🔊 ฟังเสียง";
+      speak(flashCardSay(c));
+    }
+    function flipCard(){
+      var c=FLASH[flashIdx]; flashFlipped=!flashFlipped; sfx("tap");
+      document.getElementById("flash-front").classList.toggle("hidden",flashFlipped);
+      document.getElementById("flash-back").classList.toggle("hidden",!flashFlipped);
+      document.getElementById("flash-hint").innerText=flashFlipped?"แตะอีกครั้งเพื่อดูคำ · กด 🔊 ฟังเสียง":"แตะการ์ดเพื่อดูคำแปล";
+      speak(flashCardSay(c));
+    }
+    function flashNext(){ sfx("tap"); flashIdx=(flashIdx+1)%FLASH.length; showFlash(); }
+    function flashPrev(){ sfx("tap"); flashIdx=(flashIdx-1+FLASH.length)%FLASH.length; showFlash(); }
+    function flashSpeak(){ speak(flashCardSay(FLASH[flashIdx])); }
+
+    /* =====================================================================
+       สถานะ + สร้างชุด
+    ===================================================================== */
+    var quiz=[], current=0, score=0, selectedMode="all", unitScores={}, answered=false;
+    var streak=0, bestStreak=0, missed=[];
+
+    function reshuffleOptions(q){ var c=Object.assign({},q); c.options=shuffle(q.options.slice()); return c; }
+    function buildQuiz(mode){
+      var result=[];
+      if(mode==="all"){ ALL_UNITS.forEach(function(u){ for(var i=0;i<5;i++) result.push(generators[u]()); }); return shuffle(result); }
+      for(var i=0;i<12;i++) result.push(generators[mode]());
+      return result;
+    }
+    function startQuiz(mode){
+      initAudio();
+      selectedMode=mode;
+      quiz = Array.isArray(mode) ? shuffle(mode).map(reshuffleOptions) : buildQuiz(mode);
+      current=0; score=0; streak=0; bestStreak=0; missed=[]; unitScores={};
+      ALL_UNITS.forEach(function(u){ unitScores[u]={right:0,total:0}; });
+      ["home-screen","learn-screen","result-screen"].forEach(function(id){ document.getElementById(id).classList.add("hidden"); });
+      document.getElementById("quiz-screen").classList.remove("hidden");
+      document.getElementById("total-display").innerText=quiz.length;
+      document.getElementById("question-total").innerText=quiz.length;
+      window.scrollTo(0,0);
+      loadQuestion();
+    }
+    function restartSameMode(){ startQuiz(Array.isArray(selectedMode)?"all":selectedMode); }
+    function startReview(){ startQuiz(missed.slice()); }
+    function goHome(){
+      try{ if(window.speechSynthesis) window.speechSynthesis.cancel(); }catch(e){}
+      ["quiz-screen","result-screen","learn-screen"].forEach(function(id){ document.getElementById(id).classList.add("hidden"); });
+      document.getElementById("home-screen").classList.remove("hidden");
+    }
+
+    /* =====================================================================
+       แสดงโจทย์
+    ===================================================================== */
+    function loadQuestion(){
+      answered=false;
+      var q=quiz[current];
+      document.getElementById("score-display").innerText=score;
+      document.getElementById("question-number").innerText=current+1;
+      document.getElementById("progress-bar").style.width=(current/quiz.length*100)+"%";
+      document.getElementById("unit-badge").innerText="บทที่ "+q.unit+": "+unitNames[q.unit];
+      var sb=document.getElementById("streak-badge");
+      if(streak>=2){ sb.classList.remove("hidden"); document.getElementById("streak-n").innerText=streak; } else sb.classList.add("hidden");
+      document.getElementById("q-visual").innerHTML=q.visual||"";
+      document.getElementById("q-hanzi").innerText=q.h||"";
+      document.getElementById("q-pinyin").innerText=q.p||"";
+      document.getElementById("q-prompt").innerText=q.prompt;
+      var spk=document.getElementById("speak-btn");
+      if(q.say){ spk.classList.remove("hidden"); spk.onclick=function(){ sfx("tap"); speak(q.say); }; } else spk.classList.add("hidden");
+      document.getElementById("feedback").classList.add("hidden");
+      document.getElementById("next-btn").classList.add("hidden");
+      renderChoice(q);
+      if(q.say) speak(q.say);
+    }
+
+    /* ---------- ตัวช่วย ---------- */
+    function optionSpeak(val){ return isCJK(val)?val:""; }
+    function optionSub(val){ return PINYIN[val]||""; } // พินอินใต้ตัวเลือกจีน
+    function makeConfirm(onOk){
+      var b=document.createElement("button");
+      b.id="confirm-btn"; b.setAttribute("data-ready","0");
+      b.className="w-full mt-3 bg-slate-200 text-slate-400 font-black py-3.5 rounded-2xl transition text-lg pointer-events-none";
+      b.innerText="ยืนยันคำตอบ ✓";
+      b.onclick=function(){ if(b.getAttribute("data-ready")!=="1"||answered)return; onOk(); };
+      return b;
+    }
+    function armConfirm(){ var b=document.getElementById("confirm-btn"); if(b){ b.setAttribute("data-ready","1"); b.className="w-full mt-3 bg-red-600 hover:bg-red-700 text-white font-black py-3.5 rounded-2xl shadow active:scale-95 transition text-lg"; } }
+    function lockConfirm(){ var b=document.getElementById("confirm-btn"); if(b) b.classList.add("hidden"); }
+
+    function renderChoice(q){
+      var area=document.getElementById("answer-area"); area.innerHTML="";
+      var opts=q.options, selected=null;
+      var maxLen=0; opts.forEach(function(o){ if(String(o).length>maxLen) maxLen=String(o).length; });
+      var shortStyle = maxLen<=4 && !isThai(opts.join(""));
+      var grid=document.createElement("div");
+      grid.className = shortStyle ? "grid grid-cols-2 gap-3" : "grid gap-2.5 grid-cols-1";
+      opts.forEach(function(opt){
+        var val=String(opt), sub=optionSub(val), cjk=isCJK(val);
+        var btn=document.createElement("button"); btn.setAttribute("data-v",val);
+        if(shortStyle){
+          btn.className="relative bg-white border-2 border-red-300 hover:bg-red-50 text-red-800 font-black rounded-2xl shadow-sm active:scale-95 transition min-h-[76px] flex flex-col items-center justify-center";
+          btn.innerHTML=(cjk?'<span class="absolute top-1 left-2 text-sm">🔊</span>':'')+'<span class="'+(cjk?"text-4xl":"text-3xl")+' leading-none">'+val+'</span>'+(sub?'<span class="text-[11px] font-bold text-slate-400 mt-1">'+sub+'</span>':'');
+        } else {
+          btn.className="bg-white border-2 border-red-200 hover:bg-red-50 text-slate-800 font-bold rounded-2xl shadow-sm active:scale-95 transition min-h-[54px] flex items-center gap-2 px-3 py-2 text-left";
+          btn.innerHTML=(cjk?'<span class="text-xl shrink-0">🔊</span>':'<span class="text-xl shrink-0">•</span>')+'<span class="flex-1"><span class="text-lg">'+val+'</span>'+(sub?' <span class="text-slate-400 text-sm">('+sub+')</span>':'')+'</span>';
+        }
+        btn.onclick=function(){
+          if(answered)return; sfx("tap"); if(cjk) speak(val);
+          selected=val;
+          grid.querySelectorAll("[data-v]").forEach(function(b){ b.classList.remove("ring-4","ring-red-400","bg-red-100"); });
+          btn.classList.add("ring-4","ring-red-400","bg-red-100");
+          armConfirm();
+        };
+        grid.appendChild(btn);
+      });
+      area.appendChild(grid);
+      area.appendChild(makeConfirm(function(){ commit(q,selected,area); }));
+    }
+    function commit(q,val,area){
+      if(val==null) return;
+      answered=true; lockConfirm();
+      var correct=val===q.answer;
+      area.querySelectorAll("[data-v]").forEach(function(b){
+        b.classList.add("pointer-events-none"); b.classList.remove("ring-red-400","bg-red-100");
+        var bv=b.getAttribute("data-v");
+        if(bv===q.answer) b.classList.add("ring-4","ring-emerald-400","bg-emerald-50");
+        else if(bv===val && !correct) b.classList.add("ring-4","ring-rose-400","bg-rose-50","shake");
+      });
+      finish(q,correct);
+    }
+
+    /* =====================================================================
+       สรุปผล + สตรีค
+    ===================================================================== */
+    function finish(q,correct){
+      unitScores[q.unit].total++;
+      var fb=document.getElementById("feedback"); fb.classList.remove("hidden");
+      if(correct){
+        score++; unitScores[q.unit].right++; streak++; if(streak>bestStreak) bestStreak=streak;
+        if(streak>=3) sfx("streak"); else sfx("correct");
+        var cheer = streak>=10?"🔥🔥 สุดยอด "+streak+" ข้อติด!":streak>=5?"🔥 เยี่ยม "+streak+" ข้อติด!":streak>=3?"🔥 "+streak+" ข้อติดแล้ว!":"เก่งมาก!";
+        fb.className="rounded-2xl p-3 mb-3 text-center font-bold bg-emerald-50 text-emerald-700 border border-emerald-200";
+        fb.innerText="🎉 ถูกต้อง! "+cheer+" · "+q.ex;
+      } else {
+        streak=0; sfx("wrong"); missed.push(q);
+        fb.className="rounded-2xl p-3 mb-3 text-center font-bold bg-rose-50 text-rose-700 border border-rose-200";
+        fb.innerText="💪 ยังไม่ใช่ — คำตอบคือ “"+q.answer+"” · "+q.ex;
+      }
+      document.getElementById("score-display").innerText=score;
+      var sb=document.getElementById("streak-badge");
+      if(streak>=2){ sb.classList.remove("hidden"); document.getElementById("streak-n").innerText=streak; } else sb.classList.add("hidden");
+      var next=document.getElementById("next-btn");
+      next.classList.remove("hidden");
+      next.innerText = current>=quiz.length-1 ? "ดูสรุปคะแนน 🏁" : "ข้อถัดไป ➜";
+    }
+    function nextQuestion(){ if(current>=quiz.length-1) showResult(); else { current++; window.scrollTo(0,0); loadQuestion(); } }
+
+    function showResult(){
+      try{ if(window.speechSynthesis) window.speechSynthesis.cancel(); }catch(e){}
+      document.getElementById("quiz-screen").classList.add("hidden");
+      document.getElementById("result-screen").classList.remove("hidden");
+      document.getElementById("final-score").innerText=score;
+      document.getElementById("final-total").innerText=quiz.length;
+      document.getElementById("best-streak").innerText=bestStreak;
+      var ratio=score/quiz.length;
+      document.getElementById("result-icon").innerText=ratio===1?"👑":ratio>=0.8?"🏆":ratio>=0.6?"✨":"💪";
+      var summary=document.getElementById("unit-summary"); summary.innerHTML="";
+      ALL_UNITS.forEach(function(u){
+        if(unitScores[u].total>0){
+          var row=document.createElement("div");
+          row.className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex justify-between items-center";
+          row.innerHTML='<span class="font-bold text-slate-700 text-sm">บทที่ '+u+': '+unitNames[u]+'</span><span class="font-black text-red-700">'+unitScores[u].right+'/'+unitScores[u].total+'</span>';
+          summary.appendChild(row);
+        }
+      });
+      var rb=document.getElementById("review-btn");
+      if(missed.length>0){ rb.classList.remove("hidden"); rb.innerText="🔁 ทบทวนข้อที่ตอบผิด ("+missed.length+" ข้อ)"; } else rb.classList.add("hidden");
+    }
+
+    /* =====================================================================
+       ปุ่มเรื่องบนหน้าแรก
+    ===================================================================== */
+    (function buildHome(){
+      var box=document.getElementById("unit-buttons");
+      ALL_UNITS.forEach(function(u){
+        var btn=document.createElement("button");
+        btn.className="bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 text-left rounded-2xl p-3.5 active:scale-95 transition";
+        btn.onclick=function(){ startQuiz(u); };
+        btn.innerHTML='<div class="font-black">บทที่ '+u+': '+unitNames[u]+'</div><div class="text-xs text-slate-500 font-semibold">'+unitSub[u]+'</div>';
+        box.appendChild(btn);
+      });
+    })();
+  </script>
+</body>
+</html>
