@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>English Grammar ป.1 — ไวยากรณ์อังกฤษ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { -webkit-text-size-adjust: 100%; }
+    button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    .pop { animation: pop .18s ease; }
+    @keyframes pop { 0% { transform: scale(.9); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
+    .shake { animation: shake .3s; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+    .flip { transition: transform .3s; }
+  </style>
+</head>
+<body class="min-h-screen bg-violet-50 p-3 font-sans select-none">
+  <main class="max-w-lg mx-auto">
+    <!-- ================= HOME ================= -->
+    <section id="home-screen" class="min-h-screen flex flex-col justify-center">
+      <div class="bg-white border-4 border-violet-200 rounded-3xl shadow-xl p-5">
+        <div class="text-center mb-5">
+          <div class="text-5xl mb-2">📚✏️</div>
+          <p class="text-xs font-black text-violet-500 uppercase tracking-wider">Grade 1 · English Grammar</p>
+          <h1 class="text-2xl font-black text-slate-800">ไวยากรณ์อังกฤษ ป.1</h1>
+          <p class="text-sm font-bold text-slate-500 mt-1">มีเสียงอ่าน 🔊 + คำแปลไทย · ทบทวนข้อผิด · สะสมสตรีค 🔥</p>
+        </div>
+
+        <button onclick="openLearn()" class="w-full bg-amber-400 hover:bg-amber-500 text-white text-left rounded-2xl p-4 shadow-md active:scale-95 transition mb-2.5">
+          <div class="text-lg font-black">📖 เรียนรู้กฎก่อน (Flashcards)</div>
+          <div class="text-xs font-semibold text-amber-50">การ์ดพลิกทบทวนกฎทั้ง 4 เรื่อง ช่วยจำก่อนทำข้อสอบ</div>
+        </button>
+
+        <div class="grid gap-2.5 mb-4">
+          <button onclick="startQuiz('all')" class="bg-violet-600 hover:bg-violet-700 text-white text-left rounded-2xl p-4 shadow-md active:scale-95 transition">
+            <div class="text-lg font-black">🎯 ทำรวมทุกเรื่อง</div>
+            <div class="text-xs font-semibold text-violet-100">สุ่มเรื่องละ 5 ข้อ รวม 20 ข้อ พร้อมสรุปแยกเรื่อง</div>
+          </button>
+          <div id="unit-buttons" class="grid gap-2.5"></div>
+        </div>
+
+        <a href="../" class="block text-center text-xs font-bold text-slate-500 underline">กลับหน้าเลือกแบบฝึกหัด</a>
+      </div>
+    </section>
+
+    <!-- ================= LEARN (Flashcards) ================= -->
+    <section id="learn-screen" class="hidden min-h-screen flex flex-col justify-center">
+      <div class="bg-white border-4 border-amber-200 rounded-3xl shadow-xl p-5">
+        <div class="flex items-center justify-between mb-3">
+          <button onclick="goHome()" class="text-xs bg-slate-100 text-slate-700 font-bold px-3 py-2 rounded-full active:scale-95 transition">🏠 หน้าแรก</button>
+          <span class="text-xs font-black text-amber-600">Flashcards · <span id="flash-pos">1/1</span></span>
+        </div>
+        <div class="text-center text-xs font-black text-amber-500 mb-2" id="flash-unit">Nouns</div>
+        <button id="flash-card" onclick="flipCard()" class="w-full min-h-[220px] bg-amber-50 border-2 border-amber-200 rounded-3xl p-6 flex flex-col items-center justify-center active:scale-[0.98] transition mb-3">
+          <div id="flash-front" class="text-center"></div>
+          <div id="flash-back" class="hidden text-center"></div>
+          <div class="text-[11px] font-bold text-slate-400 mt-4" id="flash-hint">แตะการ์ดเพื่อดูเฉลย</div>
+        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="flashPrev()" class="flex-1 bg-slate-100 text-slate-700 font-black py-3 rounded-2xl active:scale-95 transition">◀ ก่อนหน้า</button>
+          <button onclick="flashSpeak()" class="w-14 h-12 rounded-2xl bg-amber-500 text-white text-xl shadow active:scale-90 transition">🔊</button>
+          <button onclick="flashNext()" class="flex-1 bg-amber-500 text-white font-black py-3 rounded-2xl active:scale-95 transition">ถัดไป ▶</button>
+        </div>
+        <button onclick="startQuiz('all')" class="w-full mt-3 bg-violet-600 hover:bg-violet-700 text-white font-black py-3 rounded-2xl shadow active:scale-95 transition">พร้อมแล้ว! ทำข้อสอบ 🎯</button>
+      </div>
+    </section>
+
+    <!-- ================= QUIZ ================= -->
+    <section id="quiz-screen" class="hidden py-3">
+      <div class="bg-white border-4 border-violet-200 rounded-3xl shadow-xl p-4">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <button onclick="goHome()" class="text-xs bg-slate-100 text-slate-700 font-bold px-3 py-2 rounded-full active:scale-95 transition">🏠 หน้าแรก</button>
+          <div class="flex items-center gap-2">
+            <span id="streak-badge" class="hidden text-xs bg-orange-100 text-orange-600 font-black px-2.5 py-2 rounded-full">🔥 <span id="streak-n">0</span></span>
+            <button onclick="restartSameMode()" class="text-xs bg-amber-100 text-amber-700 font-bold px-3 py-2 rounded-full active:scale-95 transition">สุ่มใหม่ 🔄</button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between mb-3">
+          <span id="unit-badge" class="bg-violet-100 text-violet-700 font-black px-3 py-1 rounded-full text-xs">Unit 1</span>
+          <span class="text-amber-500 font-black">⭐ <span id="score-display">0</span>/<span id="total-display">20</span></span>
+        </div>
+
+        <div class="w-full bg-slate-100 rounded-full h-2 mb-3 overflow-hidden">
+          <div id="progress-bar" class="bg-violet-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+
+        <div class="text-center text-xs font-black text-slate-400 mb-2">
+          ข้อที่ <span id="question-number">1</span>/<span id="question-total">20</span>
+        </div>
+
+        <div id="question-card" class="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 mb-3">
+          <div id="question-visual" class="text-center"></div>
+          <div class="flex items-center justify-center gap-2 mb-1">
+            <button id="speak-btn" class="shrink-0 w-11 h-11 rounded-full bg-violet-500 hover:bg-violet-600 text-white text-xl shadow active:scale-90 transition" title="อ่านอีกครั้ง">🔊</button>
+            <p id="question-en" class="text-lg font-black text-center text-slate-800 leading-snug"></p>
+          </div>
+          <p id="question-th" class="text-sm font-semibold text-center text-slate-500 mt-1"></p>
+        </div>
+
+        <div id="answer-area" class="mb-3"></div>
+
+        <div id="feedback" class="hidden rounded-2xl p-3 mb-3 text-center font-bold"></div>
+
+        <button id="next-btn" onclick="nextQuestion()" class="hidden w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 rounded-2xl shadow-md active:scale-95 transition text-lg">ข้อถัดไป ➜</button>
+      </div>
+    </section>
+
+    <!-- ================= RESULT ================= -->
+    <section id="result-screen" class="hidden min-h-screen flex flex-col justify-center">
+      <div class="bg-white border-4 border-amber-300 rounded-3xl shadow-xl p-5 text-center">
+        <div id="result-icon" class="text-6xl mb-3">🏆</div>
+        <h2 class="text-2xl font-black text-slate-800 mb-2">สรุปคะแนน</h2>
+        <div class="bg-violet-50 border border-violet-100 rounded-2xl p-4 mb-3">
+          <div class="text-sm font-bold text-violet-600">คะแนนรวม</div>
+          <div class="text-5xl font-black text-violet-900"><span id="final-score">0</span>/<span id="final-total">20</span></div>
+          <div class="text-xs font-bold text-orange-500 mt-1">🔥 สตรีคสูงสุด <span id="best-streak">0</span> ข้อติด</div>
+        </div>
+        <div id="unit-summary" class="space-y-2 text-left mb-4"></div>
+        <button id="review-btn" onclick="startReview()" class="hidden w-full bg-rose-500 hover:bg-rose-600 text-white font-black py-3.5 rounded-2xl shadow-md active:scale-95 transition mb-3 text-lg"></button>
+        <button onclick="restartSameMode()" class="w-full bg-violet-600 hover:bg-violet-700 text-white font-black py-3 rounded-2xl shadow-md active:scale-95 transition mb-3">ทำชุดใหม่อีกครั้ง</button>
+        <button onclick="goHome()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-black py-3 rounded-2xl active:scale-95 transition">กลับหน้าแรก</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* =====================================================================
+       ข้อมูลหน่วย
+    ===================================================================== */
+    var unitNames = { 1:"Nouns", 2:"Articles (a/an)", 3:"Pronouns", 4:"Verb to be" };
+    var unitSub = {
+      1:"เอกพจน์ / พหูพจน์ · เติม -s, -es, foot → feet",
+      2:"a / an (an ใช้หน้า a e i o u)",
+      3:"I, you, we, they, he, she, it · แทนคำนาม",
+      4:"am / is / are · เลือกให้ตรงประธาน"
+    };
+    var ALL_UNITS = [1,2,3,4];
+
+    /* =====================================================================
+       เสียงอ่านภาษาอังกฤษ (Web Speech, en-US)
+    ===================================================================== */
+    var enVoice=null;
+    function pickVoice(){
+      try{
+        if(!window.speechSynthesis) return;
+        var vs=window.speechSynthesis.getVoices();
+        enVoice = vs.filter(function(v){ return /en[-_]US/i.test(v.lang); })[0]
+               || vs.filter(function(v){ return /^en/i.test(v.lang); })[0] || null;
+      }catch(e){}
+    }
+    if(window.speechSynthesis){ pickVoice(); window.speechSynthesis.onvoiceschanged=pickVoice; }
+    function isThai(s){ return /[฀-๿]/.test(String(s)); }
+    function speak(text){
+      try{
+        if(!window.speechSynthesis || !text || isThai(text)) return;
+        window.speechSynthesis.cancel();
+        var u=new SpeechSynthesisUtterance(String(text));
+        u.lang="en-US"; u.rate=0.82; u.pitch=1.05;
+        if(enVoice) u.voice=enVoice;
+        window.speechSynthesis.speak(u);
+      }catch(e){}
+    }
+
+    /* =====================================================================
+       เสียงเอฟเฟกต์
+    ===================================================================== */
+    var audioCtx=null;
+    function initAudio(){
+      try{
+        if(!audioCtx && (window.AudioContext||window.webkitAudioContext)){ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }
+        if(audioCtx && audioCtx.state==="suspended") audioCtx.resume();
+      }catch(e){}
+    }
+    function tone(freq,wave,dur,delay){
+      try{
+        if(!audioCtx)return;
+        var o=audioCtx.createOscillator(), g=audioCtx.createGain();
+        o.type=wave; o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination);
+        var t=audioCtx.currentTime;
+        g.gain.setValueAtTime(0.16,t+delay);
+        g.gain.exponentialRampToValueAtTime(0.01,t+delay+dur);
+        o.start(t+delay); o.stop(t+delay+dur);
+      }catch(e){}
+    }
+    function sfx(type){
+      initAudio();
+      if(type==="correct"){ tone(523.25,"sine",0.1,0); tone(659.25,"sine",0.1,0.1); tone(783.99,"sine",0.24,0.2); }
+      else if(type==="streak"){ tone(659,"sine",0.09,0); tone(880,"sine",0.09,0.09); tone(1046,"sine",0.16,0.18); }
+      else if(type==="tap"){ tone(440,"sine",0.05,0); }
+      else { tone(260,"triangle",0.18,0); tone(180,"triangle",0.24,0.14); }
+    }
+
+    /* =====================================================================
+       สุ่ม / ช่วยเหลือ
+    ===================================================================== */
+    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+    function pick(arr){ return arr[rand(0,arr.length-1)]; }
+    function shuffle(arr){ var c=arr.slice(); for(var i=c.length-1;i>0;i--){ var j=rand(0,i); var t=c[i]; c[i]=c[j]; c[j]=t; } return c; }
+    function sampleN(arr,n){ return shuffle(arr).slice(0,Math.min(n,arr.length)); }
+    function distinctOpts(answer,pool,count){
+      var o=[answer], g=0;
+      while(o.length<count && g<200){ var x=pick(pool); if(o.indexOf(x)===-1) o.push(x); g++; }
+      return shuffle(o);
+    }
+
+    /* =====================================================================
+       คลังข้อมูลไวยากรณ์
+    ===================================================================== */
+    var VOWELS=["a","e","i","o","u"];
+    // Nouns: [singular, plural]
+    var NREG=[["book","books"],["pen","pens"],["ruler","rulers"],["chair","chairs"],["pencil","pencils"],
+      ["balloon","balloons"],["flower","flowers"],["rock","rocks"],["student","students"],["eraser","erasers"],
+      ["stapler","staplers"],["banana","bananas"],["apple","apples"],["carrot","carrots"],["tiger","tigers"],
+      ["monkey","monkeys"],["eye","eyes"],["hand","hands"],["finger","fingers"],["arm","arms"],["ear","ears"],
+      ["dog","dogs"],["cat","cats"],["bird","birds"],["table","tables"]];
+    var NES=[["fox","foxes"],["tomato","tomatoes"],["dish","dishes"],["mango","mangoes"],["box","boxes"],
+      ["bus","buses"],["brush","brushes"],["watch","watches"],["glass","glasses"],["potato","potatoes"]];
+    var NIRR=[["foot","feet"],["tooth","teeth"],["man","men"],["child","children"]];
+    var NEMOJI={apple:"🍎",banana:"🍌",carrot:"🥕",book:"📚",pencil:"✏️",balloon:"🎈",flower:"🌸",dog:"🐶",
+      cat:"🐱",bird:"🐦",eye:"👁️",hand:"✋",fox:"🦊",dish:"🍽️",mango:"🥭",tomato:"🍅",tiger:"🐯",monkey:"🐵"};
+
+    // Articles: words (all where first-letter rule = correct answer)
+    var A_WORDS=["tiger","monkey","banana","carrot","piano","nurse","dog","cat","ball","book","pen","rooster",
+      "horse","prawn","zoo","lamp","table","car","house","king","big clock","good student","doctor","fireman"];
+    var AN_WORDS=["elephant","apple","orange","insect","umbrella","alligator","orangutan","ant","arrow","arm",
+      "octopus","oven","egg","old man","eagle","owl","ice cream","engineer","email","onion"];
+
+    // Pronoun replacement: category -> subjects
+    var PRON={
+      He:["a boy","a man","the fireman","the king","the boy","John","Tom","the man","Ben","my father"],
+      She:["a girl","a woman","the nurse","the girl","Anna","Susie","the woman","the queen","my mother","Helen"],
+      It:["a cat","a dog","the giraffe","an orange","the ball","the table","an apple","the mango","the bird","a book"],
+      They:["the oranges","the boys","the girls","the dogs","two cats","the students","the bananas","the apples","Ben and Jill","the children"],
+      We:["you and I","my friend and I","Tom and I","Anna and I"]
+    };
+    var PRON_TH={ I:"ฉัน", You:"คุณ / เธอ", We:"พวกเรา", They:"พวกเขา / พวกมัน", He:"เขา (ผู้ชาย)", She:"เขา (ผู้หญิง)", It:"มัน" };
+
+    // Verb to be: subject -> be
+    var BE_AM=["I"];
+    var BE_ARE=["You","We","They","Ben and Jill","The cats","My parents","Tom and I","The boys","The students","The dogs"];
+    var BE_IS=["He","She","It","Ben","Anna","The cat","My mom","The boy","A dog","Helen","The girl","My father"];
+
+    function item(o){
+      return { unit:o.unit, title:o.title, en:o.en, say:o.say||o.en, th:o.th||"",
+        visual:o.visual||"", options:o.options, answer:String(o.answer), ex:o.ex||"" };
+    }
+    function emojiRow(count,emoji){
+      var s=""; for(var i=0;i<count;i++) s+='<span class="text-3xl">'+emoji+'</span>';
+      return '<div class="bg-white rounded-2xl border border-slate-200 p-2 flex flex-wrap justify-center gap-1 mb-2">'+s+'</div>';
+    }
+
+    /* =====================================================================
+       ตัวสร้างโจทย์
+    ===================================================================== */
+    // ---- Unit 1: Nouns ----
+    function genU1(){
+      var type=rand(1,6);
+      if(type===1){ // plural form (regular/es/irregular)
+        var pair=pick(shuffle([].concat(NREG,NREG,NES,NIRR)));
+        var sing=pair[0], plu=pair[1];
+        var opts=[plu].concat([sing, sing+"s", sing+"es"].filter(function(x){return x!==plu;}));
+        opts=opts.filter(function(x,i){return opts.indexOf(x)===i;}).slice(0,4);
+        return item({unit:1,title:"Plural form",en:'What is the plural of "'+sing+'"?',
+          say:'What is the plural of '+sing+'?',th:'รูปพหูพจน์ (มากกว่า 1) ของ "'+sing+'" คืออะไร',
+          options:shuffle(opts),answer:plu,ex:'"'+sing+'" → "'+plu+'"'}); }
+      if(type===2){ // singular form
+        var pair=pick(shuffle([].concat(NREG,NES,NIRR)));
+        var opts=distinctOpts(pair[0], NREG.map(function(p){return p[0];}).concat(NES.map(function(p){return p[0];})), 4);
+        return item({unit:1,title:"Singular form",en:'What is the singular of "'+pair[1]+'"?',
+          say:'What is the singular of '+pair[1]+'?',th:'รูปเอกพจน์ (1 อัน) ของ "'+pair[1]+'" คืออะไร',
+          options:opts,answer:pair[0],ex:'"'+pair[1]+'" → "'+pair[0]+'"'}); }
+      if(type===3){ // count picture -> plural/singular
+        var keys=Object.keys(NEMOJI);
+        var allpairs=[].concat(NREG,NES,NIRR).filter(function(p){return NEMOJI[p[0]];});
+        var pair=pick(allpairs); var n=rand(2,4);
+        return item({unit:1,title:"Look and choose",en:'There are '+n+' ___ .',
+          say:'There are '+n+' what?',th:'มี '+n+' อัน ควรใช้คำใด (มากกว่า 1 = พหูพจน์)',
+          visual:emojiRow(n,NEMOJI[pair[0]]),options:shuffle([pair[1],pair[0]]),answer:pair[1],
+          ex:'มากกว่า 1 อัน ใช้พหูพจน์ "'+pair[1]+'"'}); }
+      if(type===4){ // one object -> singular
+        var allp=[].concat(NREG,NES).filter(function(p){return NEMOJI[p[0]];});
+        var pair=pick(allp);
+        return item({unit:1,title:"Look and choose",en:'There is 1 ___ .',
+          say:'There is one what?',th:'มี 1 อัน ควรใช้คำใด (1 อัน = เอกพจน์)',
+          visual:emojiRow(1,NEMOJI[pair[0]]),options:shuffle([pair[0],pair[1]]),answer:pair[0],
+          ex:'1 อัน ใช้เอกพจน์ "'+pair[0]+'"'}); }
+      if(type===5){ // add -s or -es
+        var useEs=Math.random()>0.5; var pair=useEs?pick(NES):pick(NREG);
+        return item({unit:1,title:"Add -s or -es",en:'To make "'+pair[0]+'" plural, we add ___',
+          say:'To make '+pair[0]+' plural, we add?',th:'ทำ "'+pair[0]+'" ให้เป็นพหูพจน์ ต้องเติมอะไร',
+          options:shuffle(["-s","-es"]),answer:useEs?"-es":"-s",
+          ex:useEs?'"'+pair[0]+'" ลงท้าย o/x/z/ch/sh เติม -es → '+pair[1]:'"'+pair[0]+'" เติม -s → '+pair[1]}); }
+      // which word is plural
+      var pl=pick([].concat(NREG,NES))[1];
+      var sings=shuffle([].concat(NREG,NES,NIRR)).slice(0,3).map(function(p){return p[0];});
+      return item({unit:1,title:"Which is plural?",en:'Which word is plural (more than one)?',
+        say:'Which word is plural?',th:'คำใดเป็นพหูพจน์ (มากกว่า 1)',
+        options:shuffle([pl].concat(sings)),answer:pl,ex:'"'+pl+'" เป็นพหูพจน์'});
+    }
+
+    // ---- Unit 2: Articles a/an ----
+    function genU2(){
+      var type=rand(1,4);
+      if(type===1){ var isAn=Math.random()>0.5; var word=isAn?pick(AN_WORDS):pick(A_WORDS);
+        return item({unit:2,title:"a or an",en:'___ '+word,
+          say:'a, or an, '+word+'?',th:'เติม a หรือ an หน้าคำว่า "'+word+'"',
+          options:shuffle(["a","an"]),answer:isAn?"an":"a",
+          ex:isAn?'"'+word+'" ขึ้นต้นด้วยสระ (a e i o u) จึงใช้ "an"':'"'+word+'" ขึ้นต้นด้วยพยัญชนะ จึงใช้ "a"'}); }
+      if(type===2){ var isAn=Math.random()>0.5; var word=isAn?pick(AN_WORDS):pick(A_WORDS);
+        return item({unit:2,title:"Fill a / an",en:'This is ___ '+word+'.',
+          say:'This is a, or an, '+word+'.',th:'"นี่คือ...'+word+'" เติม a หรือ an',
+          options:shuffle(["a","an"]),answer:isAn?"an":"a",
+          ex:isAn?'ใช้ "an" หน้าคำที่ขึ้นต้นด้วยสระ':'ใช้ "a" หน้าคำที่ขึ้นต้นด้วยพยัญชนะ'}); }
+      if(type===3){ var ans=pick(AN_WORDS);
+        var opts=shuffle([ans].concat(sampleN(A_WORDS,3)));
+        return item({unit:2,title:"Find 'an'",en:'Which word uses "an"?',
+          say:'Which word uses an?',th:'คำใดต้องใช้ "an" (ขึ้นต้นด้วยสระ)',
+          options:opts,answer:ans,ex:'"'+ans+'" ขึ้นต้นด้วยสระ จึงใช้ "an"'}); }
+      var ans=pick(A_WORDS); var opts=shuffle([ans].concat(sampleN(AN_WORDS,3)));
+      return item({unit:2,title:"Find 'a'",en:'Which word uses "a"?',
+        say:'Which word uses a?',th:'คำใดต้องใช้ "a" (ขึ้นต้นด้วยพยัญชนะ)',
+        options:opts,answer:ans,ex:'"'+ans+'" ขึ้นต้นด้วยพยัญชนะ จึงใช้ "a"'});
+    }
+
+    // ---- Unit 3: Pronouns ----
+    function genU3(){
+      var type=rand(1,4);
+      if(type<=2){ // replace noun with pronoun
+        var cat=pick(["He","She","It","They","We"]); var subj=pick(PRON[cat]);
+        var others=sampleN(["He","She","It","They","We","You"].filter(function(p){return p!==cat;}),3);
+        return item({unit:3,title:"Choose the pronoun",en:'Which pronoun replaces "'+subj+'"?',
+          say:'Which pronoun replaces '+subj+'?',th:'ใช้คำสรรพนามใดแทน "'+subj+'"',
+          options:shuffle([cat].concat(others)),
+          answer:cat,ex:'"'+subj+'" → '+cat+' ('+PRON_TH[cat]+')'}); }
+      if(type===3){ // meaning (Thai options)
+        var pr=pick(["I","You","We","They","He","She","It"]);
+        var others=shuffle(["I","You","We","They","He","She","It"].filter(function(x){return x!==pr;})).slice(0,3);
+        return item({unit:3,title:"Pronoun meaning",en:'What does "'+pr+'" mean?',
+          say:'What does '+pr+' mean?',th:'คำสรรพนาม "'+pr+'" แปลว่าอะไร',
+          options:shuffle([PRON_TH[pr]].concat(others.map(function(x){return PRON_TH[x];}))),
+          answer:PRON_TH[pr],ex:'"'+pr+'" แปลว่า '+PRON_TH[pr]}); }
+      // "I" with am (unique)
+      return item({unit:3,title:"Choose the pronoun",en:'___ am a student.',
+        say:'Blank am a student.',th:'"___ am a student" เติมคำสรรพนามใด',
+        options:shuffle(["I","You","We","He"]),answer:"I",ex:'ใช้กับ "am" ได้แค่ "I" เท่านั้น'});
+    }
+
+    // ---- Unit 4: Verb to be ----
+    function genU4(){
+      var type=rand(1,4);
+      if(type<=2){
+        var bucket=pick(["am","is","are"]);
+        var subj = bucket==="am"?"I" : bucket==="is"?pick(BE_IS) : pick(BE_ARE);
+        var preds=["a student.","a teacher.","happy.","tall.","my friend.","in the room.","a doctor.","here."];
+        return item({unit:4,title:"am / is / are",en:subj+' ___ '+pick(preds),
+          say:subj+' blank.',th:'"'+subj+'" ใช้ verb to be ตัวใด (am/is/are)',
+          options:shuffle(["am","is","are"]),answer:bucket,
+          ex:'"'+subj+'" ใช้ "'+bucket+'"'+(bucket==="are"?' (ประธานพหูพจน์)':bucket==="is"?' (ประธานเอกพจน์)':' (ใช้กับ I)')}); }
+      if(type===3){ // which be for a pronoun
+        var pr=pick(["I","You","We","They","He","She","It"]);
+        var be=pr==="I"?"am":(pr==="You"||pr==="We"||pr==="They")?"are":"is";
+        return item({unit:4,title:"Match the verb",en:'Which verb to be goes with "'+pr+'"?',
+          say:'Which verb to be goes with '+pr+'?',th:'"'+pr+'" ใช้คู่กับ verb to be ตัวใด',
+          options:shuffle(["am","is","are"]),answer:be,ex:'"'+pr+' '+be+'"'}); }
+      // name singular vs plural -> is/are
+      var plural=Math.random()>0.5;
+      var subj=plural?pick(["Ben and Jill","Tom and Anna","The cats","My parents","The boys"]):pick(["Ben","Anna","Helen","The cat","The boy"]);
+      return item({unit:4,title:"is or are",en:subj+' ___ here.',
+        say:subj+' blank here.',th:'"'+subj+'" เป็นประธาน'+(plural?"พหูพจน์ (มากกว่า 1)":"เอกพจน์ (1)")+' ใช้ is หรือ are',
+        options:shuffle(["is","are"]),answer:plural?"are":"is",
+        ex:plural?'ประธานมากกว่า 1 ใช้ "are"':'ประธาน 1 ใช้ "is"'});
+    }
+
+    var generators={1:genU1,2:genU2,3:genU3,4:genU4};
+
+    /* =====================================================================
+       Flashcards (เรียนรู้กฎ)
+    ===================================================================== */
+    var FLASH=[
+      {u:"Nouns",q:"พหูพจน์ (มากกว่า 1) ส่วนใหญ่เติมอะไร?",a:"เติม -s",ex:"book → books, pen → pens"},
+      {u:"Nouns",q:"คำที่ลงท้าย o, x, z, ch, sh เติมอะไร?",a:"เติม -es",ex:"fox → foxes, dish → dishes"},
+      {u:"Nouns",q:'พหูพจน์ของ "foot" คือ?',a:"feet (พิเศษ)",ex:"tooth → teeth, man → men"},
+      {u:"Articles",q:"ใช้ a หรือ an หน้าคำที่ขึ้นต้นด้วยพยัญชนะ?",a:"a",ex:"a tiger, a book, a dog"},
+      {u:"Articles",q:"ใช้ a หรือ an หน้าคำที่ขึ้นต้นด้วยสระ a e i o u?",a:"an",ex:"an apple, an egg, an umbrella"},
+      {u:"Pronouns",q:"a boy / a man ใช้สรรพนามใด?",a:"He (เขา ผู้ชาย)",ex:"The boy is tall. → He is tall."},
+      {u:"Pronouns",q:"a girl / a woman ใช้สรรพนามใด?",a:"She (เขา ผู้หญิง)",ex:"Anna is thin. → She is thin."},
+      {u:"Pronouns",q:"สัตว์ / สิ่งของ (1 อัน) ใช้สรรพนามใด?",a:"It (มัน)",ex:"The giraffe is tall. → It is tall."},
+      {u:"Pronouns",q:"คน/สัตว์/สิ่งของหลายอัน ใช้สรรพนามใด?",a:"They (พวกเขา/พวกมัน)",ex:"The oranges are sweet. → They are sweet."},
+      {u:"Pronouns",q:"ฉันกับคนอื่น (…and I) ใช้สรรพนามใด?",a:"We (พวกเรา)",ex:"Tom and I are friends. → We are friends."},
+      {u:"Verb to be",q:'"I" ใช้ verb to be ตัวใด?',a:"am",ex:"I am a student."},
+      {u:"Verb to be",q:"He / She / It / ชื่อคน 1 คน ใช้ตัวใด?",a:"is",ex:"She is a nurse. Ben is a boy."},
+      {u:"Verb to be",q:"You / We / They / ประธานพหูพจน์ ใช้ตัวใด?",a:"are",ex:"They are tigers. We are students."}
+    ];
+    var flashIdx=0, flashFlipped=false;
+    function openLearn(){
+      initAudio();
+      document.getElementById("home-screen").classList.add("hidden");
+      document.getElementById("learn-screen").classList.remove("hidden");
+      flashIdx=0; showFlash();
+    }
+    function showFlash(){
+      flashFlipped=false;
+      var c=FLASH[flashIdx];
+      document.getElementById("flash-unit").innerText=c.u;
+      document.getElementById("flash-pos").innerText=(flashIdx+1)+"/"+FLASH.length;
+      document.getElementById("flash-front").innerHTML='<div class="text-lg font-black text-slate-800 leading-snug">'+c.q+'</div>';
+      var back=document.getElementById("flash-back");
+      back.innerHTML='<div class="text-3xl font-black text-emerald-600 mb-1">'+c.a+'</div><div class="text-sm font-semibold text-slate-500">'+c.ex+'</div>';
+      back.classList.add("hidden");
+      document.getElementById("flash-front").classList.remove("hidden");
+      document.getElementById("flash-hint").innerText="แตะการ์ดเพื่อดูเฉลย";
+    }
+    function flipCard(){
+      var c=FLASH[flashIdx];
+      flashFlipped=!flashFlipped; sfx("tap");
+      document.getElementById("flash-front").classList.toggle("hidden",flashFlipped);
+      document.getElementById("flash-back").classList.toggle("hidden",!flashFlipped);
+      document.getElementById("flash-hint").innerText=flashFlipped?"แตะอีกครั้งเพื่อดูคำถาม":"แตะการ์ดเพื่อดูเฉลย";
+      if(flashFlipped) speak(c.ex);
+    }
+    function flashNext(){ sfx("tap"); flashIdx=(flashIdx+1)%FLASH.length; showFlash(); }
+    function flashPrev(){ sfx("tap"); flashIdx=(flashIdx-1+FLASH.length)%FLASH.length; showFlash(); }
+    function flashSpeak(){ var c=FLASH[flashIdx]; speak(flashFlipped?c.ex:c.a); }
+
+    /* =====================================================================
+       สร้างชุดข้อสอบ + สถานะ
+    ===================================================================== */
+    var quiz=[], current=0, score=0, selectedMode="all", unitScores={}, answered=false;
+    var streak=0, bestStreak=0, missed=[];
+
+    function reshuffleOptions(q){ var c=Object.assign({},q); c.options=shuffle(q.options.slice()); return c; }
+
+    function buildQuiz(mode){
+      var result=[];
+      if(mode==="all"){ ALL_UNITS.forEach(function(u){ for(var i=0;i<5;i++) result.push(generators[u]()); }); return shuffle(result); }
+      for(var i=0;i<12;i++) result.push(generators[mode]());
+      return result;
+    }
+
+    function startQuiz(mode){
+      initAudio(); speak(" ");
+      selectedMode=mode;
+      quiz = Array.isArray(mode) ? shuffle(mode).map(reshuffleOptions) : buildQuiz(mode);
+      current=0; score=0; streak=0; bestStreak=0; missed=[]; unitScores={};
+      ALL_UNITS.forEach(function(u){ unitScores[u]={right:0,total:0}; });
+      document.getElementById("home-screen").classList.add("hidden");
+      document.getElementById("learn-screen").classList.add("hidden");
+      document.getElementById("result-screen").classList.add("hidden");
+      document.getElementById("quiz-screen").classList.remove("hidden");
+      document.getElementById("total-display").innerText=quiz.length;
+      document.getElementById("question-total").innerText=quiz.length;
+      window.scrollTo(0,0);
+      loadQuestion();
+    }
+    function restartSameMode(){ startQuiz(Array.isArray(selectedMode)?"all":selectedMode); }
+    function startReview(){ startQuiz(missed.slice()); }
+    function goHome(){
+      try{ if(window.speechSynthesis) window.speechSynthesis.cancel(); }catch(e){}
+      ["quiz-screen","result-screen","learn-screen"].forEach(function(id){ document.getElementById(id).classList.add("hidden"); });
+      document.getElementById("home-screen").classList.remove("hidden");
+    }
+
+    /* =====================================================================
+       แสดงโจทย์
+    ===================================================================== */
+    function loadQuestion(){
+      answered=false;
+      var q=quiz[current];
+      document.getElementById("score-display").innerText=score;
+      document.getElementById("question-number").innerText=current+1;
+      document.getElementById("progress-bar").style.width=(current/quiz.length*100)+"%";
+      document.getElementById("unit-badge").innerText="Unit "+q.unit+": "+unitNames[q.unit];
+      var sb=document.getElementById("streak-badge");
+      if(streak>=2){ sb.classList.remove("hidden"); document.getElementById("streak-n").innerText=streak; } else sb.classList.add("hidden");
+      document.getElementById("question-visual").innerHTML=q.visual||"";
+      document.getElementById("question-en").innerText=q.en;
+      document.getElementById("question-th").innerText=q.th;
+      document.getElementById("speak-btn").onclick=function(){ sfx("tap"); speak(q.say); };
+      document.getElementById("feedback").classList.add("hidden");
+      document.getElementById("next-btn").classList.add("hidden");
+      renderChoice(q);
+      speak(q.say);
+    }
+
+    /* ---------- ตัวช่วยอ่าน/แปลตัวเลือก ---------- */
+    function optionSpeak(val){ return isThai(val)?"":val; }
+    function optionTh(val){ return PRON_TH[val]||""; }
+    function makeConfirm(onOk){
+      var b=document.createElement("button");
+      b.id="confirm-btn"; b.setAttribute("data-ready","0");
+      b.className="w-full mt-3 bg-slate-200 text-slate-400 font-black py-3.5 rounded-2xl transition text-lg pointer-events-none";
+      b.innerText="ยืนยันคำตอบ ✓";
+      b.onclick=function(){ if(b.getAttribute("data-ready")!=="1"||answered)return; onOk(); };
+      return b;
+    }
+    function armConfirm(){ var b=document.getElementById("confirm-btn"); if(b){ b.setAttribute("data-ready","1"); b.className="w-full mt-3 bg-violet-600 hover:bg-violet-700 text-white font-black py-3.5 rounded-2xl shadow active:scale-95 transition text-lg"; } }
+    function lockConfirm(){ var b=document.getElementById("confirm-btn"); if(b) b.classList.add("hidden"); }
+
+    function renderChoice(q){
+      var area=document.getElementById("answer-area"); area.innerHTML="";
+      var opts=q.options, selected=null;
+      var maxLen=0; opts.forEach(function(o){ if(String(o).length>maxLen) maxLen=String(o).length; });
+      var shortStyle = maxLen<=4 && !isThai(opts.join(""));
+      var grid=document.createElement("div");
+      grid.className = shortStyle
+        ? "grid gap-3 "+(opts.length===2?"grid-cols-2 max-w-xs mx-auto":opts.length===3?"grid-cols-3":"grid-cols-2")
+        : "grid gap-2.5 grid-cols-1";
+      opts.forEach(function(opt){
+        var val=String(opt), th=optionTh(val), sayable=!isThai(val);
+        var btn=document.createElement("button"); btn.setAttribute("data-v",val);
+        if(shortStyle){
+          btn.className="relative bg-white border-2 border-violet-300 hover:bg-violet-50 text-violet-800 font-black rounded-2xl shadow-sm active:scale-95 transition min-h-[72px] flex flex-col items-center justify-center";
+          btn.innerHTML=(sayable?'<span class="absolute top-1 left-2 text-sm">🔊</span>':'')+'<span class="text-3xl leading-none">'+val+'</span>'+(th?'<span class="text-[11px] font-bold text-slate-400 mt-1">'+th+'</span>':'');
+        } else {
+          btn.className="bg-white border-2 border-violet-200 hover:bg-violet-50 text-slate-800 font-bold rounded-2xl shadow-sm active:scale-95 transition min-h-[54px] flex items-center gap-2 px-3 py-2 text-left";
+          btn.innerHTML=(sayable?'<span class="text-xl shrink-0">🔊</span>':'<span class="text-xl shrink-0">•</span>')+'<span class="flex-1"><span class="text-lg">'+val+'</span>'+(th?' <span class="text-slate-400 text-sm">('+th+')</span>':'')+'</span>';
+        }
+        btn.onclick=function(){
+          if(answered)return; sfx("tap"); if(sayable) speak(optionSpeak(val));
+          selected=val;
+          grid.querySelectorAll("[data-v]").forEach(function(b){ b.classList.remove("ring-4","ring-violet-400","bg-violet-100"); });
+          btn.classList.add("ring-4","ring-violet-400","bg-violet-100");
+          armConfirm();
+        };
+        grid.appendChild(btn);
+      });
+      area.appendChild(grid);
+      area.appendChild(makeConfirm(function(){ commit(q,selected,area); }));
+    }
+    function commit(q,val,area){
+      if(val==null) return;
+      answered=true; lockConfirm();
+      var correct=val===q.answer;
+      area.querySelectorAll("[data-v]").forEach(function(b){
+        b.classList.add("pointer-events-none"); b.classList.remove("ring-violet-400","bg-violet-100");
+        var bv=b.getAttribute("data-v");
+        if(bv===q.answer) b.classList.add("ring-4","ring-emerald-400","bg-emerald-50");
+        else if(bv===val && !correct) b.classList.add("ring-4","ring-rose-400","bg-rose-50","shake");
+      });
+      finish(q,correct);
+    }
+
+    /* =====================================================================
+       สรุปผลข้อเดียว + สตรีค
+    ===================================================================== */
+    function finish(q,correct){
+      unitScores[q.unit].total++;
+      var fb=document.getElementById("feedback"); fb.classList.remove("hidden");
+      if(correct){
+        score++; unitScores[q.unit].right++; streak++; if(streak>bestStreak) bestStreak=streak;
+        if(streak>=3 && streak%1===0){ sfx("streak"); } else sfx("correct");
+        var cheer = streak>=10?"🔥🔥 สุดยอด "+streak+" ข้อติด!":streak>=5?"🔥 เยี่ยม "+streak+" ข้อติด!":streak>=3?"🔥 "+streak+" ข้อติดแล้ว!":"เก่งมาก!";
+        fb.className="rounded-2xl p-3 mb-3 text-center font-bold bg-emerald-50 text-emerald-700 border border-emerald-200";
+        fb.innerText="🎉 Correct! "+cheer+" · "+q.ex;
+      } else {
+        streak=0; sfx("wrong"); missed.push(q);
+        fb.className="rounded-2xl p-3 mb-3 text-center font-bold bg-rose-50 text-rose-700 border border-rose-200";
+        fb.innerText="💪 ยังไม่ใช่ — คำตอบคือ “"+q.answer+"” · "+q.ex;
+      }
+      document.getElementById("score-display").innerText=score;
+      var sb=document.getElementById("streak-badge");
+      if(streak>=2){ sb.classList.remove("hidden"); document.getElementById("streak-n").innerText=streak; } else sb.classList.add("hidden");
+      var next=document.getElementById("next-btn");
+      next.classList.remove("hidden");
+      next.innerText = current>=quiz.length-1 ? "ดูสรุปคะแนน 🏁" : "ข้อถัดไป ➜";
+    }
+
+    function nextQuestion(){ if(current>=quiz.length-1) showResult(); else { current++; window.scrollTo(0,0); loadQuestion(); } }
+
+    function showResult(){
+      try{ if(window.speechSynthesis) window.speechSynthesis.cancel(); }catch(e){}
+      document.getElementById("quiz-screen").classList.add("hidden");
+      document.getElementById("result-screen").classList.remove("hidden");
+      document.getElementById("final-score").innerText=score;
+      document.getElementById("final-total").innerText=quiz.length;
+      document.getElementById("best-streak").innerText=bestStreak;
+      var ratio=score/quiz.length;
+      document.getElementById("result-icon").innerText=ratio===1?"👑":ratio>=0.8?"🏆":ratio>=0.6?"✨":"💪";
+      var summary=document.getElementById("unit-summary"); summary.innerHTML="";
+      ALL_UNITS.forEach(function(u){
+        if(unitScores[u].total>0){
+          var row=document.createElement("div");
+          row.className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex justify-between items-center";
+          row.innerHTML='<span class="font-bold text-slate-700 text-sm">Unit '+u+': '+unitNames[u]+'</span><span class="font-black text-violet-700">'+unitScores[u].right+'/'+unitScores[u].total+'</span>';
+          summary.appendChild(row);
+        }
+      });
+      var rb=document.getElementById("review-btn");
+      if(missed.length>0){ rb.classList.remove("hidden"); rb.innerText="🔁 ทบทวนข้อที่ตอบผิด ("+missed.length+" ข้อ)"; }
+      else rb.classList.add("hidden");
+    }
+
+    /* =====================================================================
+       ปุ่มเรื่องบนหน้าแรก
+    ===================================================================== */
+    (function buildHome(){
+      var box=document.getElementById("unit-buttons");
+      ALL_UNITS.forEach(function(u){
+        var btn=document.createElement("button");
+        btn.className="bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 text-left rounded-2xl p-3.5 active:scale-95 transition";
+        btn.onclick=function(){ startQuiz(u); };
+        btn.innerHTML='<div class="font-black">Unit '+u+': '+unitNames[u]+'</div><div class="text-xs text-slate-500 font-semibold">'+unitSub[u]+'</div>';
+        box.appendChild(btn);
+      });
+    })();
+  </script>
+</body>
+</html>
