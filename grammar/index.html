@@ -306,27 +306,31 @@
     }
 
     // ---- Unit 2: Articles a/an ----
+    function artEx(word){ // อธิบายว่าทำไมคำนี้ใช้ a หรือ an โดยบอกตัวอักษรแรก
+      var fl=word[0].toLowerCase();
+      return VOWELS.indexOf(fl)>=0
+        ? '"'+word+'" ขึ้นต้นด้วย "'+fl+'" ซึ่งเป็นสระ (a e i o u) จึงใช้ "an"'
+        : '"'+word+'" ขึ้นต้นด้วย "'+fl+'" ซึ่งเป็นพยัญชนะ (ไม่ใช่สระ) จึงใช้ "a"';
+    }
     function genU2(){
       var type=rand(1,4);
       if(type===1){ var isAn=Math.random()>0.5; var word=isAn?pick(AN_WORDS):pick(A_WORDS);
         return item({unit:2,title:"a or an",en:'___ '+word,
           say:'a, or an, '+word+'?',th:'เติม a หรือ an หน้าคำว่า "'+word+'"',
-          options:shuffle(["a","an"]),answer:isAn?"an":"a",
-          ex:isAn?'"'+word+'" ขึ้นต้นด้วยสระ (a e i o u) จึงใช้ "an"':'"'+word+'" ขึ้นต้นด้วยพยัญชนะ จึงใช้ "a"'}); }
+          options:shuffle(["a","an"]),answer:isAn?"an":"a",ex:artEx(word)}); }
       if(type===2){ var isAn=Math.random()>0.5; var word=isAn?pick(AN_WORDS):pick(A_WORDS);
         return item({unit:2,title:"Fill a / an",en:'This is ___ '+word+'.',
           say:'This is a, or an, '+word+'.',th:'"นี่คือ...'+word+'" เติม a หรือ an',
-          options:shuffle(["a","an"]),answer:isAn?"an":"a",
-          ex:isAn?'ใช้ "an" หน้าคำที่ขึ้นต้นด้วยสระ':'ใช้ "a" หน้าคำที่ขึ้นต้นด้วยพยัญชนะ'}); }
+          options:shuffle(["a","an"]),answer:isAn?"an":"a",ex:artEx(word)}); }
       if(type===3){ var ans=pick(AN_WORDS);
         var opts=shuffle([ans].concat(sampleN(A_WORDS,3)));
         return item({unit:2,title:"Find 'an'",en:'Which word uses "an"?',
-          say:'Which word uses an?',th:'คำใดต้องใช้ "an" (ขึ้นต้นด้วยสระ)',
-          options:opts,answer:ans,ex:'"'+ans+'" ขึ้นต้นด้วยสระ จึงใช้ "an"'}); }
+          say:'Which word uses an?',th:'คำใดต้องใช้ "an" (ขึ้นต้นด้วยสระ a e i o u)',
+          options:opts,answer:ans,ex:artEx(ans)}); }
       var ans=pick(A_WORDS); var opts=shuffle([ans].concat(sampleN(AN_WORDS,3)));
       return item({unit:2,title:"Find 'a'",en:'Which word uses "a"?',
         say:'Which word uses a?',th:'คำใดต้องใช้ "a" (ขึ้นต้นด้วยพยัญชนะ)',
-        options:opts,answer:ans,ex:'"'+ans+'" ขึ้นต้นด้วยพยัญชนะ จึงใช้ "a"'});
+        options:opts,answer:ans,ex:artEx(ans)});
     }
 
     // ---- Unit 3: Pronouns ----
@@ -389,9 +393,9 @@
         examples:[{en:"a book",th:"หนังสือ 1 เล่ม"},{en:"a dog",th:"หมา 1 ตัว"},{en:"a cat",th:"แมว 1 ตัว"},{en:"a pen",th:"ปากกา 1 ด้าม"},{en:"an apple",th:"แอปเปิล 1 ผล"}],
         say:"a book. a dog. a cat. a pen. an apple."},
       {u:"Nouns",q:'คำนาม "พหูพจน์" (plural) แปลว่าอะไร?',a:"มีของมากกว่า 1 อัน 🟢🟢🟢",
-        tip:"ของหลายชิ้น ส่วนใหญ่เติม s ท้ายคำ",
-        examples:[{en:"books",th:"หนังสือหลายเล่ม"},{en:"dogs",th:"หมาหลายตัว"},{en:"cats",th:"แมวหลายตัว"},{en:"pens",th:"ปากกาหลายด้าม"},{en:"cars",th:"รถหลายคัน"}],
-        say:"books. dogs. cats. pens. cars."},
+        tip:"ของหลายชิ้น เติม s ท้ายคำ (1 อัน → หลายอัน)",
+        examples:[{en:"book → books",th:"หนังสือ"},{en:"dog → dogs",th:"หมา"},{en:"cat → cats",th:"แมว"},{en:"pen → pens",th:"ปากกา"},{en:"car → cars",th:"รถ"}],
+        say:"book, books. dog, dogs. cat, cats. pen, pens. car, cars."},
       {u:"Nouns",q:"คำที่ลงท้าย o, x, z, ch, sh ทำเป็นพหูพจน์อย่างไร?",a:"เติม -es",
         tip:"ถ้าคำจบด้วย o x z ch sh ให้เติม es (ไม่ใช่แค่ s)",
         examples:[{en:"fox → foxes",th:"สุนัขจิ้งจอก"},{en:"box → boxes",th:"กล่อง"},{en:"dish → dishes",th:"จาน"},{en:"watch → watches",th:"นาฬิกา"},{en:"tomato → tomatoes",th:"มะเขือเทศ"},{en:"bus → buses",th:"รถบัส"}],
@@ -400,17 +404,17 @@
         tip:"บางคำไม่เติม s หรือ es แต่เปลี่ยนรูปทั้งคำเลย ต้องท่องจำ",
         examples:[{en:"foot → feet",th:"เท้า (1 → หลายข้าง)"},{en:"tooth → teeth",th:"ฟัน"},{en:"man → men",th:"ผู้ชาย"},{en:"woman → women",th:"ผู้หญิง"},{en:"child → children",th:"เด็ก"},{en:"mouse → mice",th:"หนู"}],
         say:"foot, feet. tooth, teeth. man, men. woman, women. child, children."},
-      {u:"Articles",q:"a กับ an คืออะไร ใช้ทำอะไร?",a:"คำนำหน้าคำนาม 1 อัน",
-        tip:"วางหน้าคำนามที่มี 1 อัน แปลว่า \"หนึ่ง...\" ก็ได้",
-        examples:[{en:"a cat",th:"แมว 1 ตัว"},{en:"a book",th:"หนังสือ 1 เล่ม"},{en:"an apple",th:"แอปเปิล 1 ผล"},{en:"an egg",th:"ไข่ 1 ฟอง"},{en:"a ball",th:"ลูกบอล 1 ลูก"}],
-        say:"a cat. a book. an apple. an egg. a ball."},
+      {u:"Articles",q:'"a" กับ "an" ต่างกันยังไง? เลือกใช้ตัวไหน?',a:"ดูตัวอักษรแรกของคำ",
+        tip:"ขึ้นต้นด้วยสระ a e i o u → ใช้ an · ตัวอื่น (พยัญชนะ) → ใช้ a",
+        examples:[{en:"a cat",th:"c ไม่ใช่สระ → ใช้ a"},{en:"an apple",th:"a เป็นสระ → ใช้ an"},{en:"a dog",th:"d ไม่ใช่สระ → ใช้ a"},{en:"an egg",th:"e เป็นสระ → ใช้ an"},{en:"an orange",th:"o เป็นสระ → ใช้ an"}],
+        say:"a cat. an apple. a dog. an egg. an orange."},
       {u:"Articles",q:"ใช้ a หรือ an หน้าคำที่ขึ้นต้นด้วยพยัญชนะ?",a:"ใช้ a",
-        tip:"คำขึ้นต้นด้วยตัวอื่นที่ไม่ใช่ a e i o u → ใช้ a",
-        examples:[{en:"a tiger",th:"เสือ"},{en:"a book",th:"หนังสือ"},{en:"a dog",th:"หมา"},{en:"a car",th:"รถ"},{en:"a ball",th:"ลูกบอล"},{en:"a nurse",th:"พยาบาล"}],
-        say:"a tiger. a book. a dog. a car. a ball. a nurse."},
+        tip:"พยัญชนะ = ตัวอักษรที่ไม่ใช่สระ a e i o u",
+        examples:[{en:"a tiger",th:"เสือ · ขึ้นต้น t"},{en:"a book",th:"หนังสือ · b"},{en:"a dog",th:"หมา · d"},{en:"a car",th:"รถ · c"},{en:"a nurse",th:"พยาบาล · n"},{en:"a king",th:"พระราชา · k"}],
+        say:"a tiger. a book. a dog. a car. a nurse. a king."},
       {u:"Articles",q:"ใช้ a หรือ an หน้าคำที่ขึ้นต้นด้วยสระ a e i o u?",a:"ใช้ an",
-        tip:"คำขึ้นต้นด้วยสระ a e i o u → ใช้ an",
-        examples:[{en:"an apple",th:"แอปเปิล (a)"},{en:"an egg",th:"ไข่ (e)"},{en:"an insect",th:"แมลง (i)"},{en:"an orange",th:"ส้ม (o)"},{en:"an umbrella",th:"ร่ม (u)"},{en:"an ant",th:"มด (a)"}],
+        tip:"สระมี 5 ตัว: a e i o u · ขึ้นต้นด้วยตัวพวกนี้ → ใช้ an",
+        examples:[{en:"an apple",th:"แอปเปิล · a"},{en:"an egg",th:"ไข่ · e"},{en:"an insect",th:"แมลง · i"},{en:"an orange",th:"ส้ม · o"},{en:"an umbrella",th:"ร่ม · u"},{en:"an ant",th:"มด · a"}],
         say:"an apple. an egg. an insect. an orange. an umbrella. an ant."},
       {u:"Pronouns",q:"สรรพนาม (pronoun) คืออะไร?",a:"คำใช้แทนชื่อ",
         tip:"แทนชื่อคน/สัตว์/สิ่งของ จะได้ไม่ต้องพูดชื่อซ้ำๆ",
