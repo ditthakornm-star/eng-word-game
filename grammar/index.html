@@ -17,6 +17,7 @@
 </head>
 <body class="min-h-screen bg-violet-50 p-3 font-sans select-none">
   <main class="max-w-lg mx-auto">
+    <div id="badge-toast" class="hidden fixed top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-white font-black text-sm px-4 py-2 rounded-full shadow-lg z-50 pop"></div>
     <!-- ================= HOME ================= -->
     <section id="home-screen" class="min-h-screen flex flex-col justify-center">
       <div class="bg-white border-4 border-violet-200 rounded-3xl shadow-xl p-5">
@@ -26,6 +27,26 @@
           <h1 class="text-2xl font-black text-slate-800">ไวยากรณ์อังกฤษ ป.1</h1>
           <p class="text-sm font-bold text-slate-500 mt-1">มีเสียงอ่าน 🔊 + คำแปลไทย · ทบทวนข้อผิด · สะสมสตรีค 🔥</p>
         </div>
+
+        <div class="bg-violet-50 border border-violet-100 rounded-2xl p-3 mb-3">
+          <div class="flex items-center justify-between text-xs font-black text-violet-700 mb-1">
+            <span>⭐ เลเวล <span id="st-level">1</span></span>
+            <span>🔥 มาเล่น <span id="st-daily">0</span> วันติด</span>
+          </div>
+          <div class="w-full bg-white rounded-full h-2.5 overflow-hidden border border-violet-100">
+            <div id="st-xpbar" class="bg-violet-500 h-full rounded-full transition-all duration-500" style="width:0%"></div>
+          </div>
+          <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 mt-1">
+            <span>XP <span id="st-xp">0</span></span>
+            <span>อีก <span id="st-xpnext">100</span> XP ถึงเลเวลถัดไป</span>
+          </div>
+          <div id="badges-row" class="flex flex-wrap gap-1.5 mt-2 text-xl"></div>
+        </div>
+
+        <button onclick="startMatch()" class="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white text-left rounded-2xl p-4 shadow-md active:scale-95 transition mb-2.5">
+          <div class="text-lg font-black">🃏 เกมจับคู่คำ (Match)</div>
+          <div class="text-xs font-semibold text-rose-50">จับคู่คำกับคำแปลให้เร็ว สนุกแบบเกม + ได้ XP</div>
+        </button>
 
         <button onclick="openLearn()" class="w-full bg-amber-400 hover:bg-amber-500 text-white text-left rounded-2xl p-4 shadow-md active:scale-95 transition mb-2.5">
           <div class="text-lg font-black">📖 เรียนรู้กฎก่อน (Flashcards)</div>
@@ -63,6 +84,24 @@
           <button onclick="flashNext()" class="flex-1 bg-amber-500 text-white font-black py-3 rounded-2xl active:scale-95 transition">ถัดไป ▶</button>
         </div>
         <button onclick="startQuiz('all')" class="w-full mt-3 bg-violet-600 hover:bg-violet-700 text-white font-black py-3 rounded-2xl shadow active:scale-95 transition">พร้อมแล้ว! ทำข้อสอบ 🎯</button>
+      </div>
+    </section>
+
+    <!-- ================= MATCH ================= -->
+    <section id="match-screen" class="hidden min-h-screen flex flex-col justify-center">
+      <div class="bg-white border-4 border-rose-200 rounded-3xl shadow-xl p-4">
+        <div class="flex items-center justify-between mb-3">
+          <button onclick="goHome()" class="text-xs bg-slate-100 text-slate-700 font-bold px-3 py-2 rounded-full active:scale-95 transition">🏠 หน้าแรก</button>
+          <span class="text-xs font-black text-rose-600">🃏 จับคู่ <span id="match-progress">0/6</span></span>
+        </div>
+        <p class="text-center text-sm font-bold text-slate-500 mb-3">แตะคำ แล้วแตะคำแปลที่คู่กัน</p>
+        <div id="match-grid" class="grid grid-cols-2 gap-2.5"></div>
+        <div id="match-done" class="hidden text-center mt-4">
+          <div class="text-5xl mb-1 pop">🎉</div>
+          <div class="font-black text-lg text-slate-800" id="match-done-msg"></div>
+          <button onclick="startMatch()" class="w-full mt-3 bg-rose-500 hover:bg-rose-600 text-white font-black py-3 rounded-2xl active:scale-95 transition">เล่นอีกรอบ 🔄</button>
+          <button onclick="goHome()" class="w-full mt-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-black py-3 rounded-2xl active:scale-95 transition">กลับหน้าแรก</button>
+        </div>
       </div>
     </section>
 
@@ -116,6 +155,7 @@
           <div class="text-sm font-bold text-violet-600">คะแนนรวม</div>
           <div class="text-5xl font-black text-violet-900"><span id="final-score">0</span>/<span id="final-total">20</span></div>
           <div class="text-xs font-bold text-orange-500 mt-1">🔥 สตรีคสูงสุด <span id="best-streak">0</span> ข้อติด</div>
+          <div class="mt-2 inline-block bg-violet-600 text-white font-black text-sm px-4 py-1.5 rounded-full">+<span id="xp-earned">0</span> XP</div>
         </div>
         <div id="unit-summary" class="space-y-2 text-left mb-4"></div>
         <button id="review-btn" onclick="startReview()" class="hidden w-full bg-rose-500 hover:bg-rose-600 text-white font-black py-3.5 rounded-2xl shadow-md active:scale-95 transition mb-3 text-lg"></button>
@@ -493,7 +533,130 @@
        สร้างชุดข้อสอบ + สถานะ
     ===================================================================== */
     var quiz=[], current=0, score=0, selectedMode="all", unitScores={}, answered=false;
-    var streak=0, bestStreak=0, missed=[];
+    var streak=0, bestStreak=0, missed=[], sessionXP=0;
+
+    /* =====================================================================
+       ระบบสะสม: XP · เลเวล · สตรีครายวัน · เหรียญ (เก็บใน localStorage)
+    ===================================================================== */
+    var STORE_KEY="grammar_progress_v1";
+    var progress=loadProgress();
+    function loadProgress(){
+      try{ var p=JSON.parse(localStorage.getItem(STORE_KEY)); if(p&&typeof p==="object"){ p.badges=p.badges||{}; return p; } }catch(e){}
+      return { xp:0, plays:0, dailyStreak:0, lastDay:"", bestStreakEver:0, perfects:0, matchWins:0, badges:{} };
+    }
+    function saveProgress(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(progress)); }catch(e){} }
+    function dayStr(d){ return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
+    function markDay(){
+      var t=dayStr(new Date());
+      if(progress.lastDay!==t){
+        var y=new Date(); y.setDate(y.getDate()-1);
+        progress.dailyStreak = (progress.lastDay===dayStr(y)) ? (progress.dailyStreak+1) : 1;
+        progress.lastDay=t; saveProgress();
+      }
+    }
+    function levelOf(xp){ return Math.floor(xp/100)+1; }
+    function addXP(n){ progress.xp+=n; sessionXP+=n; saveProgress(); }
+
+    var BADGES=[
+      {id:"first",  e:"👣", name:"ก้าวแรก",        cond:function(){ return progress.plays>=1; }},
+      {id:"xp100",  e:"💎", name:"นักสะสม XP",      cond:function(){ return progress.xp>=100; }},
+      {id:"xp300",  e:"🌟", name:"ขยันมาก",         cond:function(){ return progress.xp>=300; }},
+      {id:"xp600",  e:"👑", name:"เซียนไวยากรณ์",   cond:function(){ return progress.xp>=600; }},
+      {id:"streak5",e:"🔥", name:"ไฟแรง 5 ติด",     cond:function(){ return progress.bestStreakEver>=5; }},
+      {id:"streak10",e:"⚡", name:"สุดยอด 10 ติด",   cond:function(){ return progress.bestStreakEver>=10; }},
+      {id:"perfect",e:"💯", name:"คะแนนเต็ม",        cond:function(){ return progress.perfects>=1; }},
+      {id:"match",  e:"🃏", name:"จับคู่เซียน",      cond:function(){ return progress.matchWins>=1; }},
+      {id:"day3",   e:"📅", name:"มาเล่น 3 วันติด",  cond:function(){ return progress.dailyStreak>=3; }}
+    ];
+    function checkBadges(){
+      var newly=[];
+      BADGES.forEach(function(b){ if(!progress.badges[b.id] && b.cond()){ progress.badges[b.id]=1; newly.push(b); } });
+      if(newly.length){ saveProgress(); showBadgeToast(newly); }
+      return newly;
+    }
+    var toastTimer=null;
+    function showBadgeToast(list){
+      var el=document.getElementById("badge-toast"); if(!el) return;
+      el.innerText="🏅 ปลดล็อกเหรียญ: "+list.map(function(b){return b.e+" "+b.name;}).join(" · ");
+      el.classList.remove("hidden");
+      if(toastTimer) clearTimeout(toastTimer);
+      toastTimer=setTimeout(function(){ el.classList.add("hidden"); }, 4000);
+    }
+    function refreshHome(){
+      var lv=levelOf(progress.xp), into=progress.xp%100;
+      var set=function(id,v){ var e=document.getElementById(id); if(e) e.innerText=v; };
+      set("st-level",lv); set("st-daily",progress.dailyStreak||0); set("st-xp",progress.xp); set("st-xpnext",100-into);
+      var bar=document.getElementById("st-xpbar"); if(bar) bar.style.width=into+"%";
+      var br=document.getElementById("badges-row"); if(br){ br.innerHTML="";
+        BADGES.forEach(function(b){ var s=document.createElement("span"); s.title=b.name; s.className=progress.badges[b.id]?"":"opacity-20 grayscale"; s.innerText=b.e; br.appendChild(s); });
+      }
+    }
+
+    /* =====================================================================
+       เกมจับคู่คำ (Match) — จับคู่คำอังกฤษ ↔ คำแปลไทย
+    ===================================================================== */
+    var MATCH_POOL=[
+      {a:"I",b:"ฉัน"},{a:"You",b:"คุณ / เธอ"},{a:"We",b:"พวกเรา"},{a:"They",b:"พวกเขา / พวกมัน"},
+      {a:"He",b:"เขา (ผู้ชาย)"},{a:"She",b:"เขา (ผู้หญิง)"},{a:"It",b:"มัน"},
+      {a:"am",b:"ใช้กับ I"},{a:"is",b:"ประธาน 1 คน/อัน"},{a:"are",b:"ประธานหลายคน"},
+      {a:"a",b:"หน้าพยัญชนะ"},{a:"an",b:"หน้าสระ a e i o u"}
+    ];
+    var matchTiles=[], matchSel=-1, matchMatched=0, matchPairs=0, matchMistakes=0, matchLocked=false;
+    function startMatch(){
+      initAudio(); markDay(); progress.plays=(progress.plays||0)+1; saveProgress();
+      var chosen=shuffle(MATCH_POOL).slice(0,6);
+      matchPairs=chosen.length; matchMatched=0; matchMistakes=0; matchSel=-1; matchLocked=false;
+      var tiles=[];
+      chosen.forEach(function(p,idx){ tiles.push({id:idx,text:p.a,side:0,done:false}); tiles.push({id:idx,text:p.b,side:1,done:false}); });
+      matchTiles=shuffle(tiles);
+      ["home-screen","learn-screen","quiz-screen","result-screen"].forEach(function(id){ document.getElementById(id).classList.add("hidden"); });
+      document.getElementById("match-screen").classList.remove("hidden");
+      document.getElementById("match-done").classList.add("hidden");
+      document.getElementById("match-grid").classList.remove("hidden");
+      window.scrollTo(0,0);
+      renderMatch();
+    }
+    function renderMatch(){
+      var grid=document.getElementById("match-grid"); grid.innerHTML="";
+      matchTiles.forEach(function(t,i){
+        var btn=document.createElement("button"); btn.setAttribute("data-i",i);
+        var base="rounded-2xl border-2 font-black min-h-[60px] px-2 py-2 shadow-sm transition text-center leading-tight ";
+        if(t.done) btn.className=base+"border-emerald-300 bg-emerald-50 text-emerald-400 opacity-50 pointer-events-none";
+        else if(i===matchSel) btn.className=base+"border-rose-500 bg-rose-100 text-rose-800 ring-4 ring-rose-300";
+        else btn.className=base+"border-rose-200 bg-white text-slate-800 hover:bg-rose-50 active:scale-95";
+        btn.innerHTML='<span class="'+(t.side===0?"text-xl":"text-base")+'">'+t.text+'</span>';
+        btn.onclick=function(){ tapMatch(i); };
+        grid.appendChild(btn);
+      });
+      document.getElementById("match-progress").innerText=matchMatched+"/"+matchPairs;
+    }
+    function tapMatch(i){
+      if(matchLocked) return;
+      var t=matchTiles[i]; if(t.done) return;
+      sfx("tap");
+      if(matchSel===-1){ matchSel=i; renderMatch(); return; }
+      if(matchSel===i){ matchSel=-1; renderMatch(); return; }
+      var s=matchTiles[matchSel];
+      if(s.id===t.id && s.side!==t.side){
+        s.done=true; t.done=true; matchMatched++; matchSel=-1; sfx("correct"); renderMatch();
+        if(matchMatched===matchPairs) matchComplete();
+      } else {
+        matchMistakes++; sfx("wrong");
+        var prev=matchSel; matchSel=-1; matchLocked=true;
+        renderMatch();
+        var grid=document.getElementById("match-grid");
+        [prev,i].forEach(function(k){ var b=grid.querySelector('[data-i="'+k+'"]'); if(b) b.classList.add("shake","ring-4","ring-rose-400"); });
+        setTimeout(function(){ matchLocked=false; renderMatch(); }, 500);
+      }
+    }
+    function matchComplete(){
+      var xp = 30 + (matchMistakes===0?20:0);
+      addXP(xp); progress.matchWins=(progress.matchWins||0)+1; saveProgress();
+      checkBadges();
+      document.getElementById("match-grid").classList.add("hidden");
+      document.getElementById("match-done").classList.remove("hidden");
+      document.getElementById("match-done-msg").innerHTML="จับคู่ครบแล้ว! "+(matchMistakes===0?"ไม่ผิดเลย เก่งมาก 💯":"ผิด "+matchMistakes+" ครั้ง")+"<br><span class='text-rose-600'>+"+xp+" XP</span>";
+    }
 
     function reshuffleOptions(q){ var c=Object.assign({},q); c.options=shuffle(q.options.slice()); return c; }
 
@@ -506,13 +669,12 @@
 
     function startQuiz(mode){
       initAudio(); speak(" ");
+      markDay(); progress.plays=(progress.plays||0)+1; saveProgress();
       selectedMode=mode;
       quiz = Array.isArray(mode) ? shuffle(mode).map(reshuffleOptions) : buildQuiz(mode);
-      current=0; score=0; streak=0; bestStreak=0; missed=[]; unitScores={};
+      current=0; score=0; streak=0; bestStreak=0; missed=[]; unitScores={}; sessionXP=0;
       ALL_UNITS.forEach(function(u){ unitScores[u]={right:0,total:0}; });
-      document.getElementById("home-screen").classList.add("hidden");
-      document.getElementById("learn-screen").classList.add("hidden");
-      document.getElementById("result-screen").classList.add("hidden");
+      ["home-screen","learn-screen","result-screen","match-screen"].forEach(function(id){ document.getElementById(id).classList.add("hidden"); });
       document.getElementById("quiz-screen").classList.remove("hidden");
       document.getElementById("total-display").innerText=quiz.length;
       document.getElementById("question-total").innerText=quiz.length;
@@ -523,8 +685,9 @@
     function startReview(){ startQuiz(missed.slice()); }
     function goHome(){
       try{ if(window.speechSynthesis) window.speechSynthesis.cancel(); }catch(e){}
-      ["quiz-screen","result-screen","learn-screen"].forEach(function(id){ document.getElementById(id).classList.add("hidden"); });
+      ["quiz-screen","result-screen","learn-screen","match-screen"].forEach(function(id){ document.getElementById(id).classList.add("hidden"); });
       document.getElementById("home-screen").classList.remove("hidden");
+      refreshHome();
     }
 
     /* =====================================================================
@@ -615,10 +778,12 @@
       var fb=document.getElementById("feedback"); fb.classList.remove("hidden");
       if(correct){
         score++; unitScores[q.unit].right++; streak++; if(streak>bestStreak) bestStreak=streak;
-        if(streak>=3 && streak%1===0){ sfx("streak"); } else sfx("correct");
+        if(streak>progress.bestStreakEver){ progress.bestStreakEver=streak; }
+        var gain = 10 + (streak>=5?5:0); addXP(gain);
+        if(streak>=3){ sfx("streak"); } else sfx("correct");
         var cheer = streak>=10?"🔥🔥 สุดยอด "+streak+" ข้อติด!":streak>=5?"🔥 เยี่ยม "+streak+" ข้อติด!":streak>=3?"🔥 "+streak+" ข้อติดแล้ว!":"เก่งมาก!";
         fb.className="rounded-2xl p-3 mb-3 text-center font-bold bg-emerald-50 text-emerald-700 border border-emerald-200";
-        fb.innerText="🎉 Correct! "+cheer+" · "+q.ex;
+        fb.innerText="🎉 Correct! "+cheer+" (+"+gain+" XP) · "+q.ex;
       } else {
         streak=0; sfx("wrong"); missed.push(q);
         fb.className="rounded-2xl p-3 mb-3 text-center font-bold bg-rose-50 text-rose-700 border border-rose-200";
@@ -655,6 +820,10 @@
       var rb=document.getElementById("review-btn");
       if(missed.length>0){ rb.classList.remove("hidden"); rb.innerText="🔁 ทบทวนข้อที่ตอบผิด ("+missed.length+" ข้อ)"; }
       else rb.classList.add("hidden");
+      if(ratio===1){ progress.perfects=(progress.perfects||0)+1; addXP(30); }
+      saveProgress();
+      document.getElementById("xp-earned").innerText=sessionXP;
+      checkBadges();
     }
 
     /* =====================================================================
@@ -669,6 +838,7 @@
         btn.innerHTML='<div class="font-black">Unit '+u+': '+unitNames[u]+'</div><div class="text-xs text-slate-500 font-semibold">'+unitSub[u]+'</div>';
         box.appendChild(btn);
       });
+      refreshHome();
     })();
   </script>
 </body>
