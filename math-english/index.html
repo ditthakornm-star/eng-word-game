@@ -489,6 +489,43 @@
       speak(q.say); // อ่านออกเสียงอัตโนมัติ
     }
 
+    /* ---------- ตัวช่วยอ่าน/แปลตัวเลือกคำตอบ ---------- */
+    var SYM_SAY={">":"greater than","<":"less than","=":"equals","≠":"not equal to"};
+    var TRANS={
+      ">":"มากกว่า","<":"น้อยกว่า","=":"เท่ากับ","≠":"ไม่เท่ากับ",
+      "more than":"มากกว่า","less than":"น้อยกว่า","equal to":"เท่ากับ","greater than":"มากกว่า","not equal to":"ไม่เท่ากับ",
+      "equal":"เท่ากัน","not equal":"ไม่เท่ากัน",
+      "increasing":"น้อยไปมาก","decreasing":"มากไปน้อย",
+      "whole":"ส่วนรวม","part":"ส่วนย่อย",
+      "the total amount":"ยอดรวมทั้งหมด","only one part":"เพียงส่วนเดียว",
+      "add":"บวก","subtract":"ลบ","sum":"ผลบวก","less":"น้อยกว่า","addition":"การบวก","subtraction":"การลบ",
+      "altogether":"รวมทั้งหมด","take away":"เอาออก","fly away":"บินหนีไป","are left":"เหลืออยู่","in total":"รวมทั้งหมด","and":"และ",
+      "zero":"ศูนย์","one":"หนึ่ง","two":"สอง","three":"สาม","four":"สี่","five":"ห้า","six":"หก","seven":"เจ็ด","eight":"แปด","nine":"เก้า","ten":"สิบ"
+    };
+    function optionSpeak(val){
+      if(SYM_SAY[val]) return SYM_SAY[val];
+      if(/^\d+$/.test(val)) return W[Number(val)];
+      return val;
+    }
+    function optionTh(val){
+      if(TRANS[val]) return TRANS[val];
+      if(/^\d+$/.test(val)) return W[Number(val)]; // เลข → คำอ่านอังกฤษ ช่วยฝึกอ่าน
+      return "";
+    }
+    function makeConfirm(onOk){
+      var b=document.createElement("button");
+      b.id="confirm-btn"; b.setAttribute("data-ready","0");
+      b.className="w-full mt-3 bg-slate-200 text-slate-400 font-black py-3.5 rounded-2xl transition text-lg pointer-events-none";
+      b.innerText="ยืนยันคำตอบ ✓";
+      b.onclick=function(){ if(b.getAttribute("data-ready")!=="1"||answered)return; onOk(); };
+      return b;
+    }
+    function armConfirm(){
+      var b=document.getElementById("confirm-btn");
+      if(b){ b.setAttribute("data-ready","1"); b.className="w-full mt-3 bg-cyan-600 hover:bg-cyan-700 text-white font-black py-3.5 rounded-2xl shadow active:scale-95 transition text-lg"; }
+    }
+    function lockConfirm(){ var b=document.getElementById("confirm-btn"); if(b) b.classList.add("hidden"); }
+
     function renderInput(q){
       var area=document.getElementById("answer-area");
       area.innerHTML="";
@@ -498,93 +535,143 @@
       else if(t==="order") renderOrder(q,area);
     }
 
-    // ---------- choice ----------
+    // ---------- choice : เลือกก่อน แล้วกดยืนยัน · แต่ละตัวเลือกกดฟังเสียง+มีคำแปล ----------
     function renderChoice(q,area){
       var opts=q.input.options;
       var maxLen=0; opts.forEach(function(o){ if(String(o).length>maxLen) maxLen=String(o).length; });
       var symbolStyle = maxLen<=2;
+      var selected=null;
       var grid=document.createElement("div");
-      if(symbolStyle) grid.className="grid gap-3 "+(opts.length===2?"grid-cols-2 max-w-xs mx-auto":opts.length===3?"grid-cols-3":"grid-cols-2");
-      else grid.className="grid gap-2.5 grid-cols-1";
+      grid.className = symbolStyle
+        ? "grid gap-3 "+(opts.length===2?"grid-cols-2 max-w-xs mx-auto":opts.length===3?"grid-cols-3":"grid-cols-2")
+        : "grid gap-2.5 grid-cols-1";
       opts.forEach(function(opt){
+        var val=String(opt), th=optionTh(val);
         var btn=document.createElement("button");
-        btn.setAttribute("data-v",String(opt));
-        if(symbolStyle) btn.className="bg-white border-2 border-cyan-300 hover:bg-cyan-50 text-cyan-800 font-black text-4xl min-h-[68px] rounded-2xl shadow-sm active:scale-95 transition";
-        else btn.className="bg-white border-2 border-cyan-200 hover:bg-cyan-50 text-slate-800 font-bold text-lg min-h-[52px] rounded-2xl shadow-sm active:scale-95 transition px-3 py-2";
-        btn.innerText=opt;
-        btn.onclick=function(){ if(answered)return; commitChoice(q,String(opt),btn,area); };
+        btn.setAttribute("data-v",val);
+        if(symbolStyle){
+          btn.className="relative bg-white border-2 border-cyan-300 hover:bg-cyan-50 text-cyan-800 font-black rounded-2xl shadow-sm active:scale-95 transition min-h-[76px] flex flex-col items-center justify-center";
+          btn.innerHTML='<span class="absolute top-1 left-2 text-sm">🔊</span><span class="text-4xl leading-none">'+val+'</span>'+(th?'<span class="text-[11px] font-bold text-slate-400 mt-1">'+th+'</span>':'');
+        } else {
+          btn.className="bg-white border-2 border-cyan-200 hover:bg-cyan-50 text-slate-800 font-bold rounded-2xl shadow-sm active:scale-95 transition min-h-[54px] flex items-center gap-2 px-3 py-2 text-left";
+          btn.innerHTML='<span class="text-xl shrink-0">🔊</span><span class="flex-1"><span class="text-lg">'+val+'</span>'+(th?' <span class="text-slate-400 text-sm">('+th+')</span>':'')+'</span>';
+        }
+        btn.onclick=function(){
+          if(answered)return; sfx("tap"); speak(optionSpeak(val));
+          selected=val;
+          grid.querySelectorAll("[data-v]").forEach(function(b){ b.classList.remove("ring-4","ring-cyan-400","bg-cyan-100"); });
+          btn.classList.add("ring-4","ring-cyan-400","bg-cyan-100");
+          armConfirm();
+        };
         grid.appendChild(btn);
       });
       area.appendChild(grid);
+      area.appendChild(makeConfirm(function(){ commitChoice(q,selected,area); }));
     }
-    function commitChoice(q,val,btn,area){
-      answered=true; sfx("tap");
+    function commitChoice(q,val,area){
+      if(val==null) return;
+      answered=true; lockConfirm();
       var correct=val===q.answer;
-      area.querySelectorAll("button").forEach(function(b){
+      area.querySelectorAll("[data-v]").forEach(function(b){
         b.classList.add("pointer-events-none");
-        if(b.getAttribute("data-v")===q.answer) b.classList.add("ring-4","ring-emerald-400","bg-emerald-50");
+        b.classList.remove("ring-cyan-400","bg-cyan-100");
+        var bv=b.getAttribute("data-v");
+        if(bv===q.answer) b.classList.add("ring-4","ring-emerald-400","bg-emerald-50");
+        else if(bv===val && !correct) b.classList.add("ring-4","ring-rose-400","bg-rose-50","shake");
       });
-      if(!correct) btn.classList.add("ring-4","ring-rose-400","bg-rose-50","shake");
       finish(q,correct);
     }
 
-    // ---------- number pad ----------
+    // ---------- number pad : เลือกก่อน แล้วกดยืนยัน ----------
     function renderPad(q,area){
-      var max=q.input.max||10, cols=6;
+      var max=q.input.max||10, selected=null;
+      var hint=document.createElement("div");
+      hint.className="text-center text-sm font-bold text-slate-500 mb-2";
+      hint.innerHTML='คำตอบที่เลือก: <span id="pad-pick" class="text-cyan-600 text-xl">–</span>';
+      area.appendChild(hint);
       var wrap=document.createElement("div");
-      wrap.className="grid gap-2"; wrap.style.gridTemplateColumns="repeat("+cols+",minmax(0,1fr))";
+      wrap.className="grid gap-2"; wrap.style.gridTemplateColumns="repeat(6,minmax(0,1fr))";
       for(var i=0;i<=max;i++){
         (function(n){
           var btn=document.createElement("button");
+          btn.setAttribute("data-n",n);
           btn.className="bg-white border-2 border-slate-200 hover:bg-cyan-50 text-slate-800 font-black text-xl h-12 rounded-xl shadow-sm active:scale-95 transition";
           btn.innerText=n;
           btn.onclick=function(){
-            if(answered)return; answered=true; sfx("tap");
-            var correct=n===Number(q.answer);
-            wrap.querySelectorAll("button").forEach(function(b){
-              b.classList.add("pointer-events-none");
-              if(parseInt(b.innerText,10)===Number(q.answer)) b.classList.add("ring-4","ring-emerald-400","bg-emerald-50");
-            });
-            if(!correct) btn.classList.add("ring-4","ring-rose-400","bg-rose-50","shake");
-            finish(q,correct);
+            if(answered)return; sfx("tap"); if(n<=10) speak(W[n]);
+            selected=n;
+            wrap.querySelectorAll("[data-n]").forEach(function(b){ b.classList.remove("ring-4","ring-cyan-400","bg-cyan-100"); });
+            btn.classList.add("ring-4","ring-cyan-400","bg-cyan-100");
+            document.getElementById("pad-pick").innerText=n;
+            armConfirm();
           };
           wrap.appendChild(btn);
         })(i);
       }
       area.appendChild(wrap);
+      area.appendChild(makeConfirm(function(){
+        if(selected==null) return;
+        answered=true; lockConfirm();
+        var correct=selected===Number(q.answer);
+        wrap.querySelectorAll("[data-n]").forEach(function(b){
+          b.classList.add("pointer-events-none");
+          b.classList.remove("ring-cyan-400","bg-cyan-100");
+          var bn=parseInt(b.getAttribute("data-n"),10);
+          if(bn===Number(q.answer)) b.classList.add("ring-4","ring-emerald-400","bg-emerald-50");
+          else if(bn===selected && !correct) b.classList.add("ring-4","ring-rose-400","bg-rose-50","shake");
+        });
+        finish(q,correct);
+      }));
     }
 
-    // ---------- order (tap in order) ----------
+    // ---------- order : แตะเรียง + เริ่มใหม่ + ยืนยัน ----------
     function renderOrder(q,area){
       var items=q.input.items.slice();
       var target=items.slice().sort(function(a,b){ return q.input.asc?a-b:b-a; });
       var picked=[];
       var info=document.createElement("div");
       info.className="text-center text-xs font-bold text-slate-400 mb-2";
-      info.innerText="แตะการ์ดทีละใบ ตามลำดับที่ถูกต้อง";
+      info.innerText="แตะการ์ดทีละใบตามลำดับ (กด “เริ่มใหม่” ถ้าจิ้มพลาด)";
       area.appendChild(info);
       var row=document.createElement("div");
       row.className="flex flex-wrap justify-center gap-3";
+      function reset(){
+        picked=[];
+        row.querySelectorAll("button").forEach(function(b){
+          b.setAttribute("data-used","0");
+          b.classList.remove("bg-cyan-100","opacity-70","pointer-events-none");
+          var badge=b.querySelector("span"); if(badge) b.removeChild(badge);
+        });
+        var cb=document.getElementById("confirm-btn");
+        if(cb){ cb.setAttribute("data-ready","0"); cb.className="w-full mt-3 bg-slate-200 text-slate-400 font-black py-3.5 rounded-2xl transition text-lg pointer-events-none"; }
+      }
       items.forEach(function(n){
         var btn=document.createElement("button");
         btn.className="relative w-16 h-16 rounded-2xl border-2 border-cyan-300 bg-white text-slate-800 font-black text-2xl shadow-sm active:scale-95 transition";
-        btn.innerText=n; btn.setAttribute("data-n",n);
+        btn.innerText=n; btn.setAttribute("data-n",n); btn.setAttribute("data-used","0");
         btn.onclick=function(){
-          if(answered||this.getAttribute("data-used")==="1")return; sfx("tap");
-          this.setAttribute("data-used","1"); picked.push(parseInt(this.getAttribute("data-n"),10));
+          if(answered||this.getAttribute("data-used")==="1")return; sfx("tap"); if(n<=10) speak(W[n]);
+          this.setAttribute("data-used","1"); picked.push(n);
           this.classList.add("bg-cyan-100","opacity-70");
           var badge=document.createElement("span");
           badge.className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-amber-400 text-white text-xs font-black flex items-center justify-center";
           badge.innerText=picked.length; this.appendChild(badge);
-          if(picked.length===items.length){
-            answered=true;
-            row.querySelectorAll("button").forEach(function(b){ b.classList.add("pointer-events-none"); });
-            finish(q, picked.join(",")===target.join(","), "ลำดับที่ถูกคือ "+target.join(" , "));
-          }
+          if(picked.length===items.length) armConfirm();
         };
         row.appendChild(btn);
       });
       area.appendChild(row);
+      var resetBtn=document.createElement("button");
+      resetBtn.className="w-full mt-2 bg-amber-100 text-amber-700 font-bold py-2 rounded-xl active:scale-95 transition text-sm";
+      resetBtn.innerText="🔄 เริ่มใหม่";
+      resetBtn.onclick=function(){ if(answered)return; sfx("tap"); reset(); };
+      area.appendChild(resetBtn);
+      area.appendChild(makeConfirm(function(){
+        if(picked.length!==items.length) return;
+        answered=true; lockConfirm();
+        row.querySelectorAll("button").forEach(function(b){ b.classList.add("pointer-events-none"); });
+        finish(q, picked.join(",")===target.join(","), "ลำดับที่ถูกคือ "+target.join(" , "));
+      }));
     }
 
     /* =====================================================================
