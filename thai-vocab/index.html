@@ -78,10 +78,10 @@
             <h2 class="text-xl font-black text-slate-800 mb-3 text-center">วิธีเล่น</h2>
             <div class="space-y-2 text-sm text-slate-700 font-semibold leading-relaxed">
                 <p>1. ดูภาพและคำใบ้ แล้วเรียงตัวอักษรให้เป็นคำภาษาไทย</p>
-                <p>2. โหมดง่ายมากจะเปิดป๊อบอัพให้ดูคำเต็ม กด “พร้อมแล้ว” แล้วค่อยสะกด</p>
-                <p>3. กด “ยืนยันคำตอบ” แล้วเลือกภาพหรือความหมายที่ตรงกับคำ</p>
-                <p>4. โหมดง่ายกด “ใบ้ตัวถัดไป” ได้ไม่เกิน 2 ครั้งต่อคำ</p>
-                <p>5. โหมดยากมีตัวหลอกเพิ่ม และไม่มีปุ่มใบ้</p>
+                <p>2. กดปุ่มตามลำดับการพิมพ์คำไทย เช่น สระหน้า เ แ โ ใ ไ ต้องกดก่อนพยัญชนะ</p>
+                <p>3. โหมดง่ายมากจะเปิดป๊อบอัพให้ดูคำเต็ม กด “พร้อมแล้ว” แล้วค่อยสะกด</p>
+                <p>4. กด “ยืนยันคำตอบ” แล้วเลือกภาพหรือความหมายที่ตรงกับคำ</p>
+                <p>5. โหมดง่ายกด “ใบ้ตัวถัดไป” ได้ไม่เกิน 2 ครั้งต่อคำ ส่วนโหมดยากไม่มีปุ่มใบ้</p>
             </div>
             <button onclick="closeHowToPlay()" class="mt-5 w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-all">เริ่มเล่นเลย</button>
         </div>
@@ -95,6 +95,10 @@
             <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 mb-3">
                 <div class="text-[10px] font-black text-emerald-600 uppercase tracking-wider mb-2">จำเป็นก้อน</div>
                 <div id="study-word-parts" class="flex flex-wrap justify-center gap-2"></div>
+            </div>
+            <div class="bg-rose-50 border border-rose-200 rounded-2xl p-3 mb-3">
+                <div class="text-[10px] font-black text-rose-600 uppercase tracking-wider mb-2">ลำดับการกดปุ่ม</div>
+                <div id="study-typing-parts" class="flex flex-wrap justify-center gap-1.5"></div>
             </div>
             <div id="study-word-thai" class="text-sm font-bold text-slate-500 mb-4"></div>
             <button onclick="startVeryEasyAnswer()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-all">พร้อมแล้ว เริ่มสะกด</button>
@@ -385,6 +389,14 @@
                 badge.className = "bg-white border-2 border-emerald-300 text-emerald-800 font-black text-lg px-3 py-1 rounded-xl shadow-sm";
                 badge.innerText = part;
                 parts.appendChild(badge);
+            });
+            var typingParts = document.getElementById("study-typing-parts");
+            typingParts.innerHTML = "";
+            answerUnits(data).forEach(function(part) {
+                var key = document.createElement("span");
+                key.className = "bg-white border-2 border-rose-300 text-rose-800 font-black text-base min-w-9 h-10 px-2 rounded-xl shadow-sm flex items-center justify-center";
+                key.innerText = getButtonDisplayChar(part);
+                typingParts.appendChild(key);
             });
             document.getElementById("study-word-modal").style.display = "flex";
         }
