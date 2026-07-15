@@ -46,7 +46,9 @@
             <div class="text-sm font-bold text-emerald-800">กดปุ่มพร้อมแล้วในป๊อบอัพก่อนเริ่มตอบ</div>
         </div>
 
-        <div id="slots-container" class="flex flex-wrap justify-center gap-2 mb-2 min-h-[50px] items-center p-2"></div>
+        <div id="slots-container" class="bg-slate-50 p-2 rounded-2xl border-2 border-slate-200 mb-3 shadow-inner">
+            <div id="typewriter-screen" class="w-full min-h-16 bg-white border-b-4 border-rose-400 text-4xl font-black flex items-center justify-center text-rose-900 tracking-wide rounded-t-xl overflow-hidden px-2 leading-tight"></div>
+        </div>
 
         <div id="status-message" class="text-center text-sm font-bold text-rose-500 min-h-[40px] mb-3 flex items-center justify-center p-2 bg-rose-50 rounded-xl"></div>
 
@@ -172,11 +174,23 @@
         var hintCount = 0;
 
         function splitUnits(text) {
-            if (window.Intl && Intl.Segmenter) {
-                var segmenter = new Intl.Segmenter("th", {granularity: "grapheme"});
-                return Array.from(segmenter.segment(text), function(part) { return part.segment; });
-            }
-            return Array.from(text);
+            return String(text).split("");
+        }
+
+        function getButtonDisplayChar(c) {
+            var marks = "ัิีึืุู็่้๊๋์ํ๎";
+            if (marks.indexOf(c) !== -1) return "◌" + c;
+            return c;
+        }
+
+        function normalizeThai(str) {
+            return String(str)
+                .replace(/([\u0E47-\u0E4C])([\u0E31\u0E34-\u0E3A])/g, "$2$1")
+                .replace(/(\u0E33)([\u0E48-\u0E4C])/g, "$2$1");
+        }
+
+        function updateScreenDisplay() {
+            document.getElementById("typewriter-screen").innerText = normalizeThai(userInput.join(""));
         }
 
         function answerOf(data) {
@@ -319,23 +333,11 @@
                 hintText.innerText = gameMode === "easy" ? "ดูภาพ/คำใบ้ แล้วกดใบ้ได้ถ้าติดขัด" : "โหมดยาก มีตัวหลอกเพิ่ม";
             }
 
-            var container = document.getElementById("slots-container");
-            container.innerHTML = "";
-            var idx = 0;
-            data.chunks.forEach(function(chunk, i) {
-                var colors = ["border-red-300 bg-red-50", "border-blue-300 bg-blue-50", "border-green-300 bg-green-50", "border-orange-300 bg-orange-50"];
-                var color = colors[i % 4];
-                var html = '<div class="flex flex-wrap gap-1 p-1.5 border-2 rounded-xl ' + color + '">';
-                splitUnits(chunk).forEach(function() {
-                    html += '<div class="min-w-8 w-8 h-10 border-b-4 border-rose-400 flex items-center justify-center font-bold text-xl text-rose-900 bg-white rounded-t-sm shadow-sm" id="s-' + (idx++) + '"></div>';
-                });
-                html += "</div>";
-                container.innerHTML += html;
-            });
+            updateScreenDisplay();
 
             var chars = targetUnits.slice();
             if (gameMode === "hard") {
-                var pool = splitUnits("กขคงจชซดตถทธนบปผพมยรลวสหอะแไใโำ");
+                var pool = splitUnits("กขคงจชซดตถทธนบปผพมยรลวศษสหอะาิีึืุูเแโใไัำ่้๊๋์");
                 var distractors = [];
                 while(distractors.length < 4) {
                     var r = pool[Math.floor(Math.random() * pool.length)];
@@ -353,7 +355,7 @@
                 (function(charVal) {
                     var btn = document.createElement("button");
                     btn.className = "bg-white min-w-12 h-14 px-2 rounded-xl border-b-4 border-slate-300 font-bold text-2xl text-slate-700 shadow-sm active:border-b-0 active:translate-y-1 active:bg-rose-500 active:text-white transition-all flex items-center justify-center";
-                    btn.innerText = charVal;
+                    btn.innerText = getButtonDisplayChar(charVal);
                     btn.dataset.letter = charVal;
                     btn.onclick = function() { handleKey(charVal, btn); };
                     kb.appendChild(btn);
@@ -433,8 +435,7 @@
             var target = answerUnits(shuffledList[currentIndex]);
             if(userInput.length < target.length) {
                 userInput.push(c);
-                var targetBox = document.getElementById("s-" + (userInput.length - 1));
-                if(targetBox) targetBox.innerText = c;
+                updateScreenDisplay();
                 btn.classList.add("opacity-30", "pointer-events-none", "scale-90");
                 usedButtons.push(btn);
             }
@@ -506,7 +507,7 @@
                 return;
             }
 
-            if (userInput.join("") === target.join("")) {
+            if (normalizeThai(userInput.join("")) === normalizeThai(target.join(""))) {
                 playSoundEffect("correct");
                 document.getElementById("submit-btn").style.display = "none";
                 document.getElementById("control-panel").style.display = "none";
@@ -597,8 +598,7 @@
         function backspace() {
             if(userInput.length > 0) {
                 userInput.pop();
-                var targetBox = document.getElementById("s-" + userInput.length);
-                if(targetBox) targetBox.innerText = "";
+                updateScreenDisplay();
                 var btn = usedButtons.pop();
                 if(btn) btn.classList.remove("opacity-30", "pointer-events-none", "scale-90");
                 document.getElementById("status-message").innerText = "";
@@ -606,12 +606,8 @@
         }
 
         function clearCurrentWord() {
-            var target = answerUnits(shuffledList[currentIndex]);
             userInput = [];
-            for(var i = 0; i < target.length; i++) {
-                var targetBox = document.getElementById("s-" + i);
-                if(targetBox) targetBox.innerText = "";
-            }
+            updateScreenDisplay();
             usedButtons.forEach(function(b) {
                 b.classList.remove("opacity-30", "pointer-events-none", "scale-90");
             });
