@@ -6,7 +6,7 @@
 - หน้าเลือกหมวด: https://ditthakornm-star.github.io/eng-word-game/
 - คณิตศาสตร์: https://ditthakornm-star.github.io/eng-word-game/math-quiz/
 - ภาษาไทย: https://ditthakornm-star.github.io/eng-word-game/thai-vocab/
-- อังกฤษ ชุดอาทิตย์นี้: https://ditthakornm-star.github.io/eng-word-game/week-july-19/
+- อังกฤษ ชุดวันที่ 19 ก.ค.: https://ditthakornm-star.github.io/eng-word-game/week-july-19/
 - อังกฤษ ชุด 6-7 ก.ค.: https://ditthakornm-star.github.io/eng-word-game/week-july-6/
 - อังกฤษ ชุด 29-30 มิ.ย.: https://ditthakornm-star.github.io/eng-word-game/week-last/
 
@@ -20,7 +20,7 @@ grammar/index.html       เกมไวยากรณ์อังกฤษ (No
 chinese/index.html       เกมภาษาจีน (ทักทาย คำศัพท์ พินอิน วรรณยุกต์ · เสียง zh-CN)
 science-quiz/index.html  เกมแบบทดสอบวิทยาศาสตร์ (ตัวเรา พืช สัตว์)
 thai-vocab/index.html    เกมสะกดคำยากภาษาไทย
-week-july-19/index.html  เกมคำศัพท์อังกฤษชุดอาทิตย์นี้
+week-july-19/index.html  เกมคำศัพท์อังกฤษชุดวันที่ 19 ก.ค.
 week-july-6/index.html   เกมคำศัพท์อังกฤษชุด 6-7 ก.ค.
 week-last/index.html     เกมคำศัพท์อังกฤษชุดเก่า
 .nojekyll                บอก GitHub Pages ให้เสิร์ฟไฟล์ตรงๆ
