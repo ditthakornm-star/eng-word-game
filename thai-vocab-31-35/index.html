@@ -185,7 +185,17 @@
         var usedButtons = [];
         var audioCtx = null;
         var wordAudio = null;
-        var audioVersion = "20260722-fixed5";
+        var uiAudio = null;
+        var audioVersion = "20260722-ui1";
+        var uiSounds = {
+            correct: "audio/ui/correct.mp3",
+            wrong: "audio/ui/wrong.mp3",
+            perfect: "audio/ui/perfect.mp3",
+            finishRetry: "audio/ui/finish-retry.mp3",
+            hint: "audio/ui/hint.mp3",
+            hintEmpty: "audio/ui/hint-empty.mp3",
+            peek: "audio/ui/peek.mp3"
+        };
         var inputLocked = false;
         var hintCount = 0;
 
@@ -279,6 +289,19 @@
             } catch (e) {
                 document.getElementById("status-message").innerText = "เปิดเสียงคำนี้ไม่ได้ ลองกดใหม่อีกครั้งนะ";
             }
+        }
+
+        function playUiRecording(name) {
+            var src = uiSounds[name];
+            if (!src) return;
+            try {
+                if (uiAudio) {
+                    uiAudio.pause();
+                    uiAudio.currentTime = 0;
+                }
+                uiAudio = new Audio(src + "?v=" + audioVersion);
+                uiAudio.play().catch(function() {});
+            } catch (e) {}
         }
 
         function openHowToPlay() {
@@ -436,6 +459,7 @@
 
         function reviewStudyWord() {
             if (gameMode !== "veryEasy") return;
+            playUiRecording("peek");
             inputLocked = true;
             setPracticeLock(true);
             showStudyWordModal(shuffledList[currentIndex]);
@@ -492,6 +516,7 @@
                 return;
             }
             if (hintCount >= 2) {
+                playUiRecording("hintEmpty");
                 document.getElementById("status-message").innerText = "คำนี้ใช้คำใบ้ครบ 2 ครั้งแล้ว ลองต่อเองอีกนิดนะ";
                 return;
             }
@@ -517,6 +542,7 @@
                 if (buttons[i].dataset.letter === nextLetter && !buttons[i].classList.contains("pointer-events-none")) {
                     handleKey(nextLetter, buttons[i]);
                     hintCount++;
+                    playUiRecording(hintCount >= 2 ? "hintEmpty" : "hint");
                     updateHintButton();
                     if (gameMode === "easy") {
                         currentWordScore = Math.max(0, currentWordScore - 0.25);
@@ -534,7 +560,7 @@
             if (hintBtn) {
                 hintBtn.innerText = "ใบ้ตัวถัดไป " + hintCount + "/2 💡";
                 if (hintCount >= 2) {
-                    hintBtn.classList.add("opacity-50", "pointer-events-none");
+                    hintBtn.classList.add("opacity-50");
                 } else {
                     hintBtn.classList.remove("opacity-50", "pointer-events-none");
                 }
@@ -565,6 +591,7 @@
                 generateTranslationOptions();
             } else {
                 playSoundEffect("wrong");
+                playUiRecording("wrong");
                 currentWordScore = Math.max(0, currentWordScore - 0.5);
                 document.getElementById("status-message").innerText = "สะกดยังไม่ถูกจ้า ลองลบแล้วเช็คตัวอักษรดูใหม่นะ 💡";
             }
@@ -596,6 +623,7 @@
             var targetWord = shuffledList[currentIndex].w;
             if (selectedWordRaw === targetWord) {
                 playSoundEffect("correct");
+                playUiRecording("correct");
                 totalScore += currentWordScore;
                 document.getElementById("score-display").innerText = formatScore(totalScore);
 
@@ -605,6 +633,7 @@
                 document.getElementById("success-modal").style.display = "flex";
             } else {
                 playSoundEffect("wrong");
+                playUiRecording("wrong");
                 currentWordScore = Math.max(0, currentWordScore - 0.5);
                 btn.className = "w-full opacity-50 bg-rose-50 border-rose-200 text-rose-400 font-bold py-3.5 rounded-xl shadow-sm pointer-events-none flex items-center justify-center gap-3";
                 var statusMsg = document.getElementById("status-message");
@@ -633,6 +662,7 @@
                 ? "สุดยอดมาก ได้คะแนนเต็มทุกคำเลย!"
                 : "เก่งมากครับ ฝึกซ้ำอีกนิด รอบหน้าคะแนนสูงขึ้นแน่นอน";
             document.getElementById("game-over-modal").style.display = "flex";
+            playUiRecording(totalScore === fullScore ? "perfect" : "finishRetry");
         }
 
         function restartGame() {
