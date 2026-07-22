@@ -46,6 +46,13 @@
             <div class="text-sm font-bold text-emerald-800">กดปุ่มพร้อมแล้วในป๊อบอัพก่อนเริ่มตอบ</div>
         </div>
 
+        <div class="flex flex-col items-center justify-center mb-4">
+            <button onclick="playWordRecording()" class="w-16 h-16 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center text-3xl shadow-lg active:scale-95 transition-all cursor-pointer border-4 border-rose-200">
+                🔊
+            </button>
+            <span class="text-[10px] font-bold text-rose-600 mt-2">กดฟังเสียงอ่านจริง</span>
+        </div>
+
         <div id="slots-container" class="bg-slate-50 p-2 rounded-2xl border-2 border-slate-200 mb-3 shadow-inner">
             <div id="typewriter-screen" class="w-full min-h-16 bg-white border-b-4 border-rose-400 text-4xl font-black flex items-center justify-center text-rose-900 tracking-wide rounded-t-xl overflow-hidden px-2 leading-tight"></div>
         </div>
@@ -78,10 +85,11 @@
             <h2 class="text-xl font-black text-slate-800 mb-3 text-center">วิธีเล่น</h2>
             <div class="space-y-2 text-sm text-slate-700 font-semibold leading-relaxed">
                 <p>1. ดูภาพและคำใบ้ แล้วเรียงตัวอักษรให้เป็นคำภาษาไทย</p>
-                <p>2. กดปุ่มตามลำดับการพิมพ์คำไทย เช่น สระหน้า เ แ โ ใ ไ ต้องกดก่อนพยัญชนะ</p>
-                <p>3. โหมดง่ายมากจะเปิดป๊อบอัพให้ดูคำเต็ม กด “พร้อมแล้ว” แล้วค่อยสะกด</p>
-                <p>4. กด “ยืนยันคำตอบ” แล้วเลือกภาพหรือความหมายที่ตรงกับคำ</p>
-                <p>5. โหมดง่ายกด “ใบ้ตัวถัดไป” ได้ไม่เกิน 2 ครั้งต่อคำ ส่วนโหมดยากไม่มีปุ่มใบ้</p>
+                <p>2. กดปุ่มเสียง 🔊 เพื่อฟังคำอ่านจริงได้ทุกคำ</p>
+                <p>3. กดปุ่มตามลำดับการพิมพ์คำไทย เช่น สระหน้า เ แ โ ใ ไ ต้องกดก่อนพยัญชนะ</p>
+                <p>4. โหมดง่ายมากจะเปิดป๊อบอัพให้ดูคำเต็ม กด “พร้อมแล้ว” แล้วค่อยสะกด</p>
+                <p>5. กด “ยืนยันคำตอบ” แล้วเลือกภาพหรือความหมายที่ตรงกับคำ</p>
+                <p>6. โหมดง่ายกด “ใบ้ตัวถัดไป” ได้ไม่เกิน 2 ครั้งต่อคำ ส่วนโหมดยากไม่มีปุ่มใบ้</p>
             </div>
             <button onclick="closeHowToPlay()" class="mt-5 w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-all">เริ่มเล่นเลย</button>
         </div>
@@ -101,6 +109,7 @@
                 <div id="study-typing-parts" class="flex flex-wrap justify-center gap-1.5"></div>
             </div>
             <div id="study-word-thai" class="text-sm font-bold text-slate-500 mb-4"></div>
+            <button onclick="playWordRecording()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold px-4 py-2 rounded-xl text-xs active:scale-95 transition mb-3">🔊 ฟังคำอ่านจริง</button>
             <button onclick="startVeryEasyAnswer()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-all">พร้อมแล้ว เริ่มสะกด</button>
         </div>
     </div>
@@ -113,6 +122,7 @@
             <div class="bg-rose-50 rounded-2xl p-3 mb-3 border border-rose-100">
                 <div id="modal-word-display" class="text-3xl font-black text-rose-900 tracking-wide mb-2"></div>
                 <p id="modal-thai-text" class="text-sm font-bold text-rose-700"></p>
+                <button onclick="playWordRecording()" class="mt-3 bg-white hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold px-4 py-2 rounded-xl text-xs active:scale-95 transition">🔊 ฟังคำอ่านอีกครั้ง</button>
             </div>
 
             <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-left">
@@ -139,31 +149,31 @@
 
     <script>
         var vocabularyList = [
-            {w:"กิ๊บติดผม", t:"ของใช้สำหรับหนีบหรือติดผม", em:"🎀", chunks:["กิ๊บ","ติด","ผม"], tip:"กิ๊บ + ติด + ผม คำว่า กิ๊บ มีไม้ตรีและไม้ไต่คู้"},
-            {w:"กุหลาบ", t:"ดอกไม้กลิ่นหอม มีหนามตามกิ่ง", em:"🌹", chunks:["กุ","หลาบ"], tip:"กุ + หลาบ คำว่า หลาบ ใช้ ห นำ ล"},
-            {w:"สังเกต", t:"ดูหรือพิจารณาอย่างตั้งใจ", em:"🔎", chunks:["สัง","เกต"], tip:"สัง + เกต คำว่า สัง ใช้ ง สะกด"},
-            {w:"ลักษณะ", t:"รูปร่างหรือคุณสมบัติที่สังเกตได้", em:"🔷", chunks:["ลัก","ษ","ณะ"], tip:"ลัก + ษ + ณะ ระวังคำนี้มี ษ และ ณ"},
-            {w:"ดอกจำปี", t:"ดอกไม้สีขาวอมเหลือง กลิ่นหอม", em:"🌼", chunks:["ดอก","จำ","ปี"], tip:"ดอก + จำ + ปี คำว่า จำ ใช้สระอำ"},
-            {w:"รั้วบ้าน", t:"สิ่งที่ล้อมบริเวณบ้าน", em:"🏡", chunks:["รั้ว","บ้าน"], tip:"รั้ว + บ้าน มีไม้โททั้งสองก้อน"},
-            {w:"ดอกมะลิ", t:"ดอกไม้สีขาว มีกลิ่นหอม", em:"🌸", chunks:["ดอก","มะ","ลิ"], tip:"ดอก + มะ + ลิ คำว่า ลิ ใช้สระอิ"},
-            {w:"หน้าบ้าน", t:"บริเวณด้านหน้าของบ้าน", em:"🏠", chunks:["หน้า","บ้าน"], tip:"หน้า + บ้าน มีไม้โททั้งสองคำ"},
-            {w:"พยาบาล", t:"ผู้ดูแลผู้ป่วยและช่วยงานแพทย์", em:"🧑‍⚕️", chunks:["พยา","บาล"], tip:"พยา + บาล คำนี้ขึ้นต้นด้วย พย"},
-            {w:"บำนาญ", t:"เงินที่ได้รับหลังเกษียณจากงาน", em:"👵", chunks:["บำ","นาญ"], tip:"บำ + นาญ ระวังคำว่า นาญ ใช้ ญ สะกด"},
-            {w:"หมอ", t:"ผู้รักษาคนป่วย", em:"👨‍⚕️", chunks:["หมอ"], tip:"หมอ ใช้ ห นำ ม"},
-            {w:"พี่ชาย", t:"ผู้ชายที่เป็นพี่", em:"👦", chunks:["พี่","ชาย"], tip:"พี่ + ชาย คำว่า พี่ มีไม้เอก"},
-            {w:"จระเข้", t:"สัตว์เลื้อยคลานตัวใหญ่ ปากยาว", em:"🐊", chunks:["จระ","เข้"], tip:"จระ + เข้ คำว่า เข้ มีไม้โท"},
-            {w:"กางเกง", t:"เครื่องแต่งกายสำหรับสวมขา", em:"👖", chunks:["กาง","เกง"], tip:"กาง + เกง ทั้งสองก้อนมี ง สะกด"},
-            {w:"ตะกร้า", t:"ภาชนะสานหรือทำเป็นใบ ใช้ใส่ของ", em:"🧺", chunks:["ตะ","กร้า"], tip:"ตะ + กร้า คำว่า กร้า มี ร ควบและไม้โท"},
-            {w:"สะพาน", t:"ทางที่สร้างข้ามน้ำหรือถนน", em:"🌉", chunks:["สะ","พาน"], tip:"สะ + พาน คำว่า พาน ใช้ พ"},
-            {w:"สับปะรด", t:"ผลไม้เปลือกมีตา เนื้อสีเหลือง", em:"🍍", chunks:["สับ","ปะ","รด"], tip:"สับ + ปะ + รด คำนี้มี ปะ อยู่กลางคำ"},
-            {w:"แจกันดอกไม้", t:"ภาชนะใส่ดอกไม้", em:"💐", chunks:["แจกัน","ดอก","ไม้"], tip:"แจกัน + ดอก + ไม้ คำว่า ไม้ มีไม้โท"},
-            {w:"อากาศ", t:"สิ่งที่เราหายใจหรือสภาพลมฟ้า", em:"🌤️", chunks:["อา","กาศ"], tip:"อา + กาศ คำว่า กาศ ใช้ ศ สะกด"},
-            {w:"นิยม", t:"ชอบหรือยอมรับกันมาก", em:"👍", chunks:["นิ","ยม"], tip:"นิ + ยม คำว่า นิ ใช้สระอิ"},
-            {w:"ขนมจีน", t:"อาหารเส้นสีขาว กินกับน้ำยา", em:"🍜", chunks:["ขนม","จีน"], tip:"ขนม + จีน คำว่า จีน ใช้สระอี"},
-            {w:"ก๋วยเตี๋ยว", t:"อาหารเส้นใส่น้ำซุปหรือผัด", em:"🥢", chunks:["ก๋วย","เตี๋ยว"], tip:"ก๋วย + เตี๋ยว มีไม้จัตวาและไม้ตรี"},
-            {w:"ราดหน้า", t:"อาหารเส้นราดน้ำข้น", em:"🍽️", chunks:["ราด","หน้า"], tip:"ราด + หน้า คำว่า หน้า มี ห นำ น และไม้โท"},
-            {w:"อึ่งอ่าง", t:"สัตว์ครึ่งบกครึ่งน้ำ รูปร่างคล้ายคางคก", em:"🐸", chunks:["อึ่ง","อ่าง"], tip:"อึ่ง + อ่าง มีไม้เอกทั้งสองก้อน"},
-            {w:"ข้างโอ่ง", t:"บริเวณด้านข้างของโอ่ง", em:"🏺", chunks:["ข้าง","โอ่ง"], tip:"ข้าง + โอ่ง มีไม้โทที่ ข้าง และไม้เอกที่ โอ่ง"}
+            {w:"กิ๊บติดผม", t:"ของใช้สำหรับหนีบหรือติดผม", em:"🎀", audio:"audio/w01.mp3", chunks:["กิ๊บ","ติด","ผม"], tip:"กิ๊บ + ติด + ผม คำว่า กิ๊บ มีไม้ตรีและไม้ไต่คู้"},
+            {w:"กุหลาบ", t:"ดอกไม้กลิ่นหอม มีหนามตามกิ่ง", em:"🌹", audio:"audio/w02.mp3", chunks:["กุ","หลาบ"], tip:"กุ + หลาบ คำว่า หลาบ ใช้ ห นำ ล"},
+            {w:"สังเกต", t:"ดูหรือพิจารณาอย่างตั้งใจ", em:"🔎", audio:"audio/w03.mp3", chunks:["สัง","เกต"], tip:"สัง + เกต คำว่า สัง ใช้ ง สะกด"},
+            {w:"ลักษณะ", t:"รูปร่างหรือคุณสมบัติที่สังเกตได้", em:"🔷", audio:"audio/w04.mp3", chunks:["ลัก","ษ","ณะ"], tip:"ลัก + ษ + ณะ ระวังคำนี้มี ษ และ ณ"},
+            {w:"ดอกจำปี", t:"ดอกไม้สีขาวอมเหลือง กลิ่นหอม", em:"🌼", audio:"audio/w05.mp3", chunks:["ดอก","จำ","ปี"], tip:"ดอก + จำ + ปี คำว่า จำ ใช้สระอำ"},
+            {w:"รั้วบ้าน", t:"สิ่งที่ล้อมบริเวณบ้าน", em:"🏡", audio:"audio/w06.mp3", chunks:["รั้ว","บ้าน"], tip:"รั้ว + บ้าน มีไม้โททั้งสองก้อน"},
+            {w:"ดอกมะลิ", t:"ดอกไม้สีขาว มีกลิ่นหอม", em:"🌸", audio:"audio/w07.mp3", chunks:["ดอก","มะ","ลิ"], tip:"ดอก + มะ + ลิ คำว่า ลิ ใช้สระอิ"},
+            {w:"หน้าบ้าน", t:"บริเวณด้านหน้าของบ้าน", em:"🏠", audio:"audio/w08.mp3", chunks:["หน้า","บ้าน"], tip:"หน้า + บ้าน มีไม้โททั้งสองคำ"},
+            {w:"พยาบาล", t:"ผู้ดูแลผู้ป่วยและช่วยงานแพทย์", em:"🧑‍⚕️", audio:"audio/w09.mp3", chunks:["พยา","บาล"], tip:"พยา + บาล คำนี้ขึ้นต้นด้วย พย"},
+            {w:"บำนาญ", t:"เงินที่ได้รับหลังเกษียณจากงาน", em:"👵", audio:"audio/w10.mp3", chunks:["บำ","นาญ"], tip:"บำ + นาญ ระวังคำว่า นาญ ใช้ ญ สะกด"},
+            {w:"หมอ", t:"ผู้รักษาคนป่วย", em:"👨‍⚕️", audio:"audio/w11.mp3", chunks:["หมอ"], tip:"หมอ ใช้ ห นำ ม"},
+            {w:"พี่ชาย", t:"ผู้ชายที่เป็นพี่", em:"👦", audio:"audio/w12.mp3", chunks:["พี่","ชาย"], tip:"พี่ + ชาย คำว่า พี่ มีไม้เอก"},
+            {w:"จระเข้", t:"สัตว์เลื้อยคลานตัวใหญ่ ปากยาว", em:"🐊", audio:"audio/w13.mp3", chunks:["จระ","เข้"], tip:"จระ + เข้ คำว่า เข้ มีไม้โท"},
+            {w:"กางเกง", t:"เครื่องแต่งกายสำหรับสวมขา", em:"👖", audio:"audio/w14.mp3", chunks:["กาง","เกง"], tip:"กาง + เกง ทั้งสองก้อนมี ง สะกด"},
+            {w:"ตะกร้า", t:"ภาชนะสานหรือทำเป็นใบ ใช้ใส่ของ", em:"🧺", audio:"audio/w15.mp3", chunks:["ตะ","กร้า"], tip:"ตะ + กร้า คำว่า กร้า มี ร ควบและไม้โท"},
+            {w:"สะพาน", t:"ทางที่สร้างข้ามน้ำหรือถนน", em:"🌉", audio:"audio/w16.mp3", chunks:["สะ","พาน"], tip:"สะ + พาน คำว่า พาน ใช้ พ"},
+            {w:"สับปะรด", t:"ผลไม้เปลือกมีตา เนื้อสีเหลือง", em:"🍍", audio:"audio/w17.mp3", chunks:["สับ","ปะ","รด"], tip:"สับ + ปะ + รด คำนี้มี ปะ อยู่กลางคำ"},
+            {w:"แจกันดอกไม้", t:"ภาชนะใส่ดอกไม้", em:"💐", audio:"audio/w18.mp3", chunks:["แจกัน","ดอก","ไม้"], tip:"แจกัน + ดอก + ไม้ คำว่า ไม้ มีไม้โท"},
+            {w:"อากาศ", t:"สิ่งที่เราหายใจหรือสภาพลมฟ้า", em:"🌤️", audio:"audio/w19.mp3", chunks:["อา","กาศ"], tip:"อา + กาศ คำว่า กาศ ใช้ ศ สะกด"},
+            {w:"นิยม", t:"ชอบหรือยอมรับกันมาก", em:"👍", audio:"audio/w20.mp3", chunks:["นิ","ยม"], tip:"นิ + ยม คำว่า นิ ใช้สระอิ"},
+            {w:"ขนมจีน", t:"อาหารเส้นสีขาว กินกับน้ำยา", em:"🍜", audio:"audio/w21.mp3", chunks:["ขนม","จีน"], tip:"ขนม + จีน คำว่า จีน ใช้สระอี"},
+            {w:"ก๋วยเตี๋ยว", t:"อาหารเส้นใส่น้ำซุปหรือผัด", em:"🥢", audio:"audio/w22.mp3", chunks:["ก๋วย","เตี๋ยว"], tip:"ก๋วย + เตี๋ยว มีไม้จัตวาและไม้ตรี"},
+            {w:"ราดหน้า", t:"อาหารเส้นราดน้ำข้น", em:"🍽️", audio:"audio/w23.mp3", chunks:["ราด","หน้า"], tip:"ราด + หน้า คำว่า หน้า มี ห นำ น และไม้โท"},
+            {w:"อึ่งอ่าง", t:"สัตว์ครึ่งบกครึ่งน้ำ รูปร่างคล้ายคางคก", em:"🐸", audio:"audio/w24.mp3", chunks:["อึ่ง","อ่าง"], tip:"อึ่ง + อ่าง มีไม้เอกทั้งสองก้อน"},
+            {w:"ข้างโอ่ง", t:"บริเวณด้านข้างของโอ่ง", em:"🏺", audio:"audio/w25.mp3", chunks:["ข้าง","โอ่ง"], tip:"ข้าง + โอ่ง มีไม้โทที่ ข้าง และไม้เอกที่ โอ่ง"}
         ];
 
         var shuffledList = [];
@@ -174,6 +184,7 @@
         var userInput = [];
         var usedButtons = [];
         var audioCtx = null;
+        var wordAudio = null;
         var inputLocked = false;
         var hintCount = 0;
 
@@ -252,6 +263,23 @@
             }
         }
 
+        function playWordRecording() {
+            var data = shuffledList[currentIndex];
+            if (!data || !data.audio) return;
+            try {
+                if (wordAudio) {
+                    wordAudio.pause();
+                    wordAudio.currentTime = 0;
+                }
+                wordAudio = new Audio(data.audio);
+                wordAudio.play().catch(function() {
+                    document.getElementById("status-message").innerText = "แตะปุ่มเสียงอีกครั้งเพื่อเปิดเสียงนะ";
+                });
+            } catch (e) {
+                document.getElementById("status-message").innerText = "เปิดเสียงคำนี้ไม่ได้ ลองกดใหม่อีกครั้งนะ";
+            }
+        }
+
         function openHowToPlay() {
             document.getElementById("how-to-modal").style.display = "flex";
         }
@@ -299,6 +327,10 @@
         }
 
         function loadWord() {
+            if (wordAudio) {
+                wordAudio.pause();
+                wordAudio.currentTime = 0;
+            }
             var data = shuffledList[currentIndex];
             var targetUnits = answerUnits(data);
             document.getElementById("word-number").innerText = currentIndex + 1;
