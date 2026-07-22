@@ -185,6 +185,7 @@
         var usedButtons = [];
         var audioCtx = null;
         var wordAudio = null;
+        var audioVersion = "20260722-fixed";
         var inputLocked = false;
         var hintCount = 0;
 
@@ -271,7 +272,7 @@
                     wordAudio.pause();
                     wordAudio.currentTime = 0;
                 }
-                wordAudio = new Audio(data.audio);
+                wordAudio = new Audio(data.audio + "?v=" + audioVersion);
                 wordAudio.play().catch(function() {
                     document.getElementById("status-message").innerText = "แตะปุ่มเสียงอีกครั้งเพื่อเปิดเสียงนะ";
                 });
