@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เกมสะกดคำภาษาไทย ป.1 - คำยาก ครั้งที่ 31-35</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-rose-50 p-4 font-sans select-none relative min-h-screen">
+    <div class="max-w-md mx-auto bg-white p-5 rounded-3xl shadow-xl border-4 border-rose-200 mt-2">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <button id="mode-toggle-btn" onclick="toggleMode()" class="text-xs bg-emerald-100 text-emerald-700 font-bold px-3 py-2 rounded-full shadow-sm active:scale-95 transition-all cursor-pointer">
+                โหมด: ง่ายมาก 🧸
+            </button>
+            <a href="../" class="text-xs bg-slate-100 text-slate-700 font-bold px-3 py-2 rounded-full shadow-sm active:scale-95 transition-all cursor-pointer">
+                เลือกหมวด 📚
+            </a>
+            <button onclick="openHowToPlay()" class="text-xs bg-amber-100 text-amber-700 font-bold px-3 py-2 rounded-full shadow-sm active:scale-95 transition-all cursor-pointer">
+                วิธีเล่น ❔
+            </button>
+        </div>
+
+        <div class="text-center mb-3">
+            <div class="text-[11px] font-black text-rose-500 uppercase tracking-wider">Thai Spelling Quiz</div>
+            <h1 class="text-xl font-black text-slate-800">คำยากภาษาไทย</h1>
+            <p class="text-xs font-bold text-slate-400">ครั้งที่ 31-35 · สอบ 23 ก.ค. รวม 25 คำ</p>
+        </div>
+
+        <div class="flex justify-between items-center mb-4 border-t border-slate-100 pt-3">
+            <span class="bg-rose-100 text-rose-700 font-bold px-3 py-1 rounded-full text-xs">
+                คำที่ <span id="word-number">1</span>/<span id="total-words">25</span>
+            </span>
+            <span class="text-amber-500 font-bold">⭐ คะแนน: <span id="score-display">0</span>/<span id="score-total">25</span></span>
+        </div>
+
+        <div class="w-full bg-slate-100 rounded-full h-2 mb-4 overflow-hidden">
+            <div id="progress-bar" class="bg-rose-500 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
+        </div>
+
+        <div id="emoji-display" class="text-5xl text-center mb-2 animate-bounce"></div>
+        <h2 id="thai-hint" class="text-sm font-black text-center text-slate-600 mb-2 min-h-[24px]">ดูภาพและคำใบ้ แล้วเรียงตัวอักษร</h2>
+        <div id="meaning-display" class="text-center text-xs font-bold text-slate-400 mb-4 min-h-[20px]"></div>
+
+        <div id="word-preview" class="hidden text-center mb-4 bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-3">
+            <div class="text-[10px] font-black text-emerald-600 uppercase tracking-wider mb-1">จำคำจากป๊อบอัพ แล้วกลับมาสะกด</div>
+            <div class="text-sm font-bold text-emerald-800">กดปุ่มพร้อมแล้วในป๊อบอัพก่อนเริ่มตอบ</div>
+        </div>
+
+        <div id="slots-container" class="bg-slate-50 p-2 rounded-2xl border-2 border-slate-200 mb-3 shadow-inner">
+            <div id="typewriter-screen" class="w-full min-h-16 bg-white border-b-4 border-rose-400 text-4xl font-black flex items-center justify-center text-rose-900 tracking-wide rounded-t-xl overflow-hidden px-2 leading-tight"></div>
+        </div>
+
+        <div id="status-message" class="text-center text-sm font-bold text-rose-500 min-h-[40px] mb-3 flex items-center justify-center p-2 bg-rose-50 rounded-xl"></div>
+
+        <button id="submit-btn" onclick="checkAnswer()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-all text-base mb-3 cursor-pointer">
+            ✅ ยืนยันคำตอบ
+        </button>
+
+        <div id="translation-container" class="flex-col items-center gap-3 mb-4 w-full" style="display: none;">
+            <div class="w-full h-[2px] bg-slate-100 mb-1"></div>
+            <h4 class="text-sky-700 font-bold text-base mb-1">คำนี้ตรงกับข้อไหนเอ่ย?</h4>
+            <div id="translation-options" class="flex flex-col gap-2 w-full"></div>
+        </div>
+
+        <div id="control-panel" class="flex flex-wrap justify-between items-center gap-2 mb-4 border-t border-slate-100 pt-3">
+            <button onclick="initGame()" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-2 rounded-xl transition active:scale-95 cursor-pointer">เริ่มใหม่ 🔄</button>
+            <button id="study-again-btn" onclick="reviewStudyWord()" class="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold px-3 py-2 rounded-xl transition active:scale-95 cursor-pointer">ดูคำอีกครั้ง 👀</button>
+            <button id="hint-btn" onclick="useHint()" class="text-xs bg-violet-100 hover:bg-violet-200 text-violet-700 font-bold px-3 py-2 rounded-xl transition active:scale-95 cursor-pointer">ใบ้ตัวถัดไป 0/2 💡</button>
+            <button onclick="backspace()" class="text-xs bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold px-3 py-2 rounded-xl transition active:scale-95 cursor-pointer">ลบ ⌫</button>
+            <button onclick="clearCurrentWord()" class="text-xs bg-rose-100 hover:bg-rose-200 text-rose-600 font-bold px-3 py-2 rounded-xl transition active:scale-95 cursor-pointer">ลบทั้งหมด ↩</button>
+        </div>
+
+        <div id="keyboard-container" class="flex flex-wrap justify-center gap-2 bg-slate-50 p-4 rounded-2xl border border-slate-200"></div>
+    </div>
+
+    <div id="how-to-modal" class="fixed inset-0 bg-slate-900/60 items-center justify-center p-4 z-50" style="display: none;">
+        <div class="bg-white rounded-3xl p-5 max-w-sm w-full shadow-2xl border-4 border-amber-300">
+            <h2 class="text-xl font-black text-slate-800 mb-3 text-center">วิธีเล่น</h2>
+            <div class="space-y-2 text-sm text-slate-700 font-semibold leading-relaxed">
+                <p>1. ดูภาพและคำใบ้ แล้วเรียงตัวอักษรให้เป็นคำภาษาไทย</p>
+                <p>2. กดปุ่มตามลำดับการพิมพ์คำไทย เช่น สระหน้า เ แ โ ใ ไ ต้องกดก่อนพยัญชนะ</p>
+                <p>3. โหมดง่ายมากจะเปิดป๊อบอัพให้ดูคำเต็ม กด “พร้อมแล้ว” แล้วค่อยสะกด</p>
+                <p>4. กด “ยืนยันคำตอบ” แล้วเลือกภาพหรือความหมายที่ตรงกับคำ</p>
+                <p>5. โหมดง่ายกด “ใบ้ตัวถัดไป” ได้ไม่เกิน 2 ครั้งต่อคำ ส่วนโหมดยากไม่มีปุ่มใบ้</p>
+            </div>
+            <button onclick="closeHowToPlay()" class="mt-5 w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-all">เริ่มเล่นเลย</button>
+        </div>
+    </div>
+
+    <div id="study-word-modal" class="fixed inset-0 bg-slate-900/70 items-center justify-center p-4 z-50" style="display: none;">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl border-4 border-emerald-400">
+            <div id="study-word-emoji" class="text-5xl mb-3"></div>
+            <p class="text-xs font-black text-emerald-500 uppercase tracking-wider">ดูให้จำก่อนนะ</p>
+            <div id="study-word-text" class="text-4xl font-black text-emerald-800 tracking-wide my-3 leading-tight"></div>
+            <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 mb-3">
+                <div class="text-[10px] font-black text-emerald-600 uppercase tracking-wider mb-2">จำเป็นก้อน</div>
+                <div id="study-word-parts" class="flex flex-wrap justify-center gap-2"></div>
+            </div>
+            <div class="bg-rose-50 border border-rose-200 rounded-2xl p-3 mb-3">
+                <div class="text-[10px] font-black text-rose-600 uppercase tracking-wider mb-2">ลำดับการกดปุ่ม</div>
+                <div id="study-typing-parts" class="flex flex-wrap justify-center gap-1.5"></div>
+            </div>
+            <div id="study-word-thai" class="text-sm font-bold text-slate-500 mb-4"></div>
+            <button onclick="startVeryEasyAnswer()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-all">พร้อมแล้ว เริ่มสะกด</button>
+        </div>
+    </div>
+
+    <div id="success-modal" class="fixed inset-0 bg-slate-900/60 items-center justify-center p-4 z-50" style="display: none;">
+        <div class="bg-white rounded-3xl p-5 max-w-sm w-full text-center shadow-2xl border-4 border-emerald-400 max-h-[95vh] overflow-y-auto">
+            <span class="text-4xl block mb-1">🎉</span>
+            <h3 class="text-lg font-bold text-emerald-600 mb-1">ถูกต้อง เก่งมาก!</h3>
+
+            <div class="bg-rose-50 rounded-2xl p-3 mb-3 border border-rose-100">
+                <div id="modal-word-display" class="text-3xl font-black text-rose-900 tracking-wide mb-2"></div>
+                <p id="modal-thai-text" class="text-sm font-bold text-rose-700"></p>
+            </div>
+
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-left">
+                <span class="text-xs font-bold text-amber-700 block mb-0.5">💡 ทริคจำ:</span>
+                <p id="modal-tip" class="text-[11px] text-slate-600 leading-relaxed"></p>
+            </div>
+
+            <button id="next-word-btn" onclick="goToNextWord()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-all text-sm cursor-pointer">คำต่อไป ➡</button>
+        </div>
+    </div>
+
+    <div id="game-over-modal" class="fixed inset-0 bg-slate-900/70 items-center justify-center p-4 z-50" style="display: none;">
+        <div class="bg-white rounded-3xl p-6 max-w-xs w-full text-center shadow-2xl border-4 border-amber-400">
+            <span id="final-modal-icon" class="text-6xl block mb-4">🏆</span>
+            <h2 class="text-2xl font-black text-slate-800 mb-2">สรุปคะแนนรวม</h2>
+            <div class="bg-rose-50 rounded-2xl p-4 mb-6 border border-rose-100">
+                <span class="text-sm font-bold text-rose-600 block mb-1">คะแนนที่ได้ทั้งหมด</span>
+                <div class="text-5xl font-black text-rose-900"><span id="final-score">0</span> <span class="text-2xl text-slate-400 font-bold">/ <span id="final-total">25</span></span></div>
+            </div>
+            <p id="final-evaluation" class="text-sm font-bold text-emerald-600 mb-6 leading-relaxed"></p>
+            <button onclick="restartGame()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-95 transition-all text-base cursor-pointer">🔄 เล่นใหม่อีกรอบ</button>
+        </div>
+    </div>
+
+    <script>
+        var vocabularyList = [
+            {w:"กิ๊บติดผม", t:"ของใช้สำหรับหนีบหรือติดผม", em:"🎀", chunks:["กิ๊บ","ติด","ผม"], tip:"กิ๊บ + ติด + ผม คำว่า กิ๊บ มีไม้ตรีและไม้ไต่คู้"},
+            {w:"กุหลาบ", t:"ดอกไม้กลิ่นหอม มีหนามตามกิ่ง", em:"🌹", chunks:["กุ","หลาบ"], tip:"กุ + หลาบ คำว่า หลาบ ใช้ ห นำ ล"},
+            {w:"สังเกต", t:"ดูหรือพิจารณาอย่างตั้งใจ", em:"🔎", chunks:["สัง","เกต"], tip:"สัง + เกต คำว่า สัง ใช้ ง สะกด"},
+            {w:"ลักษณะ", t:"รูปร่างหรือคุณสมบัติที่สังเกตได้", em:"🔷", chunks:["ลัก","ษ","ณะ"], tip:"ลัก + ษ + ณะ ระวังคำนี้มี ษ และ ณ"},
+            {w:"ดอกจำปี", t:"ดอกไม้สีขาวอมเหลือง กลิ่นหอม", em:"🌼", chunks:["ดอก","จำ","ปี"], tip:"ดอก + จำ + ปี คำว่า จำ ใช้สระอำ"},
+            {w:"รั้วบ้าน", t:"สิ่งที่ล้อมบริเวณบ้าน", em:"🏡", chunks:["รั้ว","บ้าน"], tip:"รั้ว + บ้าน มีไม้โททั้งสองก้อน"},
+            {w:"ดอกมะลิ", t:"ดอกไม้สีขาว มีกลิ่นหอม", em:"🌸", chunks:["ดอก","มะ","ลิ"], tip:"ดอก + มะ + ลิ คำว่า ลิ ใช้สระอิ"},
+            {w:"หน้าบ้าน", t:"บริเวณด้านหน้าของบ้าน", em:"🏠", chunks:["หน้า","บ้าน"], tip:"หน้า + บ้าน มีไม้โททั้งสองคำ"},
+            {w:"พยาบาล", t:"ผู้ดูแลผู้ป่วยและช่วยงานแพทย์", em:"🧑‍⚕️", chunks:["พยา","บาล"], tip:"พยา + บาล คำนี้ขึ้นต้นด้วย พย"},
+            {w:"บำนาญ", t:"เงินที่ได้รับหลังเกษียณจากงาน", em:"👵", chunks:["บำ","นาญ"], tip:"บำ + นาญ ระวังคำว่า นาญ ใช้ ญ สะกด"},
+            {w:"หมอ", t:"ผู้รักษาคนป่วย", em:"👨‍⚕️", chunks:["หมอ"], tip:"หมอ ใช้ ห นำ ม"},
+            {w:"พี่ชาย", t:"ผู้ชายที่เป็นพี่", em:"👦", chunks:["พี่","ชาย"], tip:"พี่ + ชาย คำว่า พี่ มีไม้เอก"},
+            {w:"จระเข้", t:"สัตว์เลื้อยคลานตัวใหญ่ ปากยาว", em:"🐊", chunks:["จระ","เข้"], tip:"จระ + เข้ คำว่า เข้ มีไม้โท"},
+            {w:"กางเกง", t:"เครื่องแต่งกายสำหรับสวมขา", em:"👖", chunks:["กาง","เกง"], tip:"กาง + เกง ทั้งสองก้อนมี ง สะกด"},
+            {w:"ตะกร้า", t:"ภาชนะสานหรือทำเป็นใบ ใช้ใส่ของ", em:"🧺", chunks:["ตะ","กร้า"], tip:"ตะ + กร้า คำว่า กร้า มี ร ควบและไม้โท"},
+            {w:"สะพาน", t:"ทางที่สร้างข้ามน้ำหรือถนน", em:"🌉", chunks:["สะ","พาน"], tip:"สะ + พาน คำว่า พาน ใช้ พ"},
+            {w:"สับปะรด", t:"ผลไม้เปลือกมีตา เนื้อสีเหลือง", em:"🍍", chunks:["สับ","ปะ","รด"], tip:"สับ + ปะ + รด คำนี้มี ปะ อยู่กลางคำ"},
+            {w:"แจกันดอกไม้", t:"ภาชนะใส่ดอกไม้", em:"💐", chunks:["แจกัน","ดอก","ไม้"], tip:"แจกัน + ดอก + ไม้ คำว่า ไม้ มีไม้โท"},
+            {w:"อากาศ", t:"สิ่งที่เราหายใจหรือสภาพลมฟ้า", em:"🌤️", chunks:["อา","กาศ"], tip:"อา + กาศ คำว่า กาศ ใช้ ศ สะกด"},
+            {w:"นิยม", t:"ชอบหรือยอมรับกันมาก", em:"👍", chunks:["นิ","ยม"], tip:"นิ + ยม คำว่า นิ ใช้สระอิ"},
+            {w:"ขนมจีน", t:"อาหารเส้นสีขาว กินกับน้ำยา", em:"🍜", chunks:["ขนม","จีน"], tip:"ขนม + จีน คำว่า จีน ใช้สระอี"},
+            {w:"ก๋วยเตี๋ยว", t:"อาหารเส้นใส่น้ำซุปหรือผัด", em:"🥢", chunks:["ก๋วย","เตี๋ยว"], tip:"ก๋วย + เตี๋ยว มีไม้จัตวาและไม้ตรี"},
+            {w:"ราดหน้า", t:"อาหารเส้นราดน้ำข้น", em:"🍽️", chunks:["ราด","หน้า"], tip:"ราด + หน้า คำว่า หน้า มี ห นำ น และไม้โท"},
+            {w:"อึ่งอ่าง", t:"สัตว์ครึ่งบกครึ่งน้ำ รูปร่างคล้ายคางคก", em:"🐸", chunks:["อึ่ง","อ่าง"], tip:"อึ่ง + อ่าง มีไม้เอกทั้งสองก้อน"},
+            {w:"ข้างโอ่ง", t:"บริเวณด้านข้างของโอ่ง", em:"🏺", chunks:["ข้าง","โอ่ง"], tip:"ข้าง + โอ่ง มีไม้โทที่ ข้าง และไม้เอกที่ โอ่ง"}
+        ];
+
+        var shuffledList = [];
+        var currentIndex = 0;
+        var totalScore = 0;
+        var gameMode = "veryEasy";
+        var currentWordScore = 1.0;
+        var userInput = [];
+        var usedButtons = [];
+        var audioCtx = null;
+        var inputLocked = false;
+        var hintCount = 0;
+
+        function splitUnits(text) {
+            return String(text).split("");
+        }
+
+        function getButtonDisplayChar(c) {
+            var marks = "ัิีึืุู็่้๊๋์ํ๎";
+            if (marks.indexOf(c) !== -1) return "◌" + c;
+            return c;
+        }
+
+        function normalizeThai(str) {
+            return String(str)
+                .replace(/([\u0E47-\u0E4C])([\u0E31\u0E34-\u0E3A])/g, "$2$1")
+                .replace(/(\u0E33)([\u0E48-\u0E4C])/g, "$2$1");
+        }
+
+        function updateScreenDisplay() {
+            document.getElementById("typewriter-screen").innerText = normalizeThai(userInput.join(""));
+        }
+
+        function answerOf(data) {
+            return data.w.replace(/\s/g, "");
+        }
+
+        function answerUnits(data) {
+            return splitUnits(answerOf(data));
+        }
+
+        function formatScore(num) {
+            return (num % 1 === 0) ? String(num) : num.toFixed(1);
+        }
+
+        function initAudio() {
+            try {
+                if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
+                    var AudioContext = window.AudioContext || window.webkitAudioContext;
+                    audioCtx = new AudioContext();
+                }
+                if (audioCtx && audioCtx.state === "suspended") {
+                    audioCtx.resume();
+                }
+            } catch (e) {}
+        }
+
+        function playTone(freq, wave, duration, delay) {
+            try {
+                if (!audioCtx) return;
+                var osc = audioCtx.createOscillator();
+                var gain = audioCtx.createGain();
+                osc.type = wave;
+                osc.frequency.value = freq;
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                var now = audioCtx.currentTime;
+                gain.gain.setValueAtTime(0.2, now + delay);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + delay + duration);
+                osc.start(now + delay);
+                osc.stop(now + delay + duration);
+            } catch (e) {}
+        }
+
+        function playSoundEffect(type) {
+            initAudio();
+            if (type === "correct") {
+                playTone(523.25, "sine", 0.1, 0);
+                playTone(659.25, "sine", 0.1, 0.1);
+                playTone(783.99, "sine", 0.25, 0.2);
+            } else if (type === "wrong") {
+                playTone(300, "triangle", 0.18, 0);
+                playTone(200, "triangle", 0.25, 0.15);
+            } else {
+                playTone(600, "sine", 0.05, 0);
+            }
+        }
+
+        function openHowToPlay() {
+            document.getElementById("how-to-modal").style.display = "flex";
+        }
+
+        function closeHowToPlay() {
+            document.getElementById("how-to-modal").style.display = "none";
+        }
+
+        function initGame() {
+            shuffledList = vocabularyList.slice();
+            shuffledList.sort(function() { return Math.random() - 0.5; });
+            currentIndex = 0;
+            totalScore = 0;
+            document.getElementById("total-words").innerText = vocabularyList.length;
+            document.getElementById("score-total").innerText = vocabularyList.length;
+            document.getElementById("final-total").innerText = vocabularyList.length;
+            document.getElementById("score-display").innerText = formatScore(totalScore);
+            loadWord();
+        }
+
+        function toggleMode() {
+            if (gameMode === "veryEasy") {
+                gameMode = "easy";
+            } else if (gameMode === "easy") {
+                gameMode = "hard";
+            } else {
+                gameMode = "veryEasy";
+            }
+            updateModeButton();
+            loadWord();
+        }
+
+        function updateModeButton() {
+            var btn = document.getElementById("mode-toggle-btn");
+            if (gameMode === "veryEasy") {
+                btn.innerText = "โหมด: ง่ายมาก 🧸";
+                btn.className = "text-xs bg-emerald-100 text-emerald-700 font-bold px-3 py-2 rounded-full shadow-sm active:scale-95 transition-all cursor-pointer";
+            } else if (gameMode === "easy") {
+                btn.innerText = "โหมด: ง่าย 🌱";
+                btn.className = "text-xs bg-sky-100 text-sky-700 font-bold px-3 py-2 rounded-full shadow-sm active:scale-95 transition-all cursor-pointer";
+            } else {
+                btn.innerText = "โหมด: ยาก 🔥";
+                btn.className = "text-xs bg-red-100 text-red-700 font-bold px-3 py-2 rounded-full shadow-sm active:scale-95 transition-all cursor-pointer";
+            }
+        }
+
+        function loadWord() {
+            var data = shuffledList[currentIndex];
+            var targetUnits = answerUnits(data);
+            document.getElementById("word-number").innerText = currentIndex + 1;
+            document.getElementById("progress-bar").style.width = ((currentIndex) / vocabularyList.length * 100) + "%";
+            document.getElementById("emoji-display").innerText = data.em;
+            document.getElementById("meaning-display").innerText = data.t;
+
+            document.getElementById("submit-btn").style.display = "block";
+            document.getElementById("control-panel").style.display = "flex";
+            document.getElementById("keyboard-container").style.display = "flex";
+            document.getElementById("translation-container").style.display = "none";
+            document.getElementById("success-modal").style.display = "none";
+
+            var statusMsg = document.getElementById("status-message");
+            statusMsg.innerText = "";
+            statusMsg.className = "text-center text-sm font-bold text-rose-500 min-h-[40px] mb-3 flex items-center justify-center p-2 bg-rose-50 rounded-xl";
+
+            userInput = [];
+            usedButtons = [];
+            currentWordScore = 1.0;
+            hintCount = 0;
+
+            var preview = document.getElementById("word-preview");
+            var hintText = document.getElementById("thai-hint");
+            var hintBtn = document.getElementById("hint-btn");
+            var studyAgainBtn = document.getElementById("study-again-btn");
+            inputLocked = gameMode === "veryEasy";
+            hintBtn.style.display = gameMode === "hard" ? "none" : "inline-block";
+            studyAgainBtn.style.display = gameMode === "veryEasy" ? "inline-block" : "none";
+            updateHintButton();
+            if (gameMode === "veryEasy") {
+                preview.style.display = "block";
+                hintText.innerText = "ดูคำในป๊อบอัพ แล้วกดพร้อมแล้วเพื่อเริ่มสะกด";
+            } else {
+                preview.style.display = "none";
+                hintText.innerText = gameMode === "easy" ? "ดูภาพ/คำใบ้ แล้วกดใบ้ได้ถ้าติดขัด" : "โหมดยาก มีตัวหลอกเพิ่ม";
+            }
+
+            updateScreenDisplay();
+
+            var chars = targetUnits.slice();
+            if (gameMode === "hard") {
+                var pool = splitUnits("กขคงจชซดตถทธนบปผพมยรลวศษสหอะาิีึืุูเแโใไัำ่้๊๋์");
+                var distractors = [];
+                while(distractors.length < 4) {
+                    var r = pool[Math.floor(Math.random() * pool.length)];
+                    if(chars.indexOf(r) === -1 && distractors.indexOf(r) === -1) {
+                        distractors.push(r);
+                    }
+                }
+                chars = chars.concat(distractors);
+            }
+
+            var kb = document.getElementById("keyboard-container");
+            kb.innerHTML = "";
+            chars.sort(function() { return Math.random() - 0.5; });
+            for(var i = 0; i < chars.length; i++) {
+                (function(charVal) {
+                    var btn = document.createElement("button");
+                    btn.className = "bg-white min-w-12 h-14 px-2 rounded-xl border-b-4 border-slate-300 font-bold text-2xl text-slate-700 shadow-sm active:border-b-0 active:translate-y-1 active:bg-rose-500 active:text-white transition-all flex items-center justify-center";
+                    btn.innerText = getButtonDisplayChar(charVal);
+                    btn.dataset.letter = charVal;
+                    btn.onclick = function() { handleKey(charVal, btn); };
+                    kb.appendChild(btn);
+                })(chars[i]);
+            }
+
+            if (gameMode === "veryEasy") {
+                setPracticeLock(true);
+                showStudyWordModal(data);
+                statusMsg.innerText = "ดูคำในป๊อบอัพให้จำ แล้วกดพร้อมแล้วเพื่อเริ่มสะกด";
+                statusMsg.className = "text-center text-sm font-bold text-emerald-600 min-h-[40px] mb-3 flex items-center justify-center p-2 bg-emerald-50 rounded-xl border border-emerald-200";
+            } else {
+                inputLocked = false;
+                setPracticeLock(false);
+                document.getElementById("study-word-modal").style.display = "none";
+            }
+        }
+
+        function showStudyWordModal(data) {
+            document.getElementById("study-word-emoji").innerText = data.em;
+            document.getElementById("study-word-text").innerText = data.w;
+            document.getElementById("study-word-thai").innerText = data.t;
+            var parts = document.getElementById("study-word-parts");
+            parts.innerHTML = "";
+            data.chunks.forEach(function(part) {
+                var badge = document.createElement("span");
+                badge.className = "bg-white border-2 border-emerald-300 text-emerald-800 font-black text-lg px-3 py-1 rounded-xl shadow-sm";
+                badge.innerText = part;
+                parts.appendChild(badge);
+            });
+            var typingParts = document.getElementById("study-typing-parts");
+            typingParts.innerHTML = "";
+            answerUnits(data).forEach(function(part) {
+                var key = document.createElement("span");
+                key.className = "bg-white border-2 border-rose-300 text-rose-800 font-black text-base min-w-9 h-10 px-2 rounded-xl shadow-sm flex items-center justify-center";
+                key.innerText = getButtonDisplayChar(part);
+                typingParts.appendChild(key);
+            });
+            document.getElementById("study-word-modal").style.display = "flex";
+        }
+
+        function reviewStudyWord() {
+            if (gameMode !== "veryEasy") return;
+            inputLocked = true;
+            setPracticeLock(true);
+            showStudyWordModal(shuffledList[currentIndex]);
+            document.getElementById("status-message").innerText = "ดูคำอีกครั้งให้จำ แล้วกดพร้อมแล้วเพื่อกลับมาสะกดต่อ";
+        }
+
+        function startVeryEasyAnswer() {
+            document.getElementById("study-word-modal").style.display = "none";
+            inputLocked = false;
+            setPracticeLock(false);
+            var statusMsg = document.getElementById("status-message");
+            statusMsg.innerText = "ลองสะกดจากความจำได้เลย ถ้าติดขัดกดใบ้ตัวถัดไปได้";
+            statusMsg.className = "text-center text-sm font-bold text-rose-600 min-h-[40px] mb-3 flex items-center justify-center p-2 bg-rose-50 rounded-xl border border-rose-200";
+        }
+
+        function setPracticeLock(locked) {
+            var buttons = document.querySelectorAll("#keyboard-container button");
+            for (var i = 0; i < buttons.length; i++) {
+                if (locked) {
+                    if (!buttons[i].classList.contains("pointer-events-none")) {
+                        buttons[i].classList.add("practice-lock", "opacity-40", "pointer-events-none");
+                    }
+                } else if (buttons[i].classList.contains("practice-lock")) {
+                    buttons[i].classList.remove("practice-lock");
+                    buttons[i].classList.remove("opacity-40", "pointer-events-none");
+                }
+            }
+            var submitBtn = document.getElementById("submit-btn");
+            if (locked) {
+                submitBtn.classList.add("opacity-50", "pointer-events-none");
+            } else {
+                submitBtn.classList.remove("opacity-50", "pointer-events-none");
+            }
+        }
+
+        function handleKey(c, btn) {
+            if (inputLocked) {
+                document.getElementById("status-message").innerText = "กดพร้อมแล้วในป๊อบอัพก่อน แล้วค่อยเริ่มสะกดนะ";
+                return;
+            }
+            playSoundEffect("tap");
+            var target = answerUnits(shuffledList[currentIndex]);
+            if(userInput.length < target.length) {
+                userInput.push(c);
+                updateScreenDisplay();
+                btn.classList.add("opacity-30", "pointer-events-none", "scale-90");
+                usedButtons.push(btn);
+            }
+        }
+
+        function useHint() {
+            if (gameMode === "hard") {
+                document.getElementById("status-message").innerText = "โหมดยากไม่มีคำใบ้นะ ลองดูภาพและคำใบ้อีกครั้ง";
+                return;
+            }
+            if (hintCount >= 2) {
+                document.getElementById("status-message").innerText = "คำนี้ใช้คำใบ้ครบ 2 ครั้งแล้ว ลองต่อเองอีกนิดนะ";
+                return;
+            }
+            if (inputLocked) {
+                document.getElementById("status-message").innerText = "กดพร้อมแล้วในป๊อบอัพก่อน แล้วค่อยใช้ใบ้ได้นะ";
+                return;
+            }
+            var data = shuffledList[currentIndex];
+            var target = answerUnits(data);
+            if (userInput.length >= target.length) {
+                document.getElementById("status-message").innerText = "ตัวอักษรครบแล้ว กดยืนยันคำตอบได้เลย";
+                return;
+            }
+            for (var j = 0; j < userInput.length; j++) {
+                if (userInput[j] !== target[j]) {
+                    document.getElementById("status-message").innerText = "มีตัวอักษรก่อนหน้าที่ยังไม่ตรง ลบแล้วกดใบ้ใหม่ได้เลย";
+                    return;
+                }
+            }
+            var nextLetter = target[userInput.length];
+            var buttons = document.querySelectorAll("#keyboard-container button");
+            for (var i = 0; i < buttons.length; i++) {
+                if (buttons[i].dataset.letter === nextLetter && !buttons[i].classList.contains("pointer-events-none")) {
+                    handleKey(nextLetter, buttons[i]);
+                    hintCount++;
+                    updateHintButton();
+                    if (gameMode === "easy") {
+                        currentWordScore = Math.max(0, currentWordScore - 0.25);
+                    }
+                    document.getElementById("status-message").innerText = gameMode === "veryEasy"
+                        ? "เติมตัวถัดไปให้แล้ว ลองกดตามคำด้านบนนะ"
+                        : "ใบ้ตัวถัดไปให้แล้ว กดใบ้เพิ่มได้ถ้ายังติดอยู่";
+                    return;
+                }
+            }
+        }
+
+        function updateHintButton() {
+            var hintBtn = document.getElementById("hint-btn");
+            if (hintBtn) {
+                hintBtn.innerText = "ใบ้ตัวถัดไป " + hintCount + "/2 💡";
+                if (hintCount >= 2) {
+                    hintBtn.classList.add("opacity-50", "pointer-events-none");
+                } else {
+                    hintBtn.classList.remove("opacity-50", "pointer-events-none");
+                }
+            }
+        }
+
+        function checkAnswer() {
+            if (inputLocked) {
+                document.getElementById("status-message").innerText = "กดพร้อมแล้วในป๊อบอัพก่อน แล้วค่อยตอบนะ";
+                return;
+            }
+            var target = answerUnits(shuffledList[currentIndex]);
+            if (userInput.length < target.length) {
+                document.getElementById("status-message").innerText = "เรียงตัวอักษรให้ครบก่อนนะคนเก่ง ✏️";
+                return;
+            }
+
+            if (normalizeThai(userInput.join("")) === normalizeThai(target.join(""))) {
+                playSoundEffect("correct");
+                document.getElementById("submit-btn").style.display = "none";
+                document.getElementById("control-panel").style.display = "none";
+                document.getElementById("keyboard-container").style.display = "none";
+                document.getElementById("translation-container").style.display = "flex";
+
+                var statusMsg = document.getElementById("status-message");
+                statusMsg.innerText = "สะกดถูกแล้ว! เลือกภาพหรือความหมายให้ตรงกับคำเลยจ้า 🌟";
+                statusMsg.className = "text-center text-sm font-bold text-emerald-600 min-h-[40px] mb-3 flex items-center justify-center p-2 bg-emerald-50 rounded-xl border border-emerald-200";
+                generateTranslationOptions();
+            } else {
+                playSoundEffect("wrong");
+                currentWordScore = Math.max(0, currentWordScore - 0.5);
+                document.getElementById("status-message").innerText = "สะกดยังไม่ถูกจ้า ลองลบแล้วเช็คตัวอักษรดูใหม่นะ 💡";
+            }
+        }
+
+        function generateTranslationOptions() {
+            var currentWord = shuffledList[currentIndex];
+            var options = [currentWord];
+            var shuffledVocab = vocabularyList.slice().sort(function() { return Math.random() - 0.5; });
+            for (var i = 0; i < shuffledVocab.length; i++) {
+                if (shuffledVocab[i].w !== currentWord.w && options.length < 4) {
+                    options.push(shuffledVocab[i]);
+                }
+            }
+            options.sort(function() { return Math.random() - 0.5; });
+
+            var optionsContainer = document.getElementById("translation-options");
+            optionsContainer.innerHTML = "";
+            options.forEach(function(opt) {
+                var btn = document.createElement("button");
+                btn.className = "w-full bg-white border-2 border-sky-300 text-sky-800 font-bold py-3.5 rounded-xl shadow-sm hover:bg-sky-50 active:scale-95 transition-all text-base flex items-center justify-center gap-3";
+                btn.innerHTML = '<span class="text-2xl">' + opt.em + '</span> <span>' + opt.t + '</span>';
+                btn.onclick = function() { checkTranslation(opt.w, btn); };
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkTranslation(selectedWordRaw, btn) {
+            var targetWord = shuffledList[currentIndex].w;
+            if (selectedWordRaw === targetWord) {
+                playSoundEffect("correct");
+                totalScore += currentWordScore;
+                document.getElementById("score-display").innerText = formatScore(totalScore);
+
+                document.getElementById("modal-word-display").innerText = targetWord;
+                document.getElementById("modal-thai-text").innerText = shuffledList[currentIndex].t;
+                document.getElementById("modal-tip").innerText = shuffledList[currentIndex].tip;
+                document.getElementById("success-modal").style.display = "flex";
+            } else {
+                playSoundEffect("wrong");
+                currentWordScore = Math.max(0, currentWordScore - 0.5);
+                btn.className = "w-full opacity-50 bg-rose-50 border-rose-200 text-rose-400 font-bold py-3.5 rounded-xl shadow-sm pointer-events-none flex items-center justify-center gap-3";
+                var statusMsg = document.getElementById("status-message");
+                statusMsg.innerText = "ยังไม่ใช่จ้า ลองดูรูปภาพแล้วเลือกใหม่นะ 🤔";
+                statusMsg.className = "text-center text-sm font-bold text-rose-500 min-h-[40px] mb-3 flex items-center justify-center p-2 bg-rose-50 rounded-xl border border-rose-200";
+            }
+        }
+
+        function goToNextWord() {
+            document.getElementById("success-modal").style.display = "none";
+            if (currentIndex >= shuffledList.length - 1) {
+                showGameOverSummary();
+            } else {
+                currentIndex++;
+                loadWord();
+            }
+        }
+
+        function showGameOverSummary() {
+            document.getElementById("progress-bar").style.width = "100%";
+            document.getElementById("final-score").innerText = formatScore(totalScore);
+            var fullScore = vocabularyList.length;
+            var icon = totalScore === fullScore ? "👑" : totalScore >= 20 ? "🏆" : totalScore >= 14 ? "✨" : "💪";
+            document.getElementById("final-modal-icon").innerText = icon;
+            document.getElementById("final-evaluation").innerText = totalScore === fullScore
+                ? "สุดยอดมาก ได้คะแนนเต็มทุกคำเลย!"
+                : "เก่งมากครับ ฝึกซ้ำอีกนิด รอบหน้าคะแนนสูงขึ้นแน่นอน";
+            document.getElementById("game-over-modal").style.display = "flex";
+        }
+
+        function restartGame() {
+            document.getElementById("game-over-modal").style.display = "none";
+            initGame();
+        }
+
+        function backspace() {
+            if(userInput.length > 0) {
+                userInput.pop();
+                updateScreenDisplay();
+                var btn = usedButtons.pop();
+                if(btn) btn.classList.remove("opacity-30", "pointer-events-none", "scale-90");
+                document.getElementById("status-message").innerText = "";
+            }
+        }
+
+        function clearCurrentWord() {
+            userInput = [];
+            updateScreenDisplay();
+            usedButtons.forEach(function(b) {
+                b.classList.remove("opacity-30", "pointer-events-none", "scale-90");
+            });
+            usedButtons = [];
+            document.getElementById("status-message").innerText = "";
+        }
+
+        window.onload = function() {
+            try {
+                initGame();
+                setTimeout(openHowToPlay, 400);
+            } catch (e) {
+                document.getElementById("status-message").innerText = "เกิดข้อผิดพลาด: " + e.message;
+            }
+        };
+    </script>
+</body>
+</html>

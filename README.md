@@ -4,6 +4,7 @@
 
 - หน้าเลือกหมวด: https://ditthakornm-star.github.io/eng-word-game/
 - คณิตศาสตร์: https://ditthakornm-star.github.io/eng-word-game/math-quiz/
+- ภาษาไทย ครั้งที่ 31-35: https://ditthakornm-star.github.io/eng-word-game/thai-vocab-31-35/
 - ภาษาไทย: https://ditthakornm-star.github.io/eng-word-game/thai-vocab/
 - อังกฤษ ชุดวันที่ 19 ก.ค.: https://ditthakornm-star.github.io/eng-word-game/week-july-19/
 - อังกฤษ: https://ditthakornm-star.github.io/eng-word-game/week-july-6/
