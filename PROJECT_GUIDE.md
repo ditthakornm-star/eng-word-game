@@ -7,6 +7,7 @@
 - คณิตศาสตร์: https://ditthakornm-star.github.io/eng-word-game/math-quiz/
 - ภาษาไทย ครั้งที่ 31-35: https://ditthakornm-star.github.io/eng-word-game/thai-vocab-31-35/
 - ภาษาไทย: https://ditthakornm-star.github.io/eng-word-game/thai-vocab/
+- อังกฤษ ชุดวันที่ 3-4 ส.ค.: https://ditthakornm-star.github.io/eng-word-game/week-aug-3/
 - อังกฤษ ชุดวันที่ 19 ก.ค.: https://ditthakornm-star.github.io/eng-word-game/week-july-19/
 - อังกฤษ ชุด 6-7 ก.ค.: https://ditthakornm-star.github.io/eng-word-game/week-july-6/
 - อังกฤษ ชุด 29-30 มิ.ย.: https://ditthakornm-star.github.io/eng-word-game/week-last/
@@ -22,6 +23,7 @@ chinese/index.html       เกมภาษาจีน (ทักทาย ค�
 science-quiz/index.html  เกมแบบทดสอบวิทยาศาสตร์ (ตัวเรา พืช สัตว์)
 thai-vocab-31-35/index.html เกมสะกดคำยากภาษาไทย ครั้งที่ 31-35
 thai-vocab/index.html    เกมสะกดคำยากภาษาไทย
+week-aug-3/index.html    เกมคำศัพท์อังกฤษชุดวันที่ 3-4 ส.ค.
 week-july-19/index.html  เกมคำศัพท์อังกฤษชุดวันที่ 19 ก.ค.
 week-july-6/index.html   เกมคำศัพท์อังกฤษชุด 6-7 ก.ค.
 week-last/index.html     เกมคำศัพท์อังกฤษชุดเก่า
@@ -172,6 +174,7 @@ week-last/index.html     เกมคำศัพท์อังกฤษชุ�
 ## หลักการออกแบบเกมคำศัพท์อังกฤษ
 
 ไฟล์หลักของแต่ละชุดคือ:
+- `week-aug-3/index.html`
 - `week-july-19/index.html`
 - `week-july-6/index.html`
 - `week-last/index.html`
@@ -184,6 +187,9 @@ week-last/index.html     เกมคำศัพท์อังกฤษชุ�
 - โหมดยาก: ไม่ให้คำใบ้
 - คำยาวควรแบ่งเป็นช่วงให้จำง่าย เช่น `fibrous root` แยกเป็น `fi-brous root` หรือแยกตามจังหวะอ่านที่เด็กจำได้
 - ชุดเก่าควรยังอยู่ เพื่อให้เด็กกลับไปทวนได้
+- เสียงอ่านคำศัพท์อังกฤษใช้ `window.speechSynthesis` สำเนียง en-US เหมือนเดิม เพราะอ่านอังกฤษได้ดี
+- เสียงภาษาไทยในจังหวะเกม เช่น ถูก/ผิด/คะแนนเต็ม/คำใบ้/แอบดู/แปลว่าอะไร ให้ใช้ไฟล์เสียงจริงใน `audio/ui/` แล้วเรียกผ่าน `playUiRecording()` เพื่อเลี่ยง TTS ไทยอ่านเพี้ยน
+- ถ้ารูปมีคำแบบ `teeth / tooth` ให้เลือกคำสะกดหลักที่เด็กต้องสอบเป็น `w` เพียงคำเดียว แล้วอธิบายคำที่เกี่ยวข้องใน `t` หรือ `tip` แทน ไม่ควรให้เด็กต้องพิมพ์เครื่องหมาย `/`
 
 ## วิธีอัปเดตขึ้น GitHub Pages
 
