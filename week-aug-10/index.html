@@ -85,7 +85,7 @@
                 <p>3. กด “ยืนยันคำตอบ” แล้วเลือกคำแปลภาษาไทย</p>
                 <p>4. โหมดง่ายกด “ใบ้ตัวถัดไป” ได้ไม่เกิน 2 ครั้งต่อคำ</p>
                 <p>5. โหมดยากมีตัวหลอกเพิ่ม และไม่มีปุ่มใบ้</p>
-                <p>6. ถ้าคำไหนยังไม่พร้อม กด “ข้ามคำ” เพื่อไปคำถัดไปได้ คำที่ข้ามจะไม่ได้คะแนน</p>
+                <p>6. ถ้าคำไหนยังไม่พร้อม กด “ข้ามคำ” เพื่อพักไว้ท้ายคิว คำนั้นจะวนกลับมาให้ทำใหม่จนกว่าจะครบทุกคำ</p>
             </div>
             <button onclick="closeHowToPlay()" class="mt-5 w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-all">เริ่มเล่นเลย</button>
         </div>
@@ -169,6 +169,7 @@
 
         var shuffledList = [];
         var currentIndex = 0;
+        var completedCount = 0;
         var totalScore = 0;
         var skippedCount = 0;
         var gameMode = "veryEasy";
@@ -277,6 +278,7 @@
             shuffledList = vocabularyList.slice();
             shuffledList.sort(function() { return Math.random() - 0.5; });
             currentIndex = 0;
+            completedCount = 0;
             totalScore = 0;
             skippedCount = 0;
             document.getElementById("total-words").innerText = vocabularyList.length;
@@ -315,8 +317,8 @@
         function loadWord() {
             var data = shuffledList[currentIndex];
             var target = answerOf(data);
-            document.getElementById("word-number").innerText = currentIndex + 1;
-            document.getElementById("progress-bar").style.width = ((currentIndex) / vocabularyList.length * 100) + "%";
+            document.getElementById("word-number").innerText = completedCount + 1;
+            document.getElementById("progress-bar").style.width = (completedCount / vocabularyList.length * 100) + "%";
             document.getElementById("emoji-display").innerText = data.em;
 
             document.getElementById("submit-btn").style.display = "block";
@@ -616,7 +618,8 @@
 
         function goToNextWord() {
             document.getElementById("success-modal").style.display = "none";
-            if (currentIndex >= shuffledList.length - 1) {
+            completedCount++;
+            if (completedCount >= vocabularyList.length) {
                 showGameOverSummary();
             } else {
                 currentIndex++;
@@ -632,12 +635,9 @@
             inputLocked = false;
             document.getElementById("study-word-modal").style.display = "none";
             document.getElementById("success-modal").style.display = "none";
-            if (currentIndex >= shuffledList.length - 1) {
-                showGameOverSummary();
-            } else {
-                currentIndex++;
-                loadWord();
-            }
+            shuffledList.push(shuffledList[currentIndex]);
+            currentIndex++;
+            loadWord();
         }
 
         function showGameOverSummary() {
@@ -650,7 +650,7 @@
             document.getElementById("final-evaluation").innerText = totalScore === fullScore
                 ? "สุดยอดมาก ได้คะแนนเต็มทุกคำเลย!"
                 : skippedCount > 0
-                    ? "จบครบทุกคำแล้ว ข้ามไป " + skippedCount + " คำ ลองเล่นอีกรอบเพื่อเก็บคำนั้นเพิ่มนะ"
+                    ? "ทำครบทุกคำแล้ว แม้จะพักคำไว้ " + skippedCount + " ครั้ง เก่งมากครับ!"
                     : "เก่งมากครับ ฝึกซ้ำอีกนิด รอบหน้าคะแนนสูงขึ้นแน่นอน";
             document.getElementById("game-over-modal").style.display = "flex";
             playUiRecording(totalScore === fullScore ? "perfect" : "finishRetry");
