@@ -7,6 +7,7 @@
 - คณิตศาสตร์: https://ditthakornm-star.github.io/eng-word-game/math-quiz/
 - ภาษาไทย ครั้งที่ 31-35: https://ditthakornm-star.github.io/eng-word-game/thai-vocab-31-35/
 - ภาษาไทย: https://ditthakornm-star.github.io/eng-word-game/thai-vocab/
+- อังกฤษ ชุดวันที่ 10-11 ส.ค.: https://ditthakornm-star.github.io/eng-word-game/week-aug-10/
 - อังกฤษ ชุดวันที่ 3-4 ส.ค.: https://ditthakornm-star.github.io/eng-word-game/week-aug-3/
 - อังกฤษ ชุดวันที่ 19 ก.ค.: https://ditthakornm-star.github.io/eng-word-game/week-july-19/
 - อังกฤษ ชุด 6-7 ก.ค.: https://ditthakornm-star.github.io/eng-word-game/week-july-6/
@@ -23,6 +24,7 @@ chinese/index.html       เกมภาษาจีน (ทักทาย ค�
 science-quiz/index.html  เกมแบบทดสอบวิทยาศาสตร์ (ตัวเรา พืช สัตว์)
 thai-vocab-31-35/index.html เกมสะกดคำยากภาษาไทย ครั้งที่ 31-35
 thai-vocab/index.html    เกมสะกดคำยากภาษาไทย
+week-aug-10/index.html   เกมคำศัพท์อังกฤษชุดวันที่ 10-11 ส.ค.
 week-aug-3/index.html    เกมคำศัพท์อังกฤษชุดวันที่ 3-4 ส.ค.
 week-july-19/index.html  เกมคำศัพท์อังกฤษชุดวันที่ 19 ก.ค.
 week-july-6/index.html   เกมคำศัพท์อังกฤษชุด 6-7 ก.ค.
@@ -174,6 +176,7 @@ week-last/index.html     เกมคำศัพท์อังกฤษชุ�
 ## หลักการออกแบบเกมคำศัพท์อังกฤษ
 
 ไฟล์หลักของแต่ละชุดคือ:
+- `week-aug-10/index.html`
 - `week-aug-3/index.html`
 - `week-july-19/index.html`
 - `week-july-6/index.html`
@@ -182,6 +185,7 @@ week-last/index.html     เกมคำศัพท์อังกฤษชุ�
 แนวทางที่ตกลงไว้:
 - มีหน้าเลือกชุดคำศัพท์/สัปดาห์
 - มีปุ่มกลับหน้าเริ่มต้น
+- ระหว่างทำข้อให้ใช้ปุ่ม “ข้ามคำ” แทน “เริ่มใหม่” เพื่อป้องกันเด็กกดรีเซ็ตคะแนนโดยไม่ตั้งใจ คำที่ข้ามไม่นับคะแนน และปุ่มเล่นใหม่แสดงเฉพาะหน้าสรุป
 - โหมดง่ายมาก: ให้ดูคำเต็มใน popup ก่อน กด “พร้อม” แล้วค่อยพิมพ์
 - โหมดง่าย: มีคำใบ้ กดได้ไม่เกิน 2 ครั้งต่อคำ
 - โหมดยาก: ไม่ให้คำใบ้
