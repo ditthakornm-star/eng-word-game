@@ -5,8 +5,10 @@
 ลิงก์หลัก:
 - หน้าเลือกหมวด: https://ditthakornm-star.github.io/eng-word-game/
 - คณิตศาสตร์: https://ditthakornm-star.github.io/eng-word-game/math-quiz/
+- ภาษาไทย ครั้งที่ 41-45: https://ditthakornm-star.github.io/eng-word-game/thai-vocab-41-45/
 - ภาษาไทย ครั้งที่ 31-35: https://ditthakornm-star.github.io/eng-word-game/thai-vocab-31-35/
 - ภาษาไทย: https://ditthakornm-star.github.io/eng-word-game/thai-vocab/
+- อังกฤษ ชุดวันที่ 17-18 ส.ค.: https://ditthakornm-star.github.io/eng-word-game/week-aug-17/
 - อังกฤษ ชุดวันที่ 10-11 ส.ค.: https://ditthakornm-star.github.io/eng-word-game/week-aug-10/
 - อังกฤษ ชุดวันที่ 3-4 ส.ค.: https://ditthakornm-star.github.io/eng-word-game/week-aug-3/
 - อังกฤษ ชุดวันที่ 19 ก.ค.: https://ditthakornm-star.github.io/eng-word-game/week-july-19/
@@ -22,8 +24,10 @@ math-english/index.html  เกมคณิตภาษาอังกฤษ (�
 grammar/index.html       เกมไวยากรณ์อังกฤษ (Nouns, a/an, Pronouns, Verb to be)
 chinese/index.html       เกมภาษาจีน (ทักทาย คำศัพท์ พินอิน วรรณยุกต์ · เสียง zh-CN)
 science-quiz/index.html  เกมแบบทดสอบวิทยาศาสตร์ (ตัวเรา พืช สัตว์)
+thai-vocab-41-45/index.html เกมสะกดคำยากภาษาไทย ครั้งที่ 41-45 (สุ่ม 10 จาก 25 คำ ไม่มีเสียง)
 thai-vocab-31-35/index.html เกมสะกดคำยากภาษาไทย ครั้งที่ 31-35
 thai-vocab/index.html    เกมสะกดคำยากภาษาไทย
+week-aug-17/index.html   เกมคำศัพท์อังกฤษชุดวันที่ 17-18 ส.ค.
 week-aug-10/index.html   เกมคำศัพท์อังกฤษชุดวันที่ 10-11 ส.ค.
 week-aug-3/index.html    เกมคำศัพท์อังกฤษชุดวันที่ 3-4 ส.ค.
 week-july-19/index.html  เกมคำศัพท์อังกฤษชุดวันที่ 19 ก.ค.
@@ -145,7 +149,21 @@ week-last/index.html     เกมคำศัพท์อังกฤษชุ�
 - เพิ่ม object ใน `vocabularyList` ตามรูปแบบ `{w,t,em,chunks,tip}`
 - `w` คือคำให้สะกด, `t` คือคำใบ้/ความหมาย, `em` คือภาพจำ, `chunks` คือแบ่งคำให้จำ, `tip` คือทริคหลังตอบถูก
 - ถ้าเป็นชุดใหม่คนละสัปดาห์/เลขชุด ควรสร้างโฟลเดอร์ใหม่ เช่น `thai-vocab-no31-35/` แล้วเพิ่มลิงก์ในหน้า `index.html`
+- ถ้ายังไม่มีไฟล์เสียงคนอ่านจริง ให้ชุดนั้นทำงานแบบเงียบทั้งหมดและไม่สร้าง `audio/` เปล่าไว้ เมื่อได้เสียงแล้วจึงค่อยเพิ่มภายหลัง
 - ตรวจด้วย `node --check` หลังแก้ทุกครั้ง
+
+## การจัดเก็บไฟล์ต้นฉบับรายสัปดาห์
+
+เก็บรูปโจทย์และไฟล์เกมในไดรฟ์ `E:` แยกตามวิชาและรอบ เพื่อไม่ให้รูปคนละชุดปนกัน:
+
+```text
+E:\แบบฝึกหัดลูก\ป.1\<วิชา>\รอบ <วันที่>\ต้นฉบับ\  รูปคำศัพท์/โจทย์ที่ได้รับ
+E:\แบบฝึกหัดลูก\ป.1\<วิชา>\รอบ <วันที่>\เกม\       สำเนาเกมที่พร้อมเปิดในเครื่อง
+```
+
+- ตัวอย่างอังกฤษ: `อังกฤษ\รอบ 17-18 ส.ค. 2569\`
+- ตัวอย่างไทย: `ไทย\รอบ 20 ส.ค. 2569\`
+- เก็บไฟล์บน GitHub แยกเป็นโฟลเดอร์ URL ของแต่ละชุด เพื่อให้ลิงก์ชุดเก่ายังเล่นได้เสมอ
 
 ## หลักการออกแบบเกมภาษาจีน (Chinese)
 
@@ -176,6 +194,7 @@ week-last/index.html     เกมคำศัพท์อังกฤษชุ�
 ## หลักการออกแบบเกมคำศัพท์อังกฤษ
 
 ไฟล์หลักของแต่ละชุดคือ:
+- `week-aug-17/index.html`
 - `week-aug-10/index.html`
 - `week-aug-3/index.html`
 - `week-july-19/index.html`
