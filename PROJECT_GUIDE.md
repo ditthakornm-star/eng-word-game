@@ -8,6 +8,7 @@
 - ภาษาไทย ครั้งที่ 41-45: https://ditthakornm-star.github.io/eng-word-game/thai-vocab-41-45/
 - ภาษาไทย ครั้งที่ 31-35: https://ditthakornm-star.github.io/eng-word-game/thai-vocab-31-35/
 - ภาษาไทย: https://ditthakornm-star.github.io/eng-word-game/thai-vocab/
+- อังกฤษ ชุดวันที่ 24-25 ส.ค.: https://ditthakornm-star.github.io/eng-word-game/week-aug-24/
 - อังกฤษ ชุดวันที่ 17-18 ส.ค.: https://ditthakornm-star.github.io/eng-word-game/week-aug-17/
 - อังกฤษ ชุดวันที่ 10-11 ส.ค.: https://ditthakornm-star.github.io/eng-word-game/week-aug-10/
 - อังกฤษ ชุดวันที่ 3-4 ส.ค.: https://ditthakornm-star.github.io/eng-word-game/week-aug-3/
@@ -27,6 +28,7 @@ science-quiz/index.html  เกมแบบทดสอบวิทยาศา�
 thai-vocab-41-45/index.html เกมสะกดคำยากภาษาไทย ครั้งที่ 41-45 (สุ่ม 10 จาก 25 คำ ไม่มีเสียงอ่านคำศัพท์)
 thai-vocab-31-35/index.html เกมสะกดคำยากภาษาไทย ครั้งที่ 31-35
 thai-vocab/index.html    เกมสะกดคำยากภาษาไทย
+week-aug-24/index.html   เกมคำศัพท์อังกฤษชุดวันที่ 24-25 ส.ค.
 week-aug-17/index.html   เกมคำศัพท์อังกฤษชุดวันที่ 17-18 ส.ค.
 week-aug-10/index.html   เกมคำศัพท์อังกฤษชุดวันที่ 10-11 ส.ค.
 week-aug-3/index.html    เกมคำศัพท์อังกฤษชุดวันที่ 3-4 ส.ค.
@@ -41,6 +43,7 @@ week-last/index.html     เกมคำศัพท์อังกฤษชุ�
 - `index.html` เป็นหน้าศูนย์รวม ไม่ควรเอาเกมใหม่ไปปนในหน้าอังกฤษโดยตรง
 - ถ้ามีวิชาใหม่ เช่น ภาษาไทย ให้สร้างโฟลเดอร์ใหม่ เช่น `thai-quiz/index.html`
 - เพิ่มการ์ดลิงก์ใน `index.html` ให้แยกหมวดชัดเจน
+- การ์ดบทเรียนล่าสุดให้ใส่ป้าย `NEW` ที่มองเห็นง่าย และเอาป้ายออกจากชุดเดิมเมื่อมีชุดใหม่กว่า
 - ลิงก์ GitHub Pages จะเป็นรูปแบบ `https://ditthakornm-star.github.io/eng-word-game/ชื่อโฟลเดอร์/`
 
 ## หลักการออกแบบเกมคณิต
@@ -161,7 +164,7 @@ E:\แบบฝึกหัดลูก\ป.1\<วิชา>\รอบ <วั�
 E:\แบบฝึกหัดลูก\ป.1\<วิชา>\รอบ <วันที่>\เกม\       สำเนาเกมที่พร้อมเปิดในเครื่อง
 ```
 
-- ตัวอย่างอังกฤษ: `อังกฤษ\รอบ 17-18 ส.ค. 2569\`
+- ตัวอย่างอังกฤษ: `อังกฤษ\รอบ 24-25 ส.ค. 2569\`
 - ตัวอย่างไทย: `ไทย\รอบ 20 ส.ค. 2569\`
 - เก็บไฟล์บน GitHub แยกเป็นโฟลเดอร์ URL ของแต่ละชุด เพื่อให้ลิงก์ชุดเก่ายังเล่นได้เสมอ
 
@@ -194,6 +197,7 @@ E:\แบบฝึกหัดลูก\ป.1\<วิชา>\รอบ <วั�
 ## หลักการออกแบบเกมคำศัพท์อังกฤษ
 
 ไฟล์หลักของแต่ละชุดคือ:
+- `week-aug-24/index.html`
 - `week-aug-17/index.html`
 - `week-aug-10/index.html`
 - `week-aug-3/index.html`
