@@ -4,6 +4,7 @@
 
 - หน้าเลือกหมวด: https://ditthakornm-star.github.io/eng-word-game/
 - คณิตศาสตร์: https://ditthakornm-star.github.io/eng-word-game/math-quiz/
+- คอมพิวเตอร์ ป.1 ปลายภาค 1: https://ditthakornm-star.github.io/eng-word-game/computer-quiz/
 - ภาษาไทย ครั้งที่ 41-45: https://ditthakornm-star.github.io/eng-word-game/thai-vocab-41-45/
 - ภาษาไทย ครั้งที่ 31-35: https://ditthakornm-star.github.io/eng-word-game/thai-vocab-31-35/
 - ภาษาไทย: https://ditthakornm-star.github.io/eng-word-game/thai-vocab/

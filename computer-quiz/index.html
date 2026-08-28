@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>คอมพิวเตอร์ ป.1 - ทบทวนสอบปลายภาค 1</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { -webkit-text-size-adjust: 100%; }
+    button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    .pop { animation: pop .2s ease; }
+    .shake { animation: shake .28s ease; }
+    @keyframes pop { 0% { transform: scale(.92); } 70% { transform: scale(1.04); } 100% { transform: scale(1); } }
+    @keyframes shake { 0%,100% { transform: translateX(0); } 30% { transform: translateX(-5px); } 70% { transform: translateX(5px); } }
+    .keycap { box-shadow: 0 3px 0 #cbd5e1; }
+  </style>
+</head>
+<body class="min-h-screen bg-sky-50 font-sans text-slate-800 select-none">
+  <main class="max-w-3xl mx-auto px-3 py-4">
+    <section id="home-screen">
+      <header class="bg-white border-b-4 border-sky-300 rounded-lg p-4 mb-4 shadow-sm">
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <a href="../" class="text-xs bg-slate-100 text-slate-700 font-bold px-3 py-2 rounded-full">← เลือกวิชา</a>
+          <span class="bg-amber-300 text-slate-900 text-[11px] font-black px-2.5 py-1 rounded-full">NEW</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="text-5xl shrink-0">💻</div>
+          <div>
+            <p class="text-xs font-black text-sky-600">COMPUTER G.1/2</p>
+            <h1 class="text-2xl font-black leading-tight">คอมพิวเตอร์ ป.1</h1>
+            <p class="text-sm font-semibold text-slate-500 mt-1">อุปกรณ์ เมาส์ แป้นพิมพ์ และไอคอน</p>
+          </div>
+        </div>
+      </header>
+
+      <section class="mb-4">
+        <button onclick="openStudy()" class="w-full bg-amber-400 hover:bg-amber-500 text-slate-900 text-left rounded-lg p-4 shadow-md active:scale-95 transition min-h-[86px]">
+          <div class="font-black text-lg">📚 เรียนรู้ก่อนเล่น</div>
+          <div class="text-sm font-semibold mt-1">ดูภาพ ชื่อไทย–อังกฤษ และหน้าที่ทีละอย่าง</div>
+        </button>
+      </section>
+
+      <section class="grid sm:grid-cols-2 gap-3 mb-4">
+        <button onclick="startMode('parts')" class="bg-cyan-600 hover:bg-cyan-700 text-white text-left rounded-lg p-4 shadow-md active:scale-95 transition min-h-[112px]">
+          <div class="text-3xl mb-2">🖥️</div>
+          <div class="font-black text-lg">ประกอบคอมพิวเตอร์</div>
+          <div class="text-xs text-cyan-100 font-semibold">8 ข้อ · 4 ส่วนหลักและหน้าที่</div>
+        </button>
+        <button onclick="startMode('mouse')" class="bg-blue-600 hover:bg-blue-700 text-white text-left rounded-lg p-4 shadow-md active:scale-95 transition min-h-[112px]">
+          <div class="text-3xl mb-2">🖱️</div>
+          <div class="font-black text-lg">ภารกิจเมาส์</div>
+          <div class="text-xs text-blue-100 font-semibold">8 ข้อ · ปุ่มซ้าย ขวา ล้อเลื่อน และการคลิก</div>
+        </button>
+        <button onclick="startMode('keyboard')" class="bg-teal-600 hover:bg-teal-700 text-white text-left rounded-lg p-4 shadow-md active:scale-95 transition min-h-[112px]">
+          <div class="text-3xl mb-2">⌨️</div>
+          <div class="font-black text-lg">ฮีโร่แป้นพิมพ์</div>
+          <div class="text-xs text-teal-100 font-semibold">10 ข้อ · แป้นสำคัญและกลุ่มแป้น</div>
+        </button>
+        <button onclick="startMode('icons')" class="bg-rose-600 hover:bg-rose-700 text-white text-left rounded-lg p-4 shadow-md active:scale-95 transition min-h-[112px]">
+          <div class="text-3xl mb-2">🎨</div>
+          <div class="font-black text-lg">นักสืบไอคอน</div>
+          <div class="text-xs text-rose-100 font-semibold">8 ข้อ · Paint, Tux Paint, Printer, USB และ Power</div>
+        </button>
+      </section>
+
+      <section class="mb-4">
+        <button onclick="startMode('final')" class="w-full bg-violet-600 hover:bg-violet-700 text-white text-left rounded-lg p-4 shadow-lg active:scale-95 transition min-h-[94px]">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <div class="font-black text-xl">🏆 ด่านทดสอบใหญ่</div>
+              <div class="text-sm text-violet-100 font-semibold mt-1">สุ่ม 20 ข้อ แต่ครบทุกหัวข้อแน่นอน</div>
+            </div>
+            <span class="text-3xl">20</span>
+          </div>
+        </button>
+      </section>
+
+      <button onclick="openSheets()" class="w-full bg-white border-2 border-slate-200 text-slate-700 font-bold rounded-lg p-3 active:scale-95 transition">🗂️ ดูชีทบทเรียนต้นฉบับ</button>
+    </section>
+
+    <section id="study-screen" class="hidden">
+      <div class="flex items-center justify-between gap-2 mb-4">
+        <button onclick="goHome()" class="text-xs bg-white border border-slate-200 text-slate-700 font-bold px-3 py-2 rounded-full">← หน้าเลือกด่าน</button>
+        <span id="study-counter" class="text-xs bg-sky-100 text-sky-700 font-black px-3 py-2 rounded-full">1/1</span>
+      </div>
+      <div id="study-tabs" class="grid grid-cols-4 gap-1.5 mb-4"></div>
+      <article class="bg-white border-2 border-sky-200 rounded-lg p-5 shadow-sm min-h-[390px] flex flex-col justify-between">
+        <div class="text-center">
+          <div id="study-emoji" class="text-7xl mb-3 pop">🖥️</div>
+          <p id="study-english" class="text-sm font-black text-sky-600">Monitor</p>
+          <h2 id="study-name" class="text-3xl font-black mt-1">จอมอนิเตอร์</h2>
+          <p id="study-short" class="text-lg font-bold text-emerald-700 mt-4"></p>
+          <p id="study-detail" class="text-sm font-semibold text-slate-600 leading-relaxed mt-3"></p>
+        </div>
+        <div class="grid grid-cols-2 gap-2 mt-6">
+          <button onclick="previousStudy()" class="bg-slate-200 text-slate-700 font-black py-3 rounded-lg active:scale-95">← ก่อนหน้า</button>
+          <button onclick="nextStudy()" class="bg-sky-600 text-white font-black py-3 rounded-lg active:scale-95">ถัดไป →</button>
+        </div>
+      </article>
+    </section>
+
+    <section id="sheets-screen" class="hidden">
+      <div class="flex items-center justify-between gap-2 mb-4">
+        <button onclick="goHome()" class="text-xs bg-white border border-slate-200 text-slate-700 font-bold px-3 py-2 rounded-full">← หน้าเลือกด่าน</button>
+        <span class="text-xs bg-amber-100 text-amber-700 font-black px-3 py-2 rounded-full">ชีทต้นฉบับ 2 หน้า</span>
+      </div>
+      <div class="space-y-4">
+        <figure class="bg-white border-2 border-slate-200 rounded-lg p-2 shadow-sm">
+          <img src="assets/basic-devices.jpg" alt="ชีทอุปกรณ์เทคโนโลยีเบื้องต้น" class="w-full h-auto rounded-lg" loading="lazy">
+          <figcaption class="text-center text-xs font-bold text-slate-500 p-2">อุปกรณ์เทคโนโลยีเบื้องต้น</figcaption>
+        </figure>
+        <figure class="bg-white border-2 border-slate-200 rounded-lg p-2 shadow-sm">
+          <img src="assets/final-review.jpg" alt="ชีททบทวนวิชาคอมพิวเตอร์ปลายภาค" class="w-full h-auto rounded-lg" loading="lazy">
+          <figcaption class="text-center text-xs font-bold text-slate-500 p-2">Computer G.1/2 Reviewer Finals Semester 1</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="quiz-screen" class="hidden">
+      <div class="flex items-center justify-between gap-2 mb-3">
+        <button onclick="goHome()" class="text-xs bg-white border border-slate-200 text-slate-700 font-bold px-3 py-2 rounded-full">⌂ หน้าเลือกด่าน</button>
+        <button onclick="restartMode()" class="text-xs bg-amber-100 text-amber-700 font-bold px-3 py-2 rounded-full">↻ สุ่มใหม่</button>
+      </div>
+      <div class="flex items-center justify-between gap-2 mb-3">
+        <span id="mode-badge" class="bg-sky-100 text-sky-700 font-black px-3 py-1.5 rounded-full text-xs"></span>
+        <span class="text-amber-500 font-black">★ <span id="score-display">0</span>/<span id="score-total">0</span></span>
+      </div>
+      <div class="w-full bg-slate-200 rounded-full h-2 mb-3 overflow-hidden">
+        <div id="progress-bar" class="bg-sky-500 h-full transition-all duration-300" style="width:0%"></div>
+      </div>
+      <p class="text-center text-xs font-black text-slate-400 mb-2">ข้อที่ <span id="question-number">1</span>/<span id="question-total">1</span></p>
+
+      <div class="bg-white border-2 border-sky-200 rounded-lg p-4 mb-3 shadow-sm min-h-[190px] flex flex-col items-center justify-center">
+        <div id="question-visual" class="text-6xl mb-3 pop"></div>
+        <p id="question-prompt" class="text-xl font-black text-center leading-relaxed"></p>
+      </div>
+      <div id="answer-area" class="grid sm:grid-cols-2 gap-2.5 mb-3"></div>
+      <div id="feedback" class="hidden rounded-lg p-3 mb-3 text-center font-bold"></div>
+      <button id="next-btn" onclick="nextQuestion()" class="hidden w-full bg-sky-600 hover:bg-sky-700 text-white font-black py-3.5 rounded-lg shadow-md active:scale-95 text-lg">ข้อต่อไป →</button>
+    </section>
+
+    <section id="result-screen" class="hidden min-h-[80vh] flex-col justify-center">
+      <div class="text-center mb-5">
+        <div id="result-icon" class="text-7xl mb-2">🏆</div>
+        <h2 class="text-2xl font-black">สรุปผลการฝึก</h2>
+        <p id="result-message" class="text-sm font-semibold text-slate-500 mt-1"></p>
+      </div>
+      <div class="bg-white border-2 border-amber-300 rounded-lg p-5 text-center mb-4 shadow-sm">
+        <p class="text-sm font-black text-amber-600">ตอบถูกตั้งแต่ครั้งแรก</p>
+        <div class="text-6xl font-black text-slate-900 mt-1"><span id="final-score">0</span><span class="text-2xl text-slate-400">/<span id="final-total">0</span></span></div>
+      </div>
+      <div id="category-summary" class="space-y-2 mb-4"></div>
+      <button id="retry-missed-btn" onclick="retryMissed()" class="hidden w-full bg-rose-600 hover:bg-rose-700 text-white font-black py-3.5 rounded-lg shadow-md active:scale-95 mb-2">ทบทวนข้อที่พลาด</button>
+      <button onclick="restartMode()" class="w-full bg-violet-600 hover:bg-violet-700 text-white font-black py-3.5 rounded-lg shadow-md active:scale-95 mb-2">สุ่มชุดใหม่อีกครั้ง</button>
+      <button onclick="goHome()" class="w-full bg-slate-200 text-slate-700 font-black py-3.5 rounded-lg active:scale-95">กลับหน้าเลือกด่าน</button>
+    </section>
+  </main>
+
+  <script>
+    var studyGroups = {
+      parts: {label:"ส่วนหลัก", items:[
+        {en:"Monitor", th:"จอมอนิเตอร์", em:"🖥️", short:"อุปกรณ์แสดงผล", detail:"แสดงตัวอักษร รูปภาพ และผลลัพธ์ให้เรามองเห็น บนจอมีปุ่มเปิด–ปิดของจอ"},
+        {en:"Keyboard", th:"แป้นพิมพ์", em:"⌨️", short:"อุปกรณ์รับข้อมูล", detail:"ใช้พิมพ์ตัวอักษร ตัวเลข และสัญลักษณ์ต่างๆ เข้าสู่คอมพิวเตอร์"},
+        {en:"Mouse", th:"เมาส์", em:"🖱️", short:"อุปกรณ์รับข้อมูล", detail:"ใช้ชี้ เลื่อนตัวชี้ และเลือกสิ่งต่างๆ บนหน้าจอ"},
+        {en:"System Unit", th:"หน่วยระบบหรือตัวเครื่อง", em:"🗄️", short:"เก็บส่วนสำคัญของคอมพิวเตอร์", detail:"ภายในมี CPU หน่วยความจำ และอุปกรณ์ที่ช่วยประมวลผลข้อมูล ตัวเครื่องมีปุ่ม Power"},
+        {en:"CPU", th:"หน่วยประมวลผลกลาง", em:"🧠", short:"สมองของคอมพิวเตอร์", detail:"CPU เป็นชิ้นส่วนประมวลผลที่อยู่ภายใน System Unit ไม่ใช่ชื่อของตัวเคสทั้งหมด"},
+        {en:"Touch screen", th:"จอสัมผัส", em:"👆", short:"ทั้งแสดงผลและรับการสัมผัส", detail:"มองเห็นข้อมูลบนจอและแตะสั่งงานได้โดยตรง"}
+      ]},
+      mouse: {label:"เมาส์", items:[
+        {en:"Left click", th:"คลิกซ้าย", em:"🖱️", short:"กดปุ่มซ้าย 1 ครั้ง", detail:"ใช้เลือกปุ่ม ข้อความ หรือสิ่งของบนหน้าจอ"},
+        {en:"Double-click", th:"ดับเบิลคลิก", em:"🖱️", short:"กดปุ่มซ้าย 2 ครั้งติดกัน", detail:"มักใช้เปิดโปรแกรม โฟลเดอร์ หรือไฟล์"},
+        {en:"Right click", th:"คลิกขวา", em:"🖱️", short:"กดปุ่มขวา 1 ครั้ง", detail:"ใช้เปิดเมนูคำสั่งเพิ่มเติม"},
+        {en:"Scroll wheel", th:"ล้อเลื่อน", em:"☸️", short:"หมุนเพื่อเลื่อนหน้า", detail:"ช่วยเลื่อนดูเนื้อหาขึ้นหรือลง"},
+        {en:"Mouse pad", th:"แผ่นรองเมาส์", em:"▰", short:"พื้นสำหรับวางและเลื่อนเมาส์", detail:"ช่วยให้เลื่อนเมาส์ได้สะดวกและแม่นยำ"}
+      ]},
+      keyboard: {label:"แป้นพิมพ์", items:[
+        {en:"Shift", th:"แป้น Shift", em:"⇧", short:"กดค้างเพื่อพิมพ์ตัวใหญ่หรือสัญลักษณ์บน", detail:"เช่น กด Shift พร้อมตัวอักษรเพื่อพิมพ์ตัวพิมพ์ใหญ่"},
+        {en:"Caps Lock", th:"แป้น Caps Lock", em:"⇪", short:"เปิด–ปิดการพิมพ์ตัวใหญ่ต่อเนื่อง", detail:"กดหนึ่งครั้งเพื่อเปิด และกดอีกครั้งเพื่อปิด"},
+        {en:"Backspace", th:"แป้น Backspace", em:"⌫", short:"ลบตัวอักษรด้านซ้ายของเคอร์เซอร์", detail:"ใช้แก้คำที่พิมพ์ผิด"},
+        {en:"Enter", th:"แป้น Enter", em:"↵", short:"ขึ้นบรรทัดใหม่หรือยืนยันคำสั่ง", detail:"ในงานพิมพ์ใช้ไปยังบรรทัดถัดไป"},
+        {en:"Spacebar", th:"แป้นเว้นวรรค", em:"␣", short:"เว้นช่องว่างระหว่างคำ", detail:"เป็นแป้นยาวบริเวณด้านล่างของแป้นพิมพ์"},
+        {en:"Start / Windows", th:"ปุ่ม Start", em:"⊞", short:"เปิดเมนู Start", detail:"ใช้เลือกโปรแกรม การตั้งค่า หรือเมนู Power เพื่อปิดเครื่อง"},
+        {en:"Function keys", th:"แป้นฟังก์ชัน", em:"F1", short:"แป้น F1 ถึง F12", detail:"ใช้คำสั่งพิเศษแตกต่างกันตามโปรแกรม"},
+        {en:"Control keys", th:"แป้นควบคุม", em:"Ctrl", short:"เช่น Ctrl และ Alt", detail:"มักกดร่วมกับแป้นอื่นเพื่อสั่งงาน"},
+        {en:"Navigation keys", th:"แป้นนำทาง", em:"↑", short:"เช่น แป้นลูกศร", detail:"ใช้เลื่อนเคอร์เซอร์ขึ้น ลง ซ้าย และขวา"},
+        {en:"Number / Alphabet keys", th:"แป้นตัวเลขและตัวอักษร", em:"A 7", short:"ตัวเลข 0–9 และตัวอักษร A–Z", detail:"เป็นแป้นหลักที่ใช้พิมพ์ข้อมูล"}
+      ]},
+      icons: {label:"ไอคอน", items:[
+        {en:"Paint", th:"โปรแกรม Paint", em:"🎨", short:"โปรแกรมวาดรูป", detail:"ใช้วาดภาพ ระบายสี และแก้ไขรูปอย่างง่าย"},
+        {en:"Tux Paint", th:"โปรแกรม Tux Paint", em:"🐧", short:"โปรแกรมวาดรูปสำหรับเด็ก", detail:"มีเครื่องมือวาดภาพและเอฟเฟกต์ที่เด็กใช้งานง่าย"},
+        {en:"Printer", th:"เครื่องพิมพ์", em:"🖨️", short:"อุปกรณ์แสดงผลลงบนกระดาษ", detail:"รับข้อมูลจากคอมพิวเตอร์แล้วพิมพ์เป็นเอกสารหรือรูปภาพ"},
+        {en:"USB Flash Drive", th:"แฟลชไดรฟ์", em:"💾", short:"อุปกรณ์เก็บข้อมูล", detail:"ใช้บันทึกและย้ายไฟล์ระหว่างเครื่อง"},
+        {en:"Power button", th:"ปุ่มเปิด–ปิด", em:"⏻", short:"ใช้เปิดหรือเริ่มการปิดอุปกรณ์", detail:"ควรปิดเครื่องผ่านเมนูให้ถูกต้อง ไม่ดึงปลั๊กทันที"}
+      ]}
+    };
+
+    var banks = {
+      parts: [
+        {q:"อุปกรณ์ใดใช้แสดงภาพและตัวอักษรให้เรามองเห็น", v:"👀", o:["จอมอนิเตอร์ (Monitor)","เมาส์ (Mouse)","แป้นพิมพ์ (Keyboard)","แฟลชไดรฟ์ (USB)"], ex:"จอมอนิเตอร์เป็นอุปกรณ์แสดงผล"},
+        {q:"อุปกรณ์ใดใช้พิมพ์ตัวอักษรและตัวเลข", v:"A  B  1  2", o:["แป้นพิมพ์ (Keyboard)","จอมอนิเตอร์ (Monitor)","เมาส์ (Mouse)","เครื่องพิมพ์ (Printer)"], ex:"แป้นพิมพ์เป็นอุปกรณ์รับข้อมูล"},
+        {q:"อุปกรณ์ใดใช้ชี้และเลือกสิ่งต่างๆ บนหน้าจอ", v:"➜", o:["เมาส์ (Mouse)","System Unit","จอมอนิเตอร์ (Monitor)","เครื่องพิมพ์ (Printer)"], ex:"เมาส์ควบคุมตัวชี้บนหน้าจอ"},
+        {q:"ส่วนใดเป็นตัวเครื่องที่เก็บอุปกรณ์สำคัญไว้ภายใน", v:"🗄️", o:["System Unit","Monitor","Keyboard","Mouse pad"], ex:"System Unit คือตัวเครื่อง ภายในมี CPU และหน่วยความจำ"},
+        {q:"CPU อยู่ที่ใด", v:"🧠", o:["ภายใน System Unit","บน Mouse pad","ในจอมอนิเตอร์ทุกเครื่อง","ใต้แป้น Spacebar"], ex:"CPU เป็นชิ้นส่วนประมวลผลที่อยู่ภายใน System Unit"},
+        {q:"ข้อใดมีอุปกรณ์หลักของคอมพิวเตอร์ครบ 4 ส่วน", v:"💻", o:["Monitor, Keyboard, Mouse, System Unit","Monitor, Printer, USB, ลำโพง","Mouse, Printer, กล้อง, USB","Keyboard, โทรศัพท์, Printer, จอสัมผัส"], ex:"4 ส่วนหลักคือ Monitor, Keyboard, Mouse และ System Unit"},
+        {q:"ข้อใดเป็นอุปกรณ์รับข้อมูลทั้งคู่", v:"📥", o:["Keyboard และ Mouse","Monitor และ Printer","Monitor และ System Unit","Printer และกระดาษ"], ex:"Keyboard และ Mouse ใช้ส่งข้อมูลหรือคำสั่งเข้าเครื่อง"},
+        {q:"ข้อใดเป็นอุปกรณ์แสดงผล", v:"📤", o:["Monitor","Keyboard","Mouse","USB Flash Drive"], ex:"Monitor แสดงผลให้เรามองเห็น"},
+        {q:"จอสัมผัส (Touch screen) ทำอะไรได้", v:"👆", o:["แสดงภาพและรับคำสั่งจากการแตะ","พิมพ์เอกสารลงกระดาษเท่านั้น","เก็บไฟล์อย่างเดียว","ใช้แทนปลั๊กไฟ"], ex:"จอสัมผัสทั้งแสดงผลและรับการสัมผัส"},
+        {q:"ส่วนใดทำหน้าที่ประมวลผลข้อมูลคล้ายสมอง", v:"🧠", o:["CPU","Mouse pad","Printer","Spacebar"], ex:"CPU คือหน่วยประมวลผลกลาง"},
+        {q:"ปุ่ม Power บนจอมอนิเตอร์มีไว้ทำอะไร", v:"⏻", o:["เปิด–ปิดจอ","ลบตัวอักษร","เลื่อนหน้าเว็บ","วาดรูป"], ex:"ปุ่ม Power บนจอใช้เปิดหรือปิดจอ"},
+        {q:"อุปกรณ์ใดรับข้อมูลจากการสัมผัสนิ้วบนหน้าจอ", v:"☝️", o:["Touch screen","Printer","System Unit","USB Flash Drive"], ex:"Touch screen รับคำสั่งจากการแตะ"}
+      ],
+      mouse: [
+        {q:"ต้องการเลือกปุ่มบนหน้าจอ ควรทำอย่างไร", v:"🖱️", o:["คลิกซ้าย 1 ครั้ง","ดับเบิลคลิกขวา","หมุนล้อเร็วๆ","ยกเมาส์ขึ้น"], ex:"คลิกซ้าย 1 ครั้งใช้เลือกสิ่งของหรือปุ่ม"},
+        {q:"ต้องการเปิดโปรแกรมจากไอคอนบนหน้าจอ มักใช้วิธีใด", v:"📁", o:["ดับเบิลคลิกปุ่มซ้าย","คลิกขวา 3 ครั้ง","หมุนล้อเลื่อน","กด Mouse pad"], ex:"ดับเบิลคลิกคือกดปุ่มซ้าย 2 ครั้งติดกัน"},
+        {q:"ต้องการเปิดเมนูคำสั่งเพิ่มเติม ควรใช้วิธีใด", v:"☰", o:["คลิกขวา 1 ครั้ง","ดับเบิลคลิกซ้าย","หมุนล้อเลื่อน","กด Spacebar"], ex:"คลิกขวาใช้เปิดเมนูคำสั่งเพิ่มเติม"},
+        {q:"ส่วนใดของเมาส์ใช้เลื่อนหน้าเว็บขึ้นและลง", v:"↕", o:["ล้อเลื่อน (Scroll wheel)","ปุ่มซ้าย","ปุ่มขวา","สายเมาส์"], ex:"หมุนล้อเลื่อนเพื่อเลื่อนหน้า"},
+        {q:"Mouse pad คืออะไร", v:"▰", o:["แผ่นสำหรับวางและเลื่อนเมาส์","ปุ่มเปิดเครื่อง","หน้าจอเล็ก","ที่เก็บไฟล์"], ex:"Mouse pad ช่วยให้เลื่อนเมาส์ได้สะดวก"},
+        {q:"ดับเบิลคลิกหมายถึงข้อใด", v:"2×", o:["กดปุ่มซ้าย 2 ครั้งติดกัน","กดปุ่มขวา 1 ครั้ง","หมุนล้อ 2 รอบ","กดเมาส์ค้างไว้"], ex:"Double-click คือคลิกซ้าย 2 ครั้งติดกัน"},
+        {q:"คลิกขวาหมายถึงข้อใด", v:"R", o:["กดปุ่มด้านขวา 1 ครั้ง","กดปุ่มซ้าย 2 ครั้ง","หมุนล้อขึ้น","เลื่อนเมาส์ไปขวา"], ex:"Right click คือกดปุ่มด้านขวา 1 ครั้ง"},
+        {q:"เมาส์จัดเป็นอุปกรณ์ประเภทใด", v:"🖱️", o:["อุปกรณ์รับข้อมูล","อุปกรณ์แสดงผล","อุปกรณ์พิมพ์กระดาษ","อุปกรณ์เก็บน้ำ"], ex:"เมาส์รับการเคลื่อนไหวและการคลิกจากผู้ใช้"},
+        {q:"ส่วนใดอยู่ตรงกลางระหว่างปุ่มซ้ายและปุ่มขวาของเมาส์", v:"◉", o:["ล้อเลื่อน","Mouse pad","ปุ่ม Power","แป้น Enter"], ex:"ล้อเลื่อนอยู่กลางเมาส์"},
+        {q:"เมาส์ช่วยควบคุมสิ่งใดบนหน้าจอ", v:"➤", o:["ตัวชี้หรือเคอร์เซอร์","เสียงลำโพง","หมึกเครื่องพิมพ์","แสงในห้อง"], ex:"ขยับเมาส์แล้วตัวชี้บนจอเคลื่อนที่"}
+      ],
+      keyboard: [
+        {q:"พิมพ์ผิดและต้องการลบตัวอักษรด้านซ้าย ควรกดแป้นใด", v:"ผิดด", o:["Backspace","Enter","Shift","Spacebar"], ex:"Backspace ลบตัวอักษรด้านซ้ายของเคอร์เซอร์"},
+        {q:"ต้องการขึ้นบรรทัดใหม่ ควรกดแป้นใด", v:"บรรทัด 1\nบรรทัด 2", o:["Enter","Caps Lock","Backspace","F1"], ex:"Enter ใช้ขึ้นบรรทัดใหม่หรือยืนยันคำสั่ง"},
+        {q:"ต้องการเว้นช่องว่างระหว่างคำ ควรกดแป้นใด", v:"ฉัน  รัก", o:["Spacebar","Shift","Backspace","Escape"], ex:"Spacebar คือแป้นยาวสำหรับเว้นวรรค"},
+        {q:"ต้องการพิมพ์ตัวใหญ่เพียง 1 ตัว ควรทำอย่างไร", v:"A", o:["กด Shift ค้างพร้อมตัวอักษร","กด Spacebar 2 ครั้ง","กด Backspace ค้าง","กดล้อเมาส์"], ex:"Shift ใช้พิมพ์ตัวใหญ่ชั่วคราว"},
+        {q:"ต้องการพิมพ์ตัวพิมพ์ใหญ่ต่อเนื่องหลายตัว ควรเปิดแป้นใด", v:"ABC", o:["Caps Lock","Enter","Spacebar","Backspace"], ex:"Caps Lock เปิด–ปิดตัวพิมพ์ใหญ่ต่อเนื่อง"},
+        {q:"แป้น F1 ถึง F12 เรียกว่าอะไร", v:"F1  F2  F3", o:["Function keys","Number keys","Alphabet keys","Mouse keys"], ex:"F1–F12 คือแป้นฟังก์ชันสำหรับคำสั่งพิเศษ"},
+        {q:"แป้นลูกศรมีหน้าที่อะไร", v:"← ↑ ↓ →", o:["เลื่อนเคอร์เซอร์และนำทาง","เปิดเครื่องพิมพ์","พิมพ์กระดาษ","เก็บไฟล์"], ex:"แป้นลูกศรอยู่ในกลุ่ม Navigation keys"},
+        {q:"แป้นตัวเลข 0–9 ใช้ทำอะไร", v:"0 1 2 3", o:["พิมพ์ตัวเลข","พิมพ์เฉพาะตัวอักษร","เลื่อนเมาส์","เปิดจอ"], ex:"Number keys ใช้ป้อนตัวเลข"},
+        {q:"แป้นตัวอักษร A–Z เรียกว่าอะไร", v:"A B C", o:["Alphabet keys","Function keys","Power keys","Mouse keys"], ex:"Alphabet keys คือแป้นตัวอักษร A–Z"},
+        {q:"ปุ่ม Start หรือ Windows ใช้ทำอะไร", v:"⊞", o:["เปิดเมนู Start","ลบตัวอักษร","เลื่อนหน้าเว็บ","พิมพ์กระดาษทันที"], ex:"เมนู Start ใช้เปิดโปรแกรม การตั้งค่า และเมนู Power"},
+        {q:"Ctrl และ Alt อยู่ในกลุ่มแป้นใด", v:"Ctrl  Alt", o:["Control keys","Function keys","Number keys","Navigation keys"], ex:"Ctrl และ Alt เป็นแป้นควบคุมที่มักใช้ร่วมกับแป้นอื่น"},
+        {q:"แป้นลูกศรอยู่ในกลุ่มใด", v:"↑", o:["Navigation keys","Alphabet keys","Function keys","Numeric keypad"], ex:"Navigation keys ใช้เลื่อนตำแหน่งหรือเคอร์เซอร์"},
+        {q:"Numeric keypad มักอยู่บริเวณใดของคีย์บอร์ดขนาดเต็ม", v:"7 8 9\n4 5 6", o:["ด้านขวา","ด้านซ้ายบนเสมอ","ใต้เมาส์","บนจอมอนิเตอร์"], ex:"แป้นตัวเลขชุดใหญ่มักอยู่ด้านขวา"},
+        {q:"แป้นพิมพ์จัดเป็นอุปกรณ์ประเภทใด", v:"⌨️", o:["อุปกรณ์รับข้อมูล","อุปกรณ์แสดงผล","อุปกรณ์พิมพ์กระดาษ","อุปกรณ์ให้แสง"], ex:"แป้นพิมพ์ส่งตัวอักษร ตัวเลข และคำสั่งเข้าเครื่อง"},
+        {q:"แป้นใดยาวที่สุดบริเวณด้านล่างของคีย์บอร์ด", v:"━━━━━━━━", o:["Spacebar","Enter","Caps Lock","F1"], ex:"Spacebar เป็นแป้นยาวสำหรับเว้นวรรค"},
+        {q:"กด Caps Lock อีกครั้งหลังเปิดไว้ จะเกิดอะไรขึ้น", v:"⇪", o:["ปิดโหมดตัวพิมพ์ใหญ่ต่อเนื่อง","ลบทั้งบรรทัด","ปิดคอมพิวเตอร์","เปิดเครื่องพิมพ์"], ex:"Caps Lock เป็นแป้นเปิด–ปิด"}
+      ],
+      icons: [
+        {q:"โปรแกรมใดใช้วาดรูปและระบายสีอย่างง่าย", v:"🎨", o:["Paint","Printer","USB Flash Drive","Power button"], ex:"Paint เป็นโปรแกรมวาดรูป"},
+        {q:"โปรแกรมวาดรูปใดออกแบบให้เด็กใช้งานง่าย", v:"🐧", o:["Tux Paint","System Unit","Caps Lock","Mouse pad"], ex:"Tux Paint เป็นโปรแกรมวาดรูปสำหรับเด็ก"},
+        {q:"อุปกรณ์ใดพิมพ์ข้อความหรือรูปภาพลงบนกระดาษ", v:"📄", o:["Printer","Monitor","Mouse","USB Flash Drive"], ex:"Printer คือเครื่องพิมพ์"},
+        {q:"อุปกรณ์ใดใช้บันทึกและย้ายไฟล์", v:"📁", o:["USB Flash Drive","Power button","Mouse pad","Monitor"], ex:"USB Flash Drive เป็นอุปกรณ์เก็บข้อมูล"},
+        {q:"สัญลักษณ์นี้หมายถึงอะไร", v:"⏻", o:["Power เปิด–ปิด","ล้อเลื่อน","Paint","Backspace"], ex:"สัญลักษณ์ Power ใช้กับการเปิดหรือปิดอุปกรณ์"},
+        {q:"ข้อใดเป็นอุปกรณ์แสดงผลลงบนกระดาษ", v:"🖨️", o:["Printer","Keyboard","Mouse","USB Flash Drive"], ex:"Printer แสดงผลเป็นเอกสารหรือรูปบนกระดาษ"},
+        {q:"ข้อใดเป็นโปรแกรม ไม่ใช่อุปกรณ์", v:"🧩", o:["Paint","Printer","USB Flash Drive","Mouse"], ex:"Paint เป็นซอฟต์แวร์หรือโปรแกรม"},
+        {q:"ข้อใดเป็นอุปกรณ์เก็บข้อมูล", v:"💾", o:["USB Flash Drive","Power button","Mouse pad","Scroll wheel"], ex:"แฟลชไดรฟ์ใช้เก็บข้อมูล"},
+        {q:"ต้องการวาดภาพสำหรับเด็ก ควรเลือกไอคอนใด", v:"🖍️", o:["Tux Paint","Printer","Power","System Unit"], ex:"Tux Paint เหมาะกับการวาดภาพสำหรับเด็ก"},
+        {q:"ก่อนปิดเครื่องควรทำอย่างไร", v:"⏻", o:["เลือกคำสั่งปิดเครื่องจากเมนูให้ถูกต้อง","ดึงปลั๊กทันที","เทน้ำใส่เครื่อง","กดแป้นทุกปุ่มพร้อมกัน"], ex:"ควรปิดผ่านเมนู Power เพื่อดูแลเครื่องและข้อมูล"},
+        {q:"Printer มีชื่อภาษาไทยว่าอะไร", v:"🖨️", o:["เครื่องพิมพ์","จอมอนิเตอร์","แป้นพิมพ์","หน่วยระบบ"], ex:"Printer แปลว่าเครื่องพิมพ์"},
+        {q:"USB Flash Drive เหมาะกับงานใด", v:"💾", o:["ย้ายไฟล์งานไปอีกเครื่อง","พิมพ์ตัวอักษร","เลื่อนตัวชี้","แสดงภาพบนจอ"], ex:"USB ใช้บันทึกและเคลื่อนย้ายไฟล์"}
+      ]
+    };
+
+    var modeInfo = {
+      parts:{title:"ประกอบคอมพิวเตอร์", icon:"🖥️", count:8},
+      mouse:{title:"ภารกิจเมาส์", icon:"🖱️", count:8},
+      keyboard:{title:"ฮีโร่แป้นพิมพ์", icon:"⌨️", count:10},
+      icons:{title:"นักสืบไอคอน", icon:"🎨", count:8},
+      final:{title:"ด่านทดสอบใหญ่", icon:"🏆", count:20},
+      retry:{title:"ทบทวนข้อที่พลาด", icon:"🔥", count:0}
+    };
+
+    var audioVersion="20260829-computer1", uiAudio=null;
+    var uiSounds={correct:"audio/ui/correct.mp3",wrong:"audio/ui/wrong.mp3",perfect:"audio/ui/perfect.mp3",finish:"audio/ui/finish-retry.mp3"};
+    function playUi(name){
+      var src=uiSounds[name]; if(!src)return;
+      try{ if(uiAudio){uiAudio.pause();uiAudio.currentTime=0;} uiAudio=new Audio(src+"?v="+audioVersion); uiAudio.play().catch(function(){}); }catch(e){}
+    }
+
+    function shuffle(arr){
+      var c=arr.slice();
+      for(var i=c.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=c[i];c[i]=c[j];c[j]=t;}
+      return c;
+    }
+    function sample(arr,n){return shuffle(arr).slice(0,Math.min(n,arr.length));}
+    function cloneQuestion(cat,item){
+      return {cat:cat,q:item.q,v:item.v||"",answer:item.o[0],options:shuffle(item.o),ex:item.ex};
+    }
+
+    var studyKeys=["parts","mouse","keyboard","icons"], studyGroup="parts", studyIndex=0;
+    function buildStudyTabs(){
+      var tabs=document.getElementById("study-tabs"); tabs.innerHTML="";
+      studyKeys.forEach(function(key){
+        var b=document.createElement("button");
+        b.className=(key===studyGroup?"bg-sky-600 text-white":"bg-white text-slate-600 border border-slate-200")+" text-[11px] font-black py-2 rounded-lg";
+        b.innerText=studyGroups[key].label;
+        b.onclick=function(){studyGroup=key;studyIndex=0;buildStudyTabs();renderStudy();};
+        tabs.appendChild(b);
+      });
+    }
+    function openStudy(){hideAll();document.getElementById("study-screen").classList.remove("hidden");buildStudyTabs();renderStudy();window.scrollTo(0,0);}
+    function renderStudy(){
+      var items=studyGroups[studyGroup].items,item=items[studyIndex];
+      document.getElementById("study-counter").innerText=(studyIndex+1)+"/"+items.length;
+      document.getElementById("study-emoji").innerText=item.em;
+      document.getElementById("study-english").innerText=item.en;
+      document.getElementById("study-name").innerText=item.th;
+      document.getElementById("study-short").innerText=item.short;
+      document.getElementById("study-detail").innerText=item.detail;
+    }
+    function previousStudy(){var n=studyGroups[studyGroup].items.length;studyIndex=(studyIndex-1+n)%n;renderStudy();}
+    function nextStudy(){var n=studyGroups[studyGroup].items.length;studyIndex=(studyIndex+1)%n;renderStudy();}
+    function openSheets(){hideAll();document.getElementById("sheets-screen").classList.remove("hidden");window.scrollTo(0,0);}
+
+    var quiz=[],current=0,score=0,selectedMode="final",activeMode="final",questionHadMistake=false,missed=[],categoryScores={},answered=false,lastMode="final";
+    function makeQuiz(mode){
+      var out=[];
+      if(mode==="final"){
+        [["parts",5],["mouse",4],["keyboard",6],["icons",5]].forEach(function(row){sample(banks[row[0]],row[1]).forEach(function(q){out.push(cloneQuestion(row[0],q));});});
+        return shuffle(out);
+      }
+      sample(banks[mode],modeInfo[mode].count).forEach(function(q){out.push(cloneQuestion(mode,q));});
+      return out;
+    }
+    function resetCategoryScores(){
+      categoryScores={parts:{right:0,total:0},mouse:{right:0,total:0},keyboard:{right:0,total:0},icons:{right:0,total:0}};
+    }
+    function startMode(mode){
+      selectedMode=mode;lastMode=mode;activeMode=mode;quiz=makeQuiz(mode);beginQuiz();
+    }
+    function beginQuiz(){
+      current=0;score=0;missed=[];resetCategoryScores();
+      hideAll();document.getElementById("quiz-screen").classList.remove("hidden");
+      document.getElementById("score-total").innerText=quiz.length;
+      document.getElementById("question-total").innerText=quiz.length;
+      loadQuestion();window.scrollTo(0,0);
+    }
+    function restartMode(){
+      if(lastMode==="retry"){startMode(selectedMode);}else{startMode(lastMode);}
+    }
+    function retryMissed(){
+      if(!missed.length)return;
+      var retryList=missed.map(function(q){return {cat:q.cat,q:q.q,v:q.v,answer:q.answer,options:shuffle(q.options),ex:q.ex};});
+      activeMode="retry";lastMode="retry";quiz=shuffle(retryList);beginQuiz();
+    }
+
+    function loadQuestion(){
+      answered=false;questionHadMistake=false;
+      var q=quiz[current];
+      document.getElementById("mode-badge").innerText=modeInfo[activeMode].icon+" "+modeInfo[activeMode].title;
+      document.getElementById("score-display").innerText=score;
+      document.getElementById("question-number").innerText=current+1;
+      document.getElementById("progress-bar").style.width=(current/quiz.length*100)+"%";
+      document.getElementById("question-visual").innerText=q.v;
+      document.getElementById("question-prompt").innerText=q.q;
+      document.getElementById("feedback").classList.add("hidden");
+      document.getElementById("next-btn").classList.add("hidden");
+      var area=document.getElementById("answer-area");area.innerHTML="";
+      q.options.forEach(function(opt){
+        var b=document.createElement("button");
+        b.className="bg-white border-2 border-slate-200 hover:border-sky-400 text-slate-800 font-bold text-base min-h-[58px] rounded-lg shadow-sm active:scale-95 transition px-3 py-2 leading-snug";
+        if(["Shift","Caps Lock","Backspace","Enter","Spacebar"].indexOf(opt)>=0)b.classList.add("keycap");
+        b.innerText=opt;b.onclick=function(){chooseAnswer(q,opt,b);};area.appendChild(b);
+      });
+    }
+    function chooseAnswer(q,opt,btn){
+      if(answered||btn.classList.contains("pointer-events-none"))return;
+      var fb=document.getElementById("feedback");fb.classList.remove("hidden");
+      if(opt!==q.answer){
+        questionHadMistake=true;playUi("wrong");
+        if(!missed.some(function(x){return x.q===q.q;}))missed.push(q);
+        btn.classList.add("pointer-events-none","opacity-50","border-rose-400","bg-rose-50","shake");
+        fb.className="rounded-lg p-3 mb-3 text-center font-bold bg-rose-50 text-rose-700 border border-rose-200";
+        fb.innerText="เกือบถูกแล้ว ลองเลือกใหม่อีกครั้งนะ";
+        return;
+      }
+      answered=true;playUi("correct");
+      if(!questionHadMistake){score++;categoryScores[q.cat].right++;}
+      categoryScores[q.cat].total++;
+      document.getElementById("score-display").innerText=score;
+      document.querySelectorAll("#answer-area button").forEach(function(b){b.classList.add("pointer-events-none");});
+      btn.classList.remove("border-slate-200");btn.classList.add("border-emerald-400","bg-emerald-50","ring-2","ring-emerald-300","pop");
+      fb.className="rounded-lg p-3 mb-3 text-center font-bold bg-emerald-50 text-emerald-700 border border-emerald-200";
+      fb.innerText="ถูกต้อง เก่งมาก! "+q.ex;
+      var next=document.getElementById("next-btn");next.classList.remove("hidden");
+      next.innerText=current>=quiz.length-1?"ดูสรุปผล 🏁":"ข้อต่อไป →";
+    }
+    function nextQuestion(){
+      if(!answered)return;
+      if(current>=quiz.length-1)showResult();else{current++;loadQuestion();window.scrollTo(0,0);}
+    }
+    function showResult(){
+      document.getElementById("progress-bar").style.width="100%";
+      hideAll();var screen=document.getElementById("result-screen");screen.classList.remove("hidden");screen.classList.add("flex");
+      document.getElementById("final-score").innerText=score;document.getElementById("final-total").innerText=quiz.length;
+      var ratio=score/quiz.length;
+      document.getElementById("result-icon").innerText=ratio===1?"👑":ratio>=.8?"🏆":ratio>=.6?"⭐":"💪";
+      document.getElementById("result-message").innerText=ratio===1?"ยอดเยี่ยม ตอบถูกตั้งแต่ครั้งแรกทุกข้อ!":"ทำครบแล้ว มาทบทวนข้อที่พลาดให้แม่นขึ้นกัน";
+      playUi(ratio===1?"perfect":"finish");
+      var names={parts:"🖥️ ส่วนหลัก",mouse:"🖱️ เมาส์",keyboard:"⌨️ แป้นพิมพ์",icons:"🎨 ไอคอน"};
+      var box=document.getElementById("category-summary");box.innerHTML="";
+      Object.keys(names).forEach(function(cat){
+        var stat=categoryScores[cat];if(!stat.total)return;
+        var row=document.createElement("div");row.className="bg-white border border-slate-200 rounded-lg p-3 flex items-center justify-between gap-3";
+        row.innerHTML='<span class="text-sm font-bold text-slate-700">'+names[cat]+'</span><span class="font-black text-sky-700">'+stat.right+'/'+stat.total+'</span>';box.appendChild(row);
+      });
+      var retry=document.getElementById("retry-missed-btn");
+      if(missed.length){retry.classList.remove("hidden");retry.innerText="ทบทวนข้อที่พลาด "+missed.length+" ข้อ";}else retry.classList.add("hidden");
+      window.scrollTo(0,0);
+    }
+    function hideAll(){
+      ["home-screen","study-screen","sheets-screen","quiz-screen","result-screen"].forEach(function(id){var el=document.getElementById(id);el.classList.add("hidden");if(id==="result-screen")el.classList.remove("flex");});
+    }
+    function goHome(){hideAll();document.getElementById("home-screen").classList.remove("hidden");window.scrollTo(0,0);}
+  </script>
+</body>
+</html>
