@@ -9,6 +9,7 @@
 - ภาษาไทย ครั้งที่ 41-45: https://ditthakornm-star.github.io/eng-word-game/thai-vocab-41-45/
 - ภาษาไทย ครั้งที่ 31-35: https://ditthakornm-star.github.io/eng-word-game/thai-vocab-31-35/
 - ภาษาไทย: https://ditthakornm-star.github.io/eng-word-game/thai-vocab/
+- อังกฤษ ชุดวันที่ 4 ก.ย.: https://ditthakornm-star.github.io/eng-word-game/week-sep-4/
 - อังกฤษ ชุดวันที่ 2-3 ก.ย.: https://ditthakornm-star.github.io/eng-word-game/week-sep-2/
 - อังกฤษ ชุดวันที่ 24-25 ส.ค.: https://ditthakornm-star.github.io/eng-word-game/week-aug-24/
 - อังกฤษ ชุดวันที่ 17-18 ส.ค.: https://ditthakornm-star.github.io/eng-word-game/week-aug-17/
@@ -31,6 +32,7 @@ science-quiz/index.html  เกมแบบทดสอบวิทยาศา�
 thai-vocab-41-45/index.html เกมสะกดคำยากภาษาไทย ครั้งที่ 41-45 (สุ่ม 10 จาก 25 คำ ไม่มีเสียงอ่านคำศัพท์)
 thai-vocab-31-35/index.html เกมสะกดคำยากภาษาไทย ครั้งที่ 31-35
 thai-vocab/index.html    เกมสะกดคำยากภาษาไทย
+week-sep-4/index.html    เกมคำศัพท์อังกฤษชุดวันที่ 4 ก.ย.
 week-sep-2/index.html    เกมคำศัพท์อังกฤษชุดวันที่ 2-3 ก.ย.
 week-aug-24/index.html   เกมคำศัพท์อังกฤษชุดวันที่ 24-25 ส.ค.
 week-aug-17/index.html   เกมคำศัพท์อังกฤษชุดวันที่ 17-18 ส.ค.
@@ -201,6 +203,7 @@ E:\แบบฝึกหัดลูก\ป.1\<วิชา>\รอบ <วั�
 ## หลักการออกแบบเกมคำศัพท์อังกฤษ
 
 ไฟล์หลักของแต่ละชุดคือ:
+- `week-sep-4/index.html`
 - `week-sep-2/index.html`
 - `week-aug-24/index.html`
 - `week-aug-17/index.html`
