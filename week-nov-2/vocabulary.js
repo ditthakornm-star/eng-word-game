@@ -1,0 +1,27 @@
+// ชุดสอบ 2–3 พฤศจิกายน 2569 รวมรูปกริยาจากชีทด้วย
+vocabularyList = [
+{w:'accomplish',t:'บรรลุผล',em:'🏁',chunks:['ac','com','plish'],tip:'ac + com + plish มี c สองตัว',s:'We can accomplish our goal.',st:'พวกเราสามารถบรรลุเป้าหมายได้'},
+{w:'person',t:'บุคคล',em:'🧍',chunks:['per','son'],tip:'per + son หมายถึงบุคคลหนึ่งคน',s:'She is a kind person.',st:'เธอเป็นคนใจดี'},
+{w:'personal',t:'ส่วนตัว',em:'📔',chunks:['per','son','al'],tip:'person + al เป็น personal',s:'This is my personal diary.',st:'นี่คือสมุดบันทึกส่วนตัวของฉัน'},
+{w:'be',t:'เป็น / อยู่ / คือ (รูปพื้นฐาน)',em:'🔤',chunks:['be'],tip:'be → was/were → been; ปัจจุบันใช้ is/am/are ตามประธาน',s:'I want to be a teacher.',st:'ฉันอยากเป็นครู'},
+{w:'is',t:'เป็น / อยู่ / คือ (ใช้กับ he, she, it)',em:'📘',chunks:['is'],tip:'He is / She is / It is',s:'She is happy.',st:'เธอมีความสุข'},
+{w:'am',t:'เป็น / อยู่ / คือ (ใช้กับ I)',em:'📙',chunks:['am'],tip:'I ใช้กับ am ในปัจจุบัน',s:'I am a student.',st:'ฉันเป็นนักเรียน'},
+{w:'are',t:'เป็น / อยู่ / คือ (ใช้กับ you, we, they)',em:'📗',chunks:['are'],tip:'You are / We are / They are',s:'They are friends.',st:'พวกเขาเป็นเพื่อนกัน'},
+{w:'was',t:'เป็น / อยู่ / คือ (อดีตของ is/am)',em:'🕰️',chunks:['was'],tip:'I was / He was / She was / It was',s:'I was at home yesterday.',st:'เมื่อวานฉันอยู่ที่บ้าน'},
+{w:'were',t:'เป็น / อยู่ / คือ (อดีตของ are)',em:'⌛',chunks:['were'],tip:'You were / We were / They were',s:'They were at school yesterday.',st:'เมื่อวานพวกเขาอยู่ที่โรงเรียน'},
+{w:'been',t:'เป็น / อยู่ / คือ (กริยาช่อง 3 ของ be)',em:'📚',chunks:['been'],tip:'be → was/were → been มี ee ติดกัน',s:'I have been to the zoo.',st:'ฉันเคยไปสวนสัตว์'},
+{w:'have',t:'มี (รูปพื้นฐาน)',em:'🎒',chunks:['have'],tip:'have → had → had',s:'I have a pencil.',st:'ฉันมีดินสอหนึ่งแท่ง'},
+{w:'had',t:'มี (ช่อง 2 และช่อง 3 ของ have)',em:'👜',chunks:['had'],tip:'have → had → had ช่อง 2 และ 3 เขียนเหมือนกัน',s:'I had a red toy.',st:'ฉันเคยมีของเล่นสีแดง'},
+{w:'do',t:'ทำ (รูปพื้นฐาน)',em:'✏️',chunks:['do'],tip:'do → did → done',s:'I do my homework.',st:'ฉันทำการบ้าน'},
+{w:'did',t:'ทำ (กริยาช่อง 2 ของ do)',em:'📝',chunks:['did'],tip:'do → did → done คำว่า did ขึ้นต้นและลงท้ายด้วย d',s:'I did my homework yesterday.',st:'เมื่อวานฉันทำการบ้านแล้ว'},
+{w:'done',t:'ทำ (กริยาช่อง 3 ของ do)',em:'✅',chunks:['done'],tip:'do → did → done ลงท้ายด้วย e',s:'I have done my homework.',st:'ฉันทำการบ้านเสร็จแล้ว'},
+{w:'toy',t:'ของเล่น',em:'🧸',chunks:['toy'],tip:'toy ลงท้ายด้วย oy',s:'This is my favorite toy.',st:'นี่คือของเล่นชิ้นโปรดของฉัน'},
+{w:'everyday object',t:'สิ่งของที่ใช้ทุกวัน',em:'🪥',chunks:['ev','er','y','day','ob','ject'],tip:'everyday เขียนติดกัน ตามด้วย object; ในเกมไม่ต้องกดเว้นวรรค',s:'A cup is an everyday object.',st:'ถ้วยเป็นสิ่งของที่ใช้ทุกวัน'},
+{w:'material',t:'วัสดุ',em:'🪵',chunks:['ma','te','ri','al'],tip:'แบ่งตัวสะกด ma + te + ri + al เสียงท้ายอาจรวบตามสำเนียง',s:'Wood is a natural material.',st:'ไม้เป็นวัสดุธรรมชาติ'},
+{w:'catch',t:'จับ',em:'⚾',chunks:['catch'],tip:'catch ลงท้ายด้วย tch',s:'I can catch the ball.',st:'ฉันจับลูกบอลได้'},
+{w:'hoop',t:'ห่วง',em:'⭕',chunks:['hoop'],tip:'hoop มี oo ตรงกลาง',s:'She plays with a hoop.',st:'เธอเล่นกับห่วง'},
+{w:'involve',t:'เกี่ยวพัน',em:'⚙️',chunks:['in','volve'],tip:'in + volve ลงท้ายด้วย e',s:'The game will involve everyone.',st:'เกมนี้จะให้ทุกคนมีส่วนร่วม'},
+{w:'appreciate',t:'สำนึกบุญคุณ / เห็นคุณค่า',em:'💐',chunks:['ap','pre','ci','ate'],tip:'ap + pre + ci + ate มี p สองตัว; ฟังเสียงเต็มประกอบ',s:'I appreciate your help.',st:'ฉันซาบซึ้งในความช่วยเหลือของคุณ'},
+{w:'discipline',t:'อบรม / ลงโทษ',em:'📋',chunks:['dis','ci','pline'],tip:'dis + ci + pline; เมื่อเป็นคำนามหมายถึงวินัย',s:'Parents discipline their children.',st:'พ่อแม่อบรมลูกๆ'},
+{w:'honest',t:'ซื่อสัตย์',em:'👛',chunks:['hon','est'],tip:'hon + est ตัว h ไม่ออกเสียง',s:'He is an honest person.',st:'เขาเป็นคนซื่อสัตย์'}
+];

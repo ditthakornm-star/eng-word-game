@@ -2,6 +2,8 @@
 
 เว็บรวมแบบฝึกหัดสำหรับเด็ก ป.1 เล่นผ่าน GitHub Pages ได้เลย
 
+- อังกฤษ ชุดสอบ 2–3 พ.ย. 2569 พร้อมจรวด Three.js: https://ditthakornm-star.github.io/eng-word-game/week-nov-2/
+
 - หน้าเลือกหมวด: https://ditthakornm-star.github.io/eng-word-game/
 - คณิตศาสตร์: https://ditthakornm-star.github.io/eng-word-game/math-quiz/
 - คอมพิวเตอร์ ป.1 ปลายภาค 1: https://ditthakornm-star.github.io/eng-word-game/computer-quiz/
